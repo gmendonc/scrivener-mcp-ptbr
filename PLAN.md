@@ -1,0 +1,243 @@
+# PLAN — Extensão bilíngue en + pt-BR
+
+Executa a `SPEC.md`. Os estágios rodam na ordem; cada `- [ ]` aponta a seção ou o requisito da
+SPEC.
+
+## Regras de uso
+
+1. **Toda sessão começa lendo `SPEC.md` e depois este `PLAN.md`.** Retome do primeiro item
+   `- [ ]` do primeiro estágio que não estiver fechado.
+2. **Atualize este arquivo antes do commit de cada estágio:** marque os itens `- [x]`, cole o
+   resumo da saída do comando "Pronto quando", preencha a linha de commit (hash e mensagem) e
+   registre desvios e decisões devolvidas.
+3. Divergência da SPEC → linha em **Desvios** antes do commit. Não edite a SPEC para acomodar o
+   código.
+4. Decisão que só o autor pode tomar → linha em **Decisões devolvidas** e pare o estágio.
+5. Um estágio só fecha com o comando "Pronto quando" verde e a saída registrada. Sem forma de
+   verificar, escreva "não verificado" e o motivo.
+6. Edições em arquivos do upstream só nos pontos da SPEC §9.
+
+---
+
+## Esqueleto andante (estágios 0 e 1)
+
+### Estágio 0 — Ambiente (SPEC §13 Fase 0)
+
+- [x] R0.1 Node ≥ 24.22.1 (`node -v`)
+- [x] R0.2 `npm ci` sem `EACCES` (correção do cache `~/.npm` é do autor; não rode sudo)
+- [x] R0.3 `git remote add upstream https://github.com/writerslogic/scrivener-mcp.git` (ADR 0004)
+- [x] R0.4 Linha de base do upstream registrada abaixo; falhas preexistentes em Desvios
+
+**Pronto quando:**
+
+```bash
+node -v && npm ci && git remote get-url upstream && npm run typecheck && npm run lint && npm run build && npm test -- --testTimeout=30000 && node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs
+```
+
+Saída (resumo, 2026-11-01, base `a48ef5b`):
+
+- `node -v` → `v24.22.2`
+- `npm ci` → `added 627 packages`, 0 vulnerabilidades, sem `EACCES`. Aviso: 6 pacotes com
+  install scripts fora de `allowScripts` (`better-sqlite3`, `esbuild`, `@parcel/watcher`,
+  `fsevents`, `msgpackr-extract`, `unrs-resolver`); `better-sqlite3` carrega e executa
+  `select 1` mesmo assim.
+- `git remote get-url upstream` → `https://github.com/writerslogic/scrivener-mcp.git`
+  (push desativado: `no-push`)
+- `typecheck`, `lint`, `format:check`, `build` → exit 0 (C2PA 0.91.7 verificado)
+- `npm test -- --testTimeout=30000` → exit 0; suites 150 passed, 2 skipped (152); tests 2515
+  passed, 12 skipped (2527); 119 s
+- `check-tool-registry.mjs` → 82 tools, 0 duplicados, 68 data tools, OK
+- `check-output-conformance.mjs` → 36 pass, 0 fail, 0 skip
+- `check-runtime-policy.mjs` → ok (N-API 10)
+
+Nenhuma falha preexistente.
+
+Commit: ver `git log` — `chore: registra SPEC, PLAN e linha de base do upstream (estágio 0)`
+
+### Estágio 1 — Esqueleto com CI pt-BR verde (SPEC §13 Fase 1)
+
+Núcleo:
+- [ ] `src/locale/language.ts` (SPEC §6.1) — R1.1, R1.2
+- [ ] `src/locale/context.ts` (§6.2) — R1.6
+- [ ] `src/locale/project-locale.ts` (§6.3, §6.10) — R1.7
+- [ ] `src/locale/errors.ts` (§6.4)
+- [ ] `src/locale/pt-BR/data/function-words.ts` (curadoria própria; pt, en, es, fr, it, de)
+
+Fachadas e imports:
+- [ ] `src/locale/engines/*` delegando ao nativo em todos os idiomas (§6.6) — R1.4, R1.5
+- [ ] Troca de imports da §9.A (19 arquivos) e §9.B (13 arquivos)
+- [ ] Regra de lint (§9.D) — R1.3
+- [ ] `scripts/locale/check-native-escapes.mjs` (§8.3) — R1.18
+- [ ] Teste de `\b`/`\w` — R1.12
+
+Registro e ferramenta:
+- [ ] `src/locale/tool-policies.ts` com as 26 ferramentas (§6.7)
+- [ ] `src/locale/with-locale.ts` (§6.7, §7) — R1.8, R1.9
+- [ ] Injeção em `skill-registry.ts` (§9.C) — R1.10
+- [ ] `src/locale/set-project-language.ts` (§6.9) — R1.11
+- [ ] Sugestão no `open_project` (§6.10, §9.E) e fixture `tests/fixtures/pt-BR/sample-project-pt.scriv` — R1.15
+- [ ] `src/locale/jobs.ts` + injeção em `job-queue.ts` (§8.2, §9.F) — R1.13
+
+CI:
+- [ ] `scripts/locale/check-locale-tools.mjs` (comparação com §9 e `--list-imports`) — R1.14
+- [ ] `.github/workflows/ptbr.yml` com os passos 1–7 da §10.2 — R1.17
+- [ ] Gates do upstream verdes — R1.16
+
+**Pronto quando:**
+
+```bash
+npm run typecheck && npm run format:check && npm run lint && npm run build && node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs && npm test -- --testTimeout=30000 && node scripts/locale/check-native-escapes.mjs && node scripts/locale/check-locale-tools.mjs
+```
+
+e o workflow `ptbr.yml` verde no GitHub Actions (link: _a preencher_).
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+---
+
+### Estágio 2 — Gate, opção A (SPEC §13 Fase 2)
+
+- [ ] `src/locale/pt-BR/coverage.ts` e `dispatchPtBR` nas fachadas (§6.5, §6.6) — R2.1
+- [ ] `check-locale-tools.mjs` confere `LOCALE_TOOLS` e `coverage.ts` — R2.2
+- [ ] `tests/integration/locale/gate.test.ts` — R2.3, R2.4, R2.5, R2.6
+
+**Pronto quando:**
+
+```bash
+npx jest tests/unit/locale tests/integration/locale --testTimeout=30000 && node scripts/locale/check-locale-tools.mjs && node scripts/check-output-conformance.mjs && npm test -- --testTimeout=30000
+```
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 3a — Dados e texto base (SPEC §11, §6.8, §13 Fase 3)
+
+- [ ] `scripts/locale/sources.json`, `fetch-data.mjs`, `loader.ts`, `describeWithData` (§11)
+- [ ] `docs/pt-br/SOURCES.md` com licença verificada na fonte primária para cada fonte (D8)
+- [ ] `tokens.ts`, `sentences.ts`, `syllables.ts` — R3.1, R3.2
+- [ ] `segments.ts`, `spans.ts` — R3.3, R3.4
+- [ ] Exclusão de trechos e `recordCoverage` nas fachadas — R3.5
+- [ ] Adaptador do bluepencil (D18) — R3.12
+
+**Pronto quando:**
+
+```bash
+node scripts/locale/fetch-data.mjs --check && npx jest tests/unit/locale --testTimeout=30000 && npm run lint
+```
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 3b — Legibilidade e prompts (SPEC §6.11, §7, §9.G, §13 Fase 3)
+
+- [ ] `docs/pt-br/semantica-campos.md` a partir do tipo `ReadabilityResult` — R3.8
+- [ ] Flesch adaptado — R3.6; Dale-Chall adaptado ou indisponível — R3.7
+- [ ] `prompts.ts` e injeção nos 6 arquivos (§9.G) — R3.10
+- [ ] `foreign-guard.ts` e chamada em `ai-content-enhancer.ts` — R3.11
+
+**Pronto quando:**
+
+```bash
+npx jest tests/unit/locale tests/integration/locale --testTimeout=30000 && npm test -- --testTimeout=30000 && node scripts/check-output-conformance.mjs
+```
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 3c — Corpus e calibração (SPEC §12, §13 Fase 3)
+
+- [ ] `evaluate-corpus.mjs` e `preannotate.mjs` (§12.3, §12.4)
+- [ ] ≥ 3 textos clássicos pré-anotados; **revisão do autor** (D6) — R3.14
+- [ ] Camadas `contemporaneos` e `autor` pré-anotadas em `$SCRIVENER_PTBR_CORPUS_DIR`; revisão do autor
+- [ ] Calibração de `DETECTION_MIN_TOKENS` e `DETECTION_MIN_MARGIN` — R3.9 (valores finais: _a preencher_)
+- [ ] Promoções da fase em `coverage.ts` — R3.13
+- [ ] Passo 8 da §10.2 ativado no `ptbr.yml`
+
+**Pronto quando:**
+
+```bash
+SCRIVENER_PTBR_CORPUS_DIR=<dir> node scripts/locale/evaluate-corpus.mjs --layer all --check
+```
+
+Saída (resumo, só números): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 4 — Busca e continuidade (SPEC §9.H, §9.I, §13 Fase 4)
+
+- [ ] `conceptsFor` e revisão de índice por idioma — R4.1, R4.2
+- [ ] Julgamento de relevância (`queries`) nas três camadas; revisão do autor — R4.3
+- [ ] Padrões de continuidade pt-BR — R4.4, R4.5
+
+**Pronto quando:**
+
+```bash
+npx jest tests/unit/locale --testTimeout=30000 && SCRIVENER_PTBR_CORPUS_DIR=<dir> node scripts/locale/evaluate-corpus.mjs --layer all --check
+```
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 5 — Estilo e diálogo (SPEC §13 Fase 5; §9.J sem injeção, D20)
+
+- [ ] Advérbios, passiva, filter words, hedges, clichês — R5.1, R5.2, R5.3
+- [ ] Tags de diálogo — R5.4
+- [ ] Palavras por fala na fachada `analyzeDialogue`, só em pt-BR (D20) — R5.5
+- [ ] Anotação e revisão do autor; promoção por detector — R5.6
+
+**Pronto quando:** mesmo comando do estágio 4, mais `node scripts/check-output-conformance.mjs`.
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 6 — Emoção, voz, `compromise` (SPEC §13 Fase 6)
+
+- [ ] Relatório de escolha do POS — R6.1 (se sidecar: decisão devolvida ao autor)
+- [ ] `compromise-pos` em pt-BR — R6.2
+- [ ] Emoção e sentimento — R6.3
+- [ ] Voz — R6.4
+- [ ] Revisão das ferramentas do processo filho — R6.5
+
+**Pronto quando:** mesmo comando do estágio 4.
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+### Estágio 7 — Sidecar NILC-Metrix e verificação final (SPEC §13 Fase 7, §14)
+
+- [ ] `src/locale/sidecar/nilc-metrix.ts` — R7.1, R7.2, R7.3
+- [ ] Verificação ponta a ponta completa (§14, passos 1–8)
+
+**Pronto quando:** os 8 passos da SPEC §14 com saída registrada.
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
+
+---
+
+## Desvios
+
+| Data | Estágio | Requisito / seção | O que mudou | Por quê | Evidência |
+|---|---|---|---|---|---|
+| | | | | | |
+
+## Decisões devolvidas ao autor
+
+| Data | Estágio | Pergunta | Opções e custo | Resposta | Data da resposta |
+|---|---|---|---|---|---|
+| 2026-11-01 | — | `Dicionário de Palavras Simples` (Biderman) ou CorPop26 para Dale-Chall: licença desconhecida | verificar na fonte; se não ficar clara, Dale-Chall fica indisponível (R3.7) | licença considerada ok pelo autor; registrar em `SOURCES.md` com `licenseVerified.status: "author-accepted"`; usar a lista de Biderman, porque os coeficientes da fórmula adaptada foram calibrados com ela | 2026-11-01 |
+
+## Itens futuros (fora das fases)
+
+- Perfil de estilo da casa por projeto (integracao §3.5).
+- Issue no bluepencil para abreviações configuráveis (arquitetura §6.9, opção b).
+- Passiva sintética.
