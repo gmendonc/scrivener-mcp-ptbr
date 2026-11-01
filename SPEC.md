@@ -1,6 +1,8 @@
 # SPEC — Extensão bilíngue en + pt-BR do scrivener-mcp
 
 Status: aprovada para implementação em 2026-11-01. Fases 0 a 7.
+Revisões: 2026-11-01, campos de locale agrupados em `structuredContent.locale` (D15, decisão do
+autor depois da revisão do estágio 1; ver Decisões devolvidas no `PLAN.md`).
 Insumos: `docs/pt-br/decisoes-planejamento.md`, `docs/pt-br/arquitetura-locale.md`,
 `docs/pt-br/integracao-escrita-criativa.md`, `docs/pt-br/pesquisa-recursos-pt-br.md`.
 Decisões estruturais: `docs/adr/0001` a `0004`.
@@ -31,7 +33,7 @@ mantém o mesmo valor. Um mesmo processo atende projetos nos dois idiomas.
 |---|---|---|
 | D1 | Uma SPEC para as fases 0–7; nas fases 4–7 a qualidade é regra de medição e promoção | decisoes §1 |
 | D2 | `main` é o fork; remote `upstream` = `writerslogic/scrivener-mcp`; merges periódicos de `upstream/main` | decisoes §2, ADR 0004 |
-| D3 | Projeto sem idioma gravado: detectar e usar (`languageSource: 'detected'`) | decisoes §3 |
+| D3 | Projeto sem idioma gravado: detectar e usar (`locale.languageSource: 'detected'`) | decisoes §3 |
 | D4 | Reescrita por IA que altera fala em outro idioma: rejeitar a proposta inteira e informar o trecho | decisoes §4 |
 | D5 | Promoção `unavailable` → `implemented`: precisão ≥ 0,80 em **cada** camada do corpus | decisoes §5 |
 | D6 | Corpus: o agente pré-anota, o autor revisa e corrige | decisoes §6 |
@@ -39,11 +41,11 @@ mantém o mesmo valor. Um mesmo processo atende projetos nos dois idiomas.
 | D8 | Licença verificada na fonte primária e registrada em `docs/pt-br/SOURCES.md`; o que não estiver claro é sinalizado ao autor, sem bloquear | decisoes §8 |
 | D9 | Dados de terceiros fora do repositório, baixados por script para `~/.scrivener-mcp/locale/pt-BR/` | decisoes §9, ADR 0003 |
 | D10 | Integração com o plugin escrita-criativa é feita no plugin; o MCP só ganha as medições que faltam | decisoes §10 |
-| D11 | Ferramentas não são escondidas; em pt-BR sem implementação respondem `available: false` | arquitetura §10.1 |
+| D11 | Ferramentas não são escondidas; em pt-BR sem implementação respondem `locale.available: false` | arquitetura §10.1 |
 | D12 | Idioma do projeto na memória de projeto (`customContext.locale`) | arquitetura §10.3 |
 | D13 | Descrições das ferramentas continuam em inglês | arquitetura §10.4 |
 | D14 | `compromise`: fachada parcial sobre `text-metrics` | arquitetura §6.4 |
-| D15 | Os campos `language`, `languageSource`, `coverage` e `excludedSpans` aparecem **sempre**, em todos os idiomas, como acréscimo no `structuredContent`. O texto de `content` não muda em inglês. Paridade em inglês = todo campo do upstream com o mesmo valor | autor, 2026-11-01 (sessão da SPEC) |
+| D15 | Um bloco `locale` com `language`, `languageSource`, `coverage` e `excludedSpans` aparece **sempre**, em todos os idiomas, como acréscimo no `structuredContent` (`structuredContent.locale`); os demais campos de locale (`available`, `reason`, `alternative`, `unavailableMetrics`, `changedSpans`) ficam no mesmo bloco. Nenhum campo de locale fica solto no topo: `coverage` já existe no upstream em 5 ferramentas. O texto de `content` não muda em inglês. Paridade em inglês = todo campo do upstream com o mesmo valor | autor, 2026-11-01 (sessão da SPEC; agrupamento em `locale` decidido na revisão do estágio 1) |
 | D16 | Promoção exige pelo menos **30 predições revisadas por camada**; abaixo disso o relatório marca `insufficient-sample` e não promove. O limite inferior de Wilson (95%) é reportado só como informação | autor, 2026-11-01 |
 | D17 | Busca por conceito pt-BR segue D5 com **precision@10 ≥ 0,80 por camada**; recall é medido e reportado, sem bloquear | autor, 2026-11-01 |
 | D18 | Abreviações no bluepencil: contorno (a) por substituição do ponto (arquitetura §6.9) | arquitetura §6.9 |
@@ -112,8 +114,8 @@ de ferramentas.
 |---|---|---|
 | Fachadas rasas | evita editar chamadas no upstream | testes de contrato por função |
 | Contexto implícito (ALS) | evita pass-through variable em 19 arquivos | seção 8 + teste de propagação |
-| Ferramentas listadas mesmo quando indisponíveis em pt-BR | sessão pode ter projetos nos dois idiomas | `available: false` com alternativa |
-| Campos novos na saída em inglês (D15) | schema único, cliente sempre vê o caminho | só acréscimo; valores do upstream iguais |
+| Ferramentas listadas mesmo quando indisponíveis em pt-BR | sessão pode ter projetos nos dois idiomas | `locale.available: false` com alternativa |
+| Bloco `locale` novo na saída em inglês (D15) | schema único, cliente sempre vê o caminho | só acréscimo numa chave própria; valores do upstream iguais; `withLocale` lança se o upstream declarar `locale` |
 | Ferramentas do processo filho indisponíveis em pt-BR até reimplementação | o ALS não atravessa processo | gate no nível da ferramenta (8.1) |
 
 ## 5. Estrutura de arquivos
@@ -381,22 +383,30 @@ export const LOCALE_TOOLS: Readonly<Record<string, LocaleToolPolicy>>;
 
 // with-locale.ts
 export const LANGUAGE_INPUT_PROPERTY: JSONValue;      // { type:'string', enum:['en','pt-BR','auto'], description: ≥ 1 frase }
-export const LOCALE_OUTPUT_PROPERTIES: Record<string, JSONValue>; // language, languageSource, coverage, excludedSpans, available, reason, alternative
+export const LOCALE_OUTPUT_PROPERTIES: Record<string, JSONValue>; // language, languageSource, coverage, excludedSpans, available, reason, alternative, unavailableMetrics, changedSpans
+export const LOCALE_OUTPUT_KEY = 'locale';
+export const LOCALE_OUTPUT_PROPERTY: JSONValue; // { type:'object', properties: LOCALE_OUTPUT_PROPERTIES, required: [language, languageSource, coverage, excludedSpans] }
 export function withLocale(tool: ToolDefinition): ToolDefinition;
 ```
 
 `withLocale(tool)`:
 
-1. Se `tool.name` não está em `LOCALE_TOOLS`, devolve o **mesmo objeto** `tool`.
+1. Se `tool.name` não está em `LOCALE_TOOLS`, ou se `tool` já é um invólucro, devolve o **mesmo
+   objeto** `tool`.
 2. Senão devolve um objeto memoizado (`WeakMap<ToolDefinition, ToolDefinition>`; chamar duas
    vezes devolve o mesmo objeto, porque `activateSkill` compara identidade) com:
    - `inputSchema.properties.language = LANGUAGE_INPUT_PROPERTY` (nunca em `required`);
    - `description` igual à original + `" Supports Brazilian Portuguese (pt-BR) via the optional
-     language argument; unsupported analyses answer available: false."` (em inglês, D13);
-   - se `tool.outputSchema` existe: `properties` = originais + `LOCALE_OUTPUT_PROPERTIES`;
-     `required`/`anyOf`/`oneOf` originais movidos para um ramo de `anyOf`, junto de um ramo
-     `{ required: ['available', 'reason', 'language'] }` para a resposta indisponível. Se não
-     existe, nenhum `outputSchema` é criado (o gate exige isso para ferramentas `TEXT_ONLY`);
+     language argument; unsupported analyses answer locale.available: false."` (em inglês, D13);
+   - se `tool.outputSchema` existe: `properties` = originais + `locale: LOCALE_OUTPUT_PROPERTY`,
+     também dentro dos ramos de `anyOf`/`oneOf`/`allOf` que enumeram propriedades ou têm
+     `additionalProperties: false`; `required` do topo = `['locale']`; `required`/`anyOf`/
+     `oneOf`/`allOf` originais movidos para um ramo de `anyOf`, junto de um ramo
+     `{ properties: { locale: { required: ['available', 'reason', 'language'] } } }` para a
+     resposta indisponível. Se o schema original já declara `locale` em qualquer desses níveis,
+     `withLocale` lança (um merge do upstream que crie o campo falha no registro, não é
+     sobrescrito). Se não existe `outputSchema`, nenhum é criado (o gate exige isso para
+     ferramentas `TEXT_ONLY`);
    - `handler` envolto:
      a. retira `language` de `args` antes de chamar o handler original;
      b. lê `ProjectLocale` com `readProjectLocale(context.memoryManager)`;
@@ -408,10 +418,12 @@ export function withLocale(tool: ToolDefinition): ToolDefinition;
         `reason: 'child-process'`;
      e. chama o handler; se ele lançar `LanguageUnsupportedError`, devolve a resposta
         indisponível com o `reason` e a `alternative` do erro; se lançar
-        `ForeignSpanChangedError`, devolve `isError: false`, `available: false`,
-        `reason: 'foreign-span-changed'` e a lista de trechos;
-     f. em resposta normal, acrescenta `summarize(ctx)` ao `structuredContent` (se houver
-        `outputSchema`). Em idioma ≠ `en`, acrescenta ao fim do último bloco de texto de
+        `ForeignSpanChangedError`, devolve `isError: false` e `locale` com `available: false`,
+        `reason: 'foreign-span-changed'` e a lista de trechos em `changedSpans`;
+     f. na resposta do handler, inclusive com `isError: true` (o SDK valida esse
+        `structuredContent` contra o `outputSchema`), acrescenta
+        `structuredContent.locale = { ...summarize(ctx), unavailableMetrics? }` (se houver
+        `outputSchema` e `structuredContent`). Em idioma ≠ `en`, acrescenta ao fim do último bloco de texto de
         `content` uma linha `pt-BR: …` com cobertura e métricas indisponíveis; em `en`, `content`
         fica byte a byte igual (D15).
 
@@ -422,11 +434,15 @@ Resposta indisponível:
   "isError": false,
   "content": [{ "type": "text", "text": "pt-BR: <feature> is not available for Brazilian Portuguese yet (<reason>). Try <alternative>." }],
   "structuredContent": {
-    "available": false, "reason": "not-implemented", "alternative": "analyze_document",
-    "language": "pt-BR", "languageSource": "project", "coverage": 0, "excludedSpans": []
+    "locale": {
+      "available": false, "reason": "not-implemented", "alternative": "analyze_document",
+      "language": "pt-BR", "languageSource": "project", "coverage": 0, "excludedSpans": []
+    }
   }
 }
 ```
+
+Os campos do upstream não aparecem na resposta indisponível; só o bloco `locale`.
 
 `LOCALE_TOOLS` contém exatamente estas 26 ferramentas:
 
@@ -522,18 +538,20 @@ enviado. Em `ai-content-enhancer.ts`, o texto reescrito passa por
 
 ## 7. Contrato de saída
 
-- Ferramentas em `LOCALE_TOOLS` com `outputSchema`: o `structuredContent` sempre tem
-  `language` (`'en' | 'pt-BR' | 'mixed'`), `languageSource`, `coverage` (0..1) e
-  `excludedSpans` (D15). Todos os campos do upstream mantêm nome, tipo e valor em inglês.
+- Ferramentas em `LOCALE_TOOLS` com `outputSchema`: o `structuredContent` sempre tem o bloco
+  `locale` com `language` (`'en' | 'pt-BR' | 'mixed'`), `languageSource`, `coverage` (0..1) e
+  `excludedSpans` (D15). Todos os campos do upstream mantêm nome, tipo e valor em inglês,
+  inclusive os que têm o mesmo nome de um campo de locale (`coverage` em `analyze_document`,
+  `analyze_writing_style`, `enhance_content`, `check_consistency`, `check_plot_consistency`).
 - Implementações pt-BR devolvem o mesmo tipo da nativa (`StyleResult`, `ReadabilityResult`…).
   Quando a semântica muda, o campo fica e a diferença é documentada em
   `docs/pt-br/semantica-campos.md` (por exemplo `counts.adverbs` = advérbios em -mente
   confirmados no léxico).
 - Campo numérico sem fórmula pt-BR validada: se o tipo nativo tem flag de disponibilidade
   (`smogAvailable`), ela vai `false`; senão o valor é `0` e o nome entra em
-  `unavailableMetrics` (via `recordUnavailableMetric`), que o invólucro expõe dentro de
-  `structuredContent` e na linha `pt-BR:` do texto.
-- `excludedSpans` vem truncado em 200 itens; `coverage` sempre considera todos.
+  `unavailableMetrics` (via `recordUnavailableMetric`), que o invólucro expõe em
+  `structuredContent.locale.unavailableMetrics` e na linha `pt-BR:` do texto.
+- `locale.excludedSpans` vem truncado em 200 itens; `locale.coverage` sempre considera todos.
 
 ## 8. Caminhos que escapam das fachadas
 
@@ -551,7 +569,7 @@ Ferramentas que chegam ao filho (por `NarrativeAnalysis.analyzeDocument`, `sugge
 (`policy: 'configured'`) e `editorial_workflow` (passos `analyze` e `propose`).
 
 Tratamento: no nível da ferramenta, pelo modo `child-process` de 6.7. Em pt-BR elas respondem
-`available: false`, `reason: 'child-process'`, com `alternative` (`analyze_craft_local` sem
+`locale.available: false`, `locale.reason: 'child-process'`, com `alternative` (`analyze_craft_local` sem
 `policy`, `check_style_local`, `analyze_document`), até uma fase que as implemente. Nenhum
 arquivo de `src/services/editorial/` muda. `narrativeVersion()` em `analysis-envelope.ts` é
 metadado e continua igual.
@@ -668,11 +686,11 @@ Fora desta lista, arquivos novos do fork: `.github/workflows/ptbr.yml`, `docs/ad
 - `node scripts/check-tool-registry.mjs`: lê `getRegisteredTools()` com
   `SCRIVENER_MCP_EAGER_TOOLS=1`, portanto vê os schemas aumentados. Exige ≥ 60 caracteres de
   descrição e `description` em **toda** propriedade, em qualquer profundidade, inclusive
-  `language`, os campos de `LOCALE_OUTPUT_PROPERTIES`, os ramos de `anyOf` e a ferramenta
+  `language`, o bloco `locale` e os campos de `LOCALE_OUTPUT_PROPERTIES`, os ramos de `anyOf` e a ferramenta
   `set_project_language`;
 - `node scripts/check-output-conformance.mjs`: executa ferramentas reais por
   `executeRegisteredHandler` contra o fixture inglês e valida o `structuredContent` contra o
-  `outputSchema` anunciado; os campos de D15 precisam aparecer e validar;
+  `outputSchema` anunciado; o bloco `locale` de D15 precisa aparecer e validar;
 - `npm test -- --testTimeout=30000`: a suíte do upstream sem alteração, mais os testes novos em
   `tests/unit/locale/` (que não podem depender de dados baixados; usam `describeWithData`, 11.3).
 
@@ -833,7 +851,7 @@ Testes unitários ficam em `tests/unit/locale/<módulo>.test.ts`; integração e
 | R1.6 | `context.ts` | `context.test.ts`: dentro de `runWithLocale`, `currentLocale()` é o contexto mesmo após `await` e `setTimeout`; duas chamadas concorrentes com `Promise.all` não misturam `resolutions`; fora, `undefined` e `record*` não lançam |
 | R1.7 | `project-locale.ts` | `project-locale.test.ts`: `parseProjectLocale({primary:'pt-BR', embedded:['en']})` ok; `{primary:'fr'}` lança citando `primary`; `readProjectLocale` com valor inválido → `undefined`; `writeProjectLocale` chama `setCustomContext('locale', …)` e depois `saveMemory` (mock, ordem verificada) |
 | R1.8 | `withLocale` identidade e memoização | `with-locale.test.ts`: ferramenta fora de `LOCALE_TOOLS` → mesmo objeto; dentro → objeto novo, e `withLocale` duas vezes → `toBe` o mesmo; `inputSchema.properties.language.enum` = `['en','pt-BR','auto']`; `language` não está em `required`; handler original não recebe `language` em `args` |
-| R1.9 | Campos de saída em inglês (D15) | `with-locale.test.ts`: handler falso devolve `{content:[{type:'text',text:'X'}], structuredContent:{a:1}}`; envolto, em en → `content` idêntico (`toEqual`), `structuredContent` = `{a:1, language:'en', languageSource:'default', coverage:1, excludedSpans:[]}` |
+| R1.9 | Campos de saída em inglês (D15) | `with-locale.test.ts`: handler falso devolve `{content:[{type:'text',text:'X'}], structuredContent:{a:1}}`; envolto, em en → `content` idêntico (`toEqual`), `structuredContent` = `{a:1, locale:{language:'en', languageSource:'default', coverage:1, excludedSpans:[]}}`; resultado com `isError: true` e `structuredContent` também recebe `locale`; schema original que declara `locale` faz `withLocale` lançar |
 | R1.10 | Registro aplica o invólucro | `registry-locale.test.ts`: após `initializeSkillRegistry()` com `SCRIVENER_MCP_EAGER_TOOLS=1`, cada nome de `LOCALE_TOOLS` em `getRegisteredTools()` tem `inputSchema.properties.language`; nenhum outro tem; `activateSkill` chamado de novo devolve `false` (identidade estável) |
 | R1.11 | `set_project_language` | `set-project-language.test.ts`: sem projeto → erro de projeto ausente; com `memoryManager` mock, `{primary:'pt-BR', embedded:['en']}` grava e devolve `{locale, previous: undefined}`; `{clear:true}` remove; `{primary:'xx'}` → `INVALID_ARGUMENT` |
 | R1.12 | Proibição de `\b`/`\w` em pt-BR | `no-ascii-boundaries.test.ts`: varre `src/locale/pt-BR/**/*.ts` e falha se achar `\\b` ou `\\w` em literal de regex |
@@ -853,10 +871,10 @@ esqueleto só prova o caminho: idioma resolvido, campos na saída, gates verdes.
 |---|---|---|
 | R2.1 | `coverage.ts` completo | `coverage.test.ts`: conjunto de chaves = conjunto de funções de valor das fachadas (as duas direções); toda chave tem `state`; nesta fase só são `language-neutral`: `text-metrics.getAccurateWordCount`, `text-metrics.countWords`, `text-metrics.getCharacterCount`, `text-metrics.getAccurateParagraphCount`, `narrative-lens.listManuscriptRules`, `narrative-lens.listStructureTemplates`, `narrative-lens.genreFromLabel`, `narrative-lens.parseManuscriptReport`; o resto é `unavailable` com `alternative` |
 | R2.2 | Ferramentas e fachadas consistentes | `check-locale-tools.mjs`: todo nome de `LOCALE_TOOLS` existe no registro; toda função de valor importada no upstream existe na fachada e em `coverage.ts` |
-| R2.3 | Nenhuma métrica inglesa sobre texto português | `tests/integration/locale/gate.test.ts`: para cada ferramenta em `LOCALE_TOOLS` com argumentos mínimos sobre `sample-project-pt.scriv` (projeto com `locale.primary='pt-BR'`), a resposta tem `isError: false` e ou `available: false` com `reason` e `alternative`, ou só campos de funções `language-neutral`; validada contra o `outputSchema` aumentado (Ajv) |
-| R2.4 | Gate do processo filho | `gate.test.ts`: `analyze_manuscript_local {action:'analyze'}` em pt-BR → `available:false, reason:'child-process'` e o spy em `NarrativeAnalysis.prototype.serializedAnalysis` não foi chamado; `{action:'capabilities'}` → resposta normal; `analyze_craft_local {policy:'configured'}` → indisponível; sem `policy` → passa pela fachada; `editorial_workflow {action:'list'}` → normal, `{action:'start',…}` → indisponível |
-| R2.5 | Paridade inglesa intacta | `gate.test.ts` sobre `tests/sample-project.scriv`: para cada ferramenta de `LOCALE_TOOLS`, o `structuredContent` sem os campos de D15 é `toEqual` ao do handler original chamado sem invólucro |
-| R2.6 | Detecção sem projeto | projeto pt sem `locale` → `languageSource: 'detected'`, `language: 'pt-BR'`, resposta indisponível (D3) |
+| R2.3 | Nenhuma métrica inglesa sobre texto português | `tests/integration/locale/gate.test.ts`: para cada ferramenta em `LOCALE_TOOLS` com argumentos mínimos sobre `sample-project-pt.scriv` (projeto com `locale.primary='pt-BR'`), a resposta tem `isError: false` e ou `locale.available: false` com `reason` e `alternative`, ou só campos de funções `language-neutral`; validada contra o `outputSchema` aumentado (Ajv) |
+| R2.4 | Gate do processo filho | `gate.test.ts`: `analyze_manuscript_local {action:'analyze'}` em pt-BR → `locale: {available:false, reason:'child-process'}` e o spy em `NarrativeAnalysis.prototype.serializedAnalysis` não foi chamado; `{action:'capabilities'}` → resposta normal; `analyze_craft_local {policy:'configured'}` → indisponível; sem `policy` → passa pela fachada; `editorial_workflow {action:'list'}` → normal, `{action:'start',…}` → indisponível |
+| R2.5 | Paridade inglesa intacta | `gate.test.ts` sobre `tests/sample-project.scriv`: para cada ferramenta de `LOCALE_TOOLS`, o `structuredContent` sem a chave `locale` é `toEqual` ao do handler original chamado sem invólucro (inclusive o `coverage` do upstream nas 5 ferramentas que o têm) |
+| R2.6 | Detecção sem projeto | projeto pt sem `locale` gravado → `locale.languageSource: 'detected'`, `locale.language: 'pt-BR'`, resposta indisponível (D3) |
 
 ### Fase 3 — Texto base, legibilidade, prompts
 
@@ -872,7 +890,7 @@ esqueleto só prova o caminho: idioma resolvido, campos na saída, gates verdes.
 | R3.8 | Campos sem fórmula | Tipo conferido em 2026-11-01 (`ReadabilityResultJs`, `node_modules/narrative-lens/index.d.ts:334`): `fkgl`, `gunningFog`, `smog` + `smogAvailable`, `ari`, `colemanLiau`, `fleschEase`, `daleChall`, `sentenceCount`, `wordCount`, `syllableCount`, `charCount`, `polysyllableCount`, `readabilityVariance` e `gradeLevels` (strings para `fkgl`, `gunningFog`, `ari`, `colemanLiau`, `fleschEase`, `daleChall`). Só `smog` tem flag de disponibilidade. `readability.test.ts`: tabela de `docs/pt-br/semantica-campos.md` (escrita no passo 1 da fase); todo campo marcado indisponível aparece com flag `false` ou em `unavailableMetrics`; `gradeLevels` usa faixas brasileiras |
 | R3.9 | Limiares de detecção calibrados | `evaluate-corpus.mjs --detector language.span` nas três camadas cumpre D5/D16; os valores finais de `DETECTION_MIN_TOKENS`/`MIN_MARGIN` e o relatório entram no `PLAN.md` |
 | R3.10 | Diretiva de idioma | `prompts.test.ts`: `languageDirective('en') === ''`; em pt-BR contém "português do Brasil" e "não traduza"; para cada um dos 6 arquivos de prompt, com provedor mockado, o prompt de sistema em en é byte a byte o do upstream e em pt-BR termina com a diretiva |
-| R3.11 | Rejeição de tradução (D4) | `tests/integration/locale/enhance-foreign.test.ts`: `enhance_content` em texto pt com `— I told you, this is not the place for that — disse John.`; provedor mockado devolve a fala traduzida → `available:false`, `reason:'foreign-span-changed'`, trecho com `languageBefore:'en'`, `languageAfter:'pt-BR'`; nenhuma proposta criada em `review_changes`; provedor que preserva a fala → resposta normal |
+| R3.11 | Rejeição de tradução (D4) | `tests/integration/locale/enhance-foreign.test.ts`: `enhance_content` em texto pt com `— I told you, this is not the place for that — disse John.`; provedor mockado devolve a fala traduzida → `locale.available:false`, `locale.reason:'foreign-span-changed'`, trecho em `locale.changedSpans` com `languageBefore:'en'`, `languageAfter:'pt-BR'`; nenhuma proposta criada em `review_changes`; provedor que preserva a fala → resposta normal |
 | R3.12 | Adaptador do bluepencil (D18) | `bluepencil-adapter.test.ts`: `analyzeRhythm` sobre `'A Dra. Ana chegou. Ela saiu.'` → 2 frases; linha/coluna dos achados iguais às do texto original; excerto restaurado com `.`; `findEchoes` ignora palavras funcionais pt (`para` não aparece) |
 | R3.13 | Promoções da fase | `analyzeRhythm`, `findEchoes`, `findRepeats`, `sentenceStarters` → `language-neutral` com adaptador; `computeReadability` → `implemented` (R3.6–R3.8); `splitIntoSentences`, `getAccurateSentenceCount`, `getWordFrequency` → `implemented` com relatório de frases do corpus cumprindo D5/D16 |
 | R3.14 | Corpus clássico inicial | ≥ 3 textos em `tests/fixtures/pt-BR/classicos/` com anotações `reviewed` para `language.span` e `dialogue.speech`; `evaluate-corpus.mjs --layer classicos --check` verde no workflow pt-BR |
@@ -934,9 +952,9 @@ Saídas resumidas no `PLAN.md`.
 7. Sessão real por stdio (`node dist/index.js` num cliente MCP): `open_project` no
    `sample-project-pt.scriv` mostra a sugestão; `set_project_language {primary:'pt-BR',
    embedded:['en']}`; `check_style_local` num documento com fala inglesa devolve
-   `language:'pt-BR'`, `languageSource:'project'`, `coverage < 1` e o span inglês em
-   `excludedSpans`; `analyze_manuscript_local {action:'analyze'}` devolve `available:false`,
-   `reason:'child-process'`; `open_project` em `tests/sample-project.scriv` e
-   `check_style_local` devolvem os mesmos valores do upstream mais os campos de D15 com
-   `language:'en'`.
+   `locale.language:'pt-BR'`, `locale.languageSource:'project'`, `locale.coverage < 1` e o
+   span inglês em `locale.excludedSpans`; `analyze_manuscript_local {action:'analyze'}`
+   devolve `locale.available:false`, `locale.reason:'child-process'`; `open_project` em
+   `tests/sample-project.scriv` e `check_style_local` devolvem os mesmos valores do upstream
+   mais o bloco `locale` de D15 com `language:'en'`.
 8. Workflow `ptbr.yml` e `ci.yml` verdes no GitHub Actions para o commit final.
