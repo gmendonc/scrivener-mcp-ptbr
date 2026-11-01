@@ -2,7 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 
 const ROOT = join(__dirname, '..', '..', '..');
-const ESLINT = join(ROOT, 'node_modules', '.bin', 'eslint');
+// O script JS pelo próprio Node: no Windows, node_modules/.bin/eslint é um .cmd que o
+// spawnSync sem shell não executa.
+const ESLINT = join(ROOT, 'node_modules', 'eslint', 'bin', 'eslint.js');
 
 interface LintResult {
 	messages: Array<{ ruleId: string | null }>;
@@ -13,8 +15,9 @@ interface LintResult {
 // TypeScript não o contém, então o `project` do parser é desligado (a regra não usa tipos).
 function lint(filename: string, source: string): string[] {
 	const result = spawnSync(
-		ESLINT,
+		process.execPath,
 		[
+			ESLINT,
 			'--stdin',
 			'--stdin-filename',
 			filename,
@@ -24,6 +27,8 @@ function lint(filename: string, source: string): string[] {
 		],
 		{ cwd: ROOT, input: source, encoding: 'utf8' }
 	);
+	if (result.error) throw result.error;
+	if (!result.stdout) throw new Error(`eslint exited ${result.status}: ${result.stderr}`);
 	const [report] = JSON.parse(result.stdout) as LintResult[];
 	return report.messages.map((m) => m.ruleId ?? 'parse-error');
 }

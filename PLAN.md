@@ -80,7 +80,7 @@ Registro e ferramenta:
 
 CI:
 - [x] `scripts/locale/check-locale-tools.mjs` (comparação com §9 e `--list-imports`) — R1.14
-- [ ] `.github/workflows/ptbr.yml` com os passos 1–7 da §10.2 — R1.17 (arquivo escrito; execução no Actions depende de push, não autorizado ainda)
+- [x] `.github/workflows/ptbr.yml` com os passos 1–7 da §10.2 — R1.17
 - [x] Gates do upstream verdes — R1.16
 
 **Pronto quando:**
@@ -89,7 +89,7 @@ CI:
 npm run typecheck && npm run format:check && npm run lint && npm run build && node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs && npm test -- --testTimeout=30000 && node scripts/locale/check-native-escapes.mjs && node scripts/locale/check-locale-tools.mjs
 ```
 
-e o workflow `ptbr.yml` verde no GitHub Actions (link: _a preencher; depende de push autorizado pelo autor_).
+e o workflow `ptbr.yml` verde no GitHub Actions (link: https://github.com/gmendonc/scrivener-mcp-ptbr/actions/runs/41351996460, commit `8f11023`).
 
 Saída (resumo, 2026-11-01, depois das correções da revisão):
 
@@ -105,7 +105,18 @@ Saída (resumo, 2026-11-01, depois das correções da revisão):
   `__locale` quebrando `suggest_improvements` assíncrono), ambos corrigidos com teste que falha
   sem a correção; ver Desvios.
 
-R1.17 não verificado: o `ptbr.yml` ainda não rodou no GitHub Actions (exige push).
+GitHub Actions no commit `8f11023`:
+
+- `pt-BR` (`ptbr.yml`): success — R1.17 verde.
+- `CI` (`ci.yml` do upstream): failure só no Windows (`windows-latest` 24.x e `windows-2022`
+  22.23.4), 4 testes em `tests/unit/locale/lint-rule.test.ts`: o teste chamava
+  `node_modules/.bin/eslint`, que no Windows é `.cmd` e o `spawnSync` sem shell não executa.
+  Corrigido para `process.execPath` + `node_modules/eslint/bin/eslint.js`; Linux e macOS
+  passaram nas 7 combinações. "Release verification" falha por depender da matriz completa.
+  Correção ainda não verificada no Windows (exige novo push).
+- `Changelog` (workflow do upstream): failure em "Open changelog PR" — "GitHub Actions is not
+  permitted to create or approve pull requests" (configuração do fork, não código).
+- `CodeQL`, `Scorecard`: success.
 
 Commit: ver `git log` — `feat(locale): esqueleto andante pt-BR (estágio 1)`
 
