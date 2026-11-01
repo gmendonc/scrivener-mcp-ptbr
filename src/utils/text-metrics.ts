@@ -3,7 +3,7 @@
  * Handles Unicode, contractions, acronyms, and special characters properly
  */
 
-import nlp from 'compromise';
+import nlp from '../locale/engines/compromise.js';
 import { escapeRegExp } from './regex.js';
 
 /**

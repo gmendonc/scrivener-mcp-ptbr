@@ -7,6 +7,7 @@ import { resolveScrivenerProjectPath } from '../../utils/scrivener-utils.js';
 import { PersonalizationService } from '../../services/personalization/personalization-service.js';
 import type { HandlerContext, HandlerResult, ToolDefinition } from '../types.js';
 import { requireProject, getStringArg } from '../types.js';
+import { draftSample, localeSuggestionText } from '../../locale/project-locale.js';
 
 const lifecycleOperations = new WeakMap<HandlerContext, Promise<void>>();
 
@@ -110,7 +111,7 @@ export const openProjectHandler: ToolDefinition = {
 					content: [
 						{
 							type: 'text',
-							text: `Project opened: ${metadata.title || path.basename(projectPath)}\n\n${compact(metadata)}`,
+							text: `Project opened: ${metadata.title || path.basename(projectPath)}\n\n${compact(metadata)}${await localeSuggestionText(memoryManager, () => draftSample(project))}`,
 						},
 					],
 				};

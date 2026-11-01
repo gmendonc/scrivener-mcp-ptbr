@@ -1,4 +1,4 @@
-import { computeReadability } from 'narrative-lens';
+import { computeReadability } from '../locale/engines/narrative-lens.js';
 /**
  * Advanced Readability Metrics Service
  * Provides comprehensive text readability analysis using multiple algorithms

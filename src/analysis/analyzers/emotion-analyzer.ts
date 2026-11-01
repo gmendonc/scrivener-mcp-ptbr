@@ -1,5 +1,5 @@
 import { getLogger } from '../../core/logger.js';
-import { splitIntoSentences } from '../../utils/text-metrics.js';
+import { splitIntoSentences } from '../../locale/engines/text-metrics.js';
 
 export interface EmotionalAnalysis {
 	dominantEmotion: string;

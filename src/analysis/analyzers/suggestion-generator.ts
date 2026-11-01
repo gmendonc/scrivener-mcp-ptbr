@@ -1,4 +1,4 @@
-import { collectProseExamples } from 'narrative-lens';
+import { collectProseExamples } from '../../locale/engines/narrative-lens.js';
 import type { StyleAnalysis } from './style-analyzer.js';
 import type { QualityIndicators } from './quality-analyzer.js';
 

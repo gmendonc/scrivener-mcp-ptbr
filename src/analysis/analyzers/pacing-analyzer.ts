@@ -1,11 +1,11 @@
-import { splitIntoSentences } from '../../utils/text-metrics.js';
+import { splitIntoSentences } from '../../locale/engines/text-metrics.js';
 import {
 	aggregatePacing,
 	analyzePacing,
 	computeReadability,
 	explainPacing,
 	extractDialogue,
-} from 'narrative-lens';
+} from '../../locale/engines/narrative-lens.js';
 import { getLogger } from '../../core/logger.js';
 
 export interface PacingAnalysis {

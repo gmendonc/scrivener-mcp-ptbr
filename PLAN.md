@@ -57,31 +57,31 @@ Commit: ver `git log` — `chore: registra SPEC, PLAN e linha de base do upstrea
 ### Estágio 1 — Esqueleto com CI pt-BR verde (SPEC §13 Fase 1)
 
 Núcleo:
-- [ ] `src/locale/language.ts` (SPEC §6.1) — R1.1, R1.2
-- [ ] `src/locale/context.ts` (§6.2) — R1.6
-- [ ] `src/locale/project-locale.ts` (§6.3, §6.10) — R1.7
-- [ ] `src/locale/errors.ts` (§6.4)
-- [ ] `src/locale/pt-BR/data/function-words.ts` (curadoria própria; pt, en, es, fr, it, de)
+- [x] `src/locale/language.ts` (SPEC §6.1) — R1.1, R1.2
+- [x] `src/locale/context.ts` (§6.2) — R1.6
+- [x] `src/locale/project-locale.ts` (§6.3, §6.10) — R1.7
+- [x] `src/locale/errors.ts` (§6.4)
+- [x] `src/locale/pt-BR/data/function-words.ts` (curadoria própria; pt, en, es, fr, it, de)
 
 Fachadas e imports:
-- [ ] `src/locale/engines/*` delegando ao nativo em todos os idiomas (§6.6) — R1.4, R1.5
-- [ ] Troca de imports da §9.A (19 arquivos) e §9.B (13 arquivos)
-- [ ] Regra de lint (§9.D) — R1.3
-- [ ] `scripts/locale/check-native-escapes.mjs` (§8.3) — R1.18
-- [ ] Teste de `\b`/`\w` — R1.12
+- [x] `src/locale/engines/*` delegando ao nativo em todos os idiomas (§6.6) — R1.4, R1.5
+- [x] Troca de imports da §9.A (19 arquivos) e §9.B (13 arquivos)
+- [x] Regra de lint (§9.D) — R1.3
+- [x] `scripts/locale/check-native-escapes.mjs` (§8.3) — R1.18
+- [x] Teste de `\b`/`\w` — R1.12
 
 Registro e ferramenta:
-- [ ] `src/locale/tool-policies.ts` com as 26 ferramentas (§6.7)
-- [ ] `src/locale/with-locale.ts` (§6.7, §7) — R1.8, R1.9
-- [ ] Injeção em `skill-registry.ts` (§9.C) — R1.10
-- [ ] `src/locale/set-project-language.ts` (§6.9) — R1.11
-- [ ] Sugestão no `open_project` (§6.10, §9.E) e fixture `tests/fixtures/pt-BR/sample-project-pt.scriv` — R1.15
-- [ ] `src/locale/jobs.ts` + injeção em `job-queue.ts` (§8.2, §9.F) — R1.13
+- [x] `src/locale/tool-policies.ts` com as 26 ferramentas (§6.7)
+- [x] `src/locale/with-locale.ts` (§6.7, §7) — R1.8, R1.9
+- [x] Injeção em `skill-registry.ts` (§9.C) — R1.10
+- [x] `src/locale/set-project-language.ts` (§6.9) — R1.11
+- [x] Sugestão no `open_project` (§6.10, §9.E) e fixture `tests/fixtures/pt-BR/sample-project-pt.scriv` — R1.15
+- [x] `src/locale/jobs.ts` + injeção em `job-queue.ts` (§8.2, §9.F) — R1.13
 
 CI:
-- [ ] `scripts/locale/check-locale-tools.mjs` (comparação com §9 e `--list-imports`) — R1.14
-- [ ] `.github/workflows/ptbr.yml` com os passos 1–7 da §10.2 — R1.17
-- [ ] Gates do upstream verdes — R1.16
+- [x] `scripts/locale/check-locale-tools.mjs` (comparação com §9 e `--list-imports`) — R1.14
+- [ ] `.github/workflows/ptbr.yml` com os passos 1–7 da §10.2 — R1.17 (arquivo escrito; execução no Actions depende de push, não autorizado ainda)
+- [x] Gates do upstream verdes — R1.16
 
 **Pronto quando:**
 
@@ -89,11 +89,25 @@ CI:
 npm run typecheck && npm run format:check && npm run lint && npm run build && node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs && npm test -- --testTimeout=30000 && node scripts/locale/check-native-escapes.mjs && node scripts/locale/check-locale-tools.mjs
 ```
 
-e o workflow `ptbr.yml` verde no GitHub Actions (link: _a preencher_).
+e o workflow `ptbr.yml` verde no GitHub Actions (link: _a preencher; depende de push autorizado pelo autor_).
 
-Saída (resumo): _a preencher_
+Saída (resumo, 2026-11-01, depois das correções da revisão):
 
-Commit: `________` — _mensagem_
+- `typecheck`, `format:check`, `lint`, `build` → exit 0
+- `check-tool-registry.mjs` → 83 tools (82 + `set_project_language`), 0 duplicados, 69 data tools, OK
+- `check-output-conformance.mjs` → 36 pass, 0 fail, 0 skip
+- `npm test -- --testTimeout=30000` → exit 0; suites 164 passed, 2 skipped (166); tests 2633
+  passed, 12 skipped (2645); 83 s. Linha de base: 2515 passed → +118 testes de locale
+- `check-native-escapes.mjs` → nenhum escape (exceção: `lens-native.cts`)
+- `check-locale-tools.mjs` → 30 pontos de injeção tocados, nenhum fora da §9
+- `check-runtime-policy.mjs` → ok
+- Revisão em contexto fresco (subagente `revisor`): 2 bloqueios (colisão de `coverage`;
+  `__locale` quebrando `suggest_improvements` assíncrono), ambos corrigidos com teste que falha
+  sem a correção; ver Desvios.
+
+R1.17 não verificado: o `ptbr.yml` ainda não rodou no GitHub Actions (exige push).
+
+Commit: ver `git log` — `feat(locale): esqueleto andante pt-BR (estágio 1)`
 
 ---
 
@@ -228,13 +242,28 @@ Commit: `________` — _mensagem_
 
 | Data | Estágio | Requisito / seção | O que mudou | Por quê | Evidência |
 |---|---|---|---|---|---|
-| | | | | | |
+| 2026-11-01 | 1 | D15, §6.2, §6.7, §7, R1.9 | Campos de locale agrupados em `structuredContent.locale` (`language`, `languageSource`, `coverage`, `excludedSpans`, `unavailableMetrics`, `available`, `reason`, `alternative`, `changedSpans`); `outputSchema` exige só `locale` no topo; resposta indisponível = `{ locale: { available: false, … } }`; `withLocale` lança se o upstream declarar `locale` | Decisão do autor (opção b, ver Decisões devolvidas): `coverage` solto colidia com o `coverage` do upstream em 5 ferramentas e o sobrescrevia em inglês | `with-locale.test.ts` (forma, ramos `oneOf` fechados, colisão); `registry-locale.test.ts` envolve as 26 ferramentas reais sem lançar |
+| 2026-11-01 | 1 | §9.C | `.map(withLocale)` dentro de `visibleTools`, não só em `activateSkill` | O handler de `use_skill` monta os schemas a partir de `visibleTools(skill)` e anunciaria ferramentas sem `language`; `getRegisteredTools` já leria o `handlerMap` | `registry-locale.test.ts` › "advertises the wrapped schemas through use_skill too" falha sem o desvio (mutação conferida) |
+| 2026-11-01 | 1 | §9.C | Prettier quebrou a lista `tools` do skill `project` em 6 linhas | Formato imposto por `format:check` | `git diff src/handlers/skill-registry.ts` |
+| 2026-11-01 | 1 | §9.F | `runWithJobLocale(jobPayload(...), …)` envolve as duas chamadas a `processJob` (worker BullMQ e fila embutida): 3 chamadas no total, não 2; `runWithJobLocale` retira `__locale` do payload antes de processar e `withJobLocale` não grava bloco vazio | Envolver dentro de `processJob` reindentaria o `switch`; `writing-suggestions` rejeita chaves desconhecidas e `suggest_improvements` com `async: true` falhava sempre (achado do revisor) | `queue-locale.test.ts`: sem a remoção, falha com "Suggestion request contains unsupported fields" (mutação conferida) |
+| 2026-11-01 | 1 | §4.3 | `project-locale.ts` importa `getLogger` (valor) de `src/core/logger.ts`; `set-project-language.ts` importa `HandlerError`, `requireProject`, `requireMemoryManager` de `src/handlers/types.ts` | A própria SPEC pede `logger.warn` (§6.3) e "erro de projeto ausente" (R1.11) | typecheck, lint |
+| 2026-11-01 | 1 | R1.3 | Teste roda o CLI do ESLint por `--stdin` com `--parser-options=project:false`, não a API programática | `eslint.config.js` é ESM e o Jest roda em CJS; arquivo temporário em `src/` disputava com o teste de escapes em paralelo | `lint-rule.test.ts` |
+| 2026-11-01 | 1 | R1.4 | `jest.mock` em vez de `jest.unstable_mockModule` | O Jest do upstream roda em CJS (sem `--experimental-vm-modules`) | `engines-parity.test.ts` |
+| 2026-11-01 | 1 | §6.10 | `localeSuggestionText` devolve a linha já prefixada com `\n\n` e nunca lança | A injeção no `open_project` continua uma concatenação só; a sugestão não pode impedir a abertura (um mock do upstream sem `getCustomContext` derrubava o `open_project`) | `project-locale.test.ts` › "never throws"; `handler-error-messages.test.ts` do upstream |
+| 2026-11-01 | 1 | §6.7 f | Resultados com `isError: true` e `structuredContent` também recebem o bloco `locale` | O SDK valida esse `structuredContent` contra o `outputSchema`; `tool-protocol.test.ts` falhava em `enhance_content` | `with-locale.test.ts` › "adds the locale block to isError results" |
+| 2026-11-01 | 1 | §6.7 | `withLocale` é idempotente: envolver um invólucro devolve ele mesmo | Com a checagem de colisão, reenvolver acusaria colisão consigo mesmo | `with-locale.test.ts` (R1.8) |
+| 2026-11-01 | 1 | §6.6 | `aggregatePacing`, `analyzePacing`, `explainPacing` resolvem idioma só pelo contexto (passos 1–3), como as 4 funções sem texto | Recebem números já derivados do texto; `resolveContextLanguage` não registra o padrão `en` para não gerar `mixed` falso | `engines-parity.test.ts` |
+| 2026-11-01 | 1 | §10.2 | Passo 3 (`fetch-data.mjs --ci`) fora do `ptbr.yml`; passo extra que busca `upstream/main` | O script só existe no estágio 3a; `check-locale-tools` precisa do ref | `.github/workflows/ptbr.yml` |
+| 2026-11-01 | 1 | §8.3, R1.14 | `check-native-escapes.mjs --root <dir>` para teste hermético; `check-locale-tools.mjs` conta também mudanças não commitadas e arquivos não rastreados | Testar sem escrever em `src/`; valer antes do commit | `check-native-escapes.test.ts`; arquivo `src/zz-probe.ts` fez o script sair com 1 |
+| 2026-11-01 | 1 | §6.7 f | Mantida a linha `pt-BR:` anexada ao último bloco de texto, embora deixe inválido o JSON em texto de ferramentas que usam `formatPayload` (só em pt-BR) | Segue a SPEC; clientes devem ler `structuredContent` | achado do revisor; sem teste |
+| 2026-11-01 | 1 | — | Observação: `tests/integration/locale/open-project.test.ts` deixa um worker do Jest sem encerrar (aviso "failed to exit gracefully"); persiste sem a injeção do fork, vem do ciclo `open_project`/`close_project` do upstream rodado no processo de teste | Corrigir exigiria mexer no upstream; os testes passam | bissecção por arquivo e por caso; `--detectOpenHandles` em série não aponta handle |
 
 ## Decisões devolvidas ao autor
 
 | Data | Estágio | Pergunta | Opções e custo | Resposta | Data da resposta |
 |---|---|---|---|---|---|
 | 2026-11-01 | — | `Dicionário de Palavras Simples` (Biderman) ou CorPop26 para Dale-Chall: licença desconhecida | verificar na fonte; se não ficar clara, Dale-Chall fica indisponível (R3.7) | licença considerada ok pelo autor; registrar em `SOURCES.md` com `licenseVerified.status: "author-accepted"`; usar a lista de Biderman, porque os coeficientes da fórmula adaptada foram calibrados com ela | 2026-11-01 |
+| 2026-11-01 | 1 | O campo `coverage` de D15 colide com `coverage` do upstream em `analyze_document`, `analyze_writing_style`, `enhance_content`, `check_consistency`, `check_plot_consistency` e o sobrescreve em inglês (§7) | (a) renomear para `languageCoverage`: editar D15/§6.2/§6.7/§7/R1.9, sem colisão hoje; (b) agrupar em `structuredContent.locale`: muda a forma de D15, protege contra colisões futuras; (c) não sobrescrever quando existe: D15 deixa de ser uniforme | (b) agrupar numa chave `locale` | 2026-11-01 |
 
 ## Itens futuros (fora das fases)
 

@@ -1,4 +1,4 @@
-import { detectThemesSmart } from 'narrative-lens';
+import { detectThemesSmart } from '../locale/engines/narrative-lens.js';
 import { getLogger } from '../core/logger.js';
 import { escapeRegExp } from '../utils/regex.js';
 import type { DatabaseService } from '../handlers/database/database-service.js';

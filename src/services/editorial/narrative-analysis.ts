@@ -5,7 +5,7 @@ import {
 	listStructureTemplates,
 	parseManuscriptReport,
 	checkGrammar,
-} from 'narrative-lens';
+} from '../../locale/engines/narrative-lens.js';
 import type { ManuscriptSource, SourceDocument } from './types.js';
 import type { PersistentStore } from './persistent-store.js';
 import { analysisDigest, analysisEnvelope, type AnalysisEnvelope } from './analysis-envelope.js';

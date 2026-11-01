@@ -16,7 +16,7 @@ import {
 	measureVoiceDriftFromText,
 	trackWorldState,
 	wordFrequencies,
-} from 'narrative-lens';
+} from '../locale/engines/narrative-lens.js';
 import { createError, ErrorCode } from '../core/errors.js';
 import {
 	requireProject,

@@ -3,7 +3,7 @@
  * Fixes context issues like "unhappy" triggering as joy and "enjoying misery" double-counting
  */
 
-import nlp from 'compromise';
+import nlp from '../../locale/engines/compromise-pos.js';
 
 interface SentimentTerm {
 	normal: string;

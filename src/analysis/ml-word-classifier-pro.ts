@@ -3,8 +3,8 @@
  * Replaces custom implementations with battle-tested libraries
  */
 
-import nlp from 'compromise';
-import { computeReadability, collectProseExamples } from 'narrative-lens';
+import nlp from '../locale/engines/compromise-pos.js';
+import { computeReadability, collectProseExamples } from '../locale/engines/narrative-lens.js';
 import { nlpAnalyzer } from '../services/analysis/nlp-sentiment-analyzer.js';
 import {
 	withErrorHandling,

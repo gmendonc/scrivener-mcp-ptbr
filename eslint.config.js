@@ -66,6 +66,43 @@ export default tseslint.config(
 		},
 	},
 	{
+		files: ['src/**/*.{ts,cts}'],
+		ignores: ['src/locale/engines/**'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					paths: ['narrative-lens', 'bluepencil-node', 'compromise'].map((name) => ({
+						name,
+						allowTypeImports: true,
+						message: 'pt-BR fork: import the facade from src/locale/engines/ instead.',
+					})),
+					patterns: [
+						{
+							group: ['**/locale/engines/compromise.js'],
+							message: 'Only src/utils/text-metrics.ts may import the neutral compromise re-export.',
+						},
+					],
+				},
+			],
+		},
+	},
+	{
+		files: ['src/utils/text-metrics.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					paths: ['narrative-lens', 'bluepencil-node', 'compromise'].map((name) => ({
+						name,
+						allowTypeImports: true,
+						message: 'pt-BR fork: import the facade from src/locale/engines/ instead.',
+					})),
+				},
+			],
+		},
+	},
+	{
 		files: ['**/*.js'],
 		rules: {
 			'@typescript-eslint/no-var-requires': 'off',

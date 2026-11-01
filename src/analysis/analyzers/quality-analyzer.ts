@@ -1,6 +1,6 @@
-import { collectProseExamples } from 'narrative-lens';
+import { collectProseExamples } from '../../locale/engines/narrative-lens.js';
 import { getLogger } from '../../core/logger.js';
-import { splitIntoSentences } from '../../utils/text-metrics.js';
+import { splitIntoSentences } from '../../locale/engines/text-metrics.js';
 import type { MLWordClassifierPro } from '../ml-word-classifier-pro.js';
 
 export interface QualityIndicators {

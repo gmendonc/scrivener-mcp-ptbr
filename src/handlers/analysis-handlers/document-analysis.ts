@@ -1,5 +1,5 @@
 import { analysisEnvelope } from '../../services/editorial/analysis-envelope.js';
-import { checkGrammar } from 'narrative-lens';
+import { checkGrammar } from '../../locale/engines/narrative-lens.js';
 import type { DocumentAnalysis } from '../../analysis/ai-document-analyzer.js';
 import {
 	AIDocumentAnalyzer,

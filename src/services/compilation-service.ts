@@ -5,7 +5,7 @@
 import { DOCUMENT_TYPES } from '../core/constants.js';
 import { createError, ErrorCode } from '../core/errors.js';
 import { getLogger } from '../core/logger.js';
-import { getAccurateWordCount } from '../utils/text-metrics.js';
+import { getAccurateWordCount } from '../locale/engines/text-metrics.js';
 import { classifyLayout } from './compile-settings.js';
 import type {
 	DocumentInfo,

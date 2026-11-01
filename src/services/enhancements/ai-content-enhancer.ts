@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { AIClient } from '../ai/ai-client.js';
 import { untrustedBlock } from '../../utils/prompt-input.js';
-import { computeReadability } from 'narrative-lens';
+import { computeReadability } from '../../locale/engines/narrative-lens.js';
 
 export const ENHANCEMENT_INSTRUCTIONS = {
 	grammar: 'Fix grammar, spelling, and punctuation only. Make no stylistic changes.',

@@ -1,4 +1,4 @@
-import { collectProseExamples } from 'narrative-lens';
+import { collectProseExamples } from '../locale/engines/narrative-lens.js';
 // import type { ScrivenerDocument } from '../scrivener-project.js';
 import { getLogger } from '../core/logger.js';
 import { webContentParser } from '../services/web-content-parser.js';
@@ -22,7 +22,7 @@ import {
 	formatDuration,
 	measureExecution,
 } from '../utils/common.js';
-import { getWritingTextMetrics as getTextMetrics } from '../utils/text-metrics.js';
+import { getWritingTextMetrics as getTextMetrics } from '../locale/engines/text-metrics.js';
 
 // Import the new modular analyzers
 import {

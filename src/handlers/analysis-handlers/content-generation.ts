@@ -3,7 +3,7 @@ import { analysisDigest, analysisEnvelope } from '../../services/editorial/analy
 import { storyText } from '../../services/editorial/provenance.js';
 import { cloneHMSMetadata } from '../../services/memory/hhm/document-index.js';
 import { formatPayload } from '../../core/response-formatter.js';
-import { getAccurateWordCount } from '../../utils/text-metrics.js';
+import { getAccurateWordCount } from '../../locale/engines/text-metrics.js';
 import { untrustedBlock } from '../../utils/prompt-input.js';
 import { ANALYSIS_ENVELOPE_SCHEMA, RESULT_REFERENCE_SCHEMA } from '../shared-schemas.js';
 import {

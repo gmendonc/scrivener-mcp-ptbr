@@ -1,4 +1,4 @@
-import { analyzeOpeningChecked } from 'narrative-lens';
+import { analyzeOpeningChecked } from '../../locale/engines/narrative-lens.js';
 
 export interface StructureAnalysis {
 	sceneBreaks: number | null;

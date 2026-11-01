@@ -1,0 +1,58 @@
+name: pt-BR
+
+# Workflow próprio do fork (SPEC §10.2, D7); .github/workflows/ci.yml do upstream não muda.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ptbr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # check-locale-tools compara com upstream/main pelo merge-base.
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/writerslogic/scrivener-mcp.git
+          git fetch --no-tags upstream main
+
+      - name: Use Node.js 24.22.x
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.22.x
+          cache: 'npm'
+
+      # 1
+      - name: Install dependencies
+        run: npm ci
+
+      # 2
+      - name: Typecheck, lint, build
+        run: npm run typecheck && npm run lint && npm run build
+
+      # 3 — node scripts/locale/fetch-data.mjs --ci entra no estágio 3a, junto do script.
+
+      # 4
+      - name: Locale tests
+        run: npx jest tests/unit/locale tests/integration/locale --testTimeout=30000
+
+      # 5
+      - name: Native escapes
+        run: node scripts/locale/check-native-escapes.mjs
+
+      # 6
+      - name: Injection points
+        run: node scripts/locale/check-locale-tools.mjs
+
+      # 7
+      - name: Tool registry and output conformance
+        run: node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs

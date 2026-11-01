@@ -21,6 +21,8 @@ import { localSearchHandlers } from './local-search-handlers.js';
 import { workflowHandlers } from './workflow-handlers.js';
 import { contentCredentialsHandlers } from './content-credentials-handlers.js';
 import { readResultHandler } from './result-handlers.js';
+import { withLocale } from '../locale/with-locale.js';
+import { setProjectLanguageHandler } from '../locale/set-project-language.js';
 import type { HandlerContext, HandlerResult, ToolDefinition } from './types.js';
 import { HandlerError } from './types.js';
 import { AjvJsonSchemaValidator } from '@modelcontextprotocol/sdk/validation/ajv';
@@ -36,7 +38,12 @@ const skills: Skill[] = [
 	{
 		name: 'project',
 		description: 'Open, browse, save, close, and verify Scrivener projects',
-		tools: [...projectHandlers, ...integrityHandlers, dashboardHandler],
+		tools: [
+			...projectHandlers,
+			...integrityHandlers,
+			dashboardHandler,
+			setProjectLanguageHandler,
+		],
 	},
 	{
 		name: 'documents',
@@ -104,7 +111,7 @@ const HIDDEN_TOOLS = new Set<string>([
 ]);
 
 function visibleTools(skill: Skill): ToolDefinition[] {
-	return skill.tools.filter((t) => !HIDDEN_TOOLS.has(t.name));
+	return skill.tools.filter((t) => !HIDDEN_TOOLS.has(t.name)).map(withLocale);
 }
 
 const handlerMap = new Map<string, ToolDefinition>();

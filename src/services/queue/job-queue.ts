@@ -12,7 +12,8 @@ import { createHash, randomUUID } from 'node:crypto';
 import { realpath } from 'node:fs/promises';
 import { hostname } from 'node:os';
 import { ContentAnalyzer } from '../../analysis/base-analyzer.js';
-import { extractNamedEntities } from 'narrative-lens';
+import { extractNamedEntities } from '../../locale/engines/narrative-lens.js';
+import { jobPayload, runWithJobLocale, withJobLocale } from '../../locale/jobs.js';
 import { nlpAnalyzer } from '../analysis/nlp-sentiment-analyzer.js';
 import { analysisEnvelope } from '../editorial/analysis-envelope.js';
 import { createError, ErrorCode } from '../../core/errors.js';
@@ -332,7 +333,9 @@ export class JobQueueService {
 			async (job: Job) => {
 				this.logger.debug(`Processing job ${job.id} of type ${jobType}`);
 				try {
-					const result = await this.processJob(jobType, job);
+					const result = await runWithJobLocale(jobPayload(job.data), jobType, () =>
+						this.processJob(jobType, job)
+					);
 					this.logger.debug(`Job ${job.id} completed successfully`);
 					return result;
 				} catch (error) {
@@ -829,7 +832,7 @@ export class JobQueueService {
 					}
 				: data;
 		if (!this.isInitialized) throw new Error('Job queue closed during request admission');
-		const envelope = scopeJob(scope, jobType, payload);
+		const envelope = scopeJob(scope, jobType, withJobLocale(payload));
 		this.validateAnalysisJob(jobType, envelope.payload);
 		const jobId = scopedJobId(scope);
 		if (this.connectionType === 'embedded') {
@@ -876,7 +879,9 @@ export class JobQueueService {
 			let status: EmbeddedJobStatus;
 			try {
 				if (this.readEmbeddedJob(jobId)?.state === 'cancelled') return;
-				const result = await this.processJob(jobType, { id: jobId, data } as Job);
+				const result = await runWithJobLocale(jobPayload(data), jobType, () =>
+					this.processJob(jobType, { id: jobId, data } as Job)
+				);
 				status = { jobType, state: 'completed', progress: 100, result };
 			} catch (error) {
 				status = {

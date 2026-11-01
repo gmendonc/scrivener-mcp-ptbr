@@ -1,6 +1,6 @@
 import { CompilationService } from '../services/compilation-service.js';
 import type { RTFContent } from '../services/parsers/rtf-handler.js';
-import { getAccurateWordCount } from '../utils/text-metrics.js';
+import { getAccurateWordCount } from '../locale/engines/text-metrics.js';
 import {
 	AICompilationService,
 	MAX_COMPILATION_AI_SOURCE,

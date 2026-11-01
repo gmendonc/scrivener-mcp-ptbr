@@ -1,6 +1,6 @@
-import { getWritingTextMetrics as getTextMetrics } from '../../utils/text-metrics.js';
+import { getWritingTextMetrics as getTextMetrics } from '../../locale/engines/text-metrics.js';
 import { getLogger } from '../../core/logger.js';
-import { computeReadability } from 'narrative-lens';
+import { computeReadability } from '../../locale/engines/narrative-lens.js';
 import { generateHash } from '../../utils/common.js';
 import type { PredictiveCacheFactory } from '../../utils/predictive-cache.js';
 

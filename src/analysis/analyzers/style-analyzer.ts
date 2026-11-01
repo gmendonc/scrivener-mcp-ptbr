@@ -3,8 +3,8 @@ import {
 	computeReadability,
 	extractDialogue,
 	wordFrequencies,
-} from 'narrative-lens';
-import { splitIntoSentences } from '../../utils/text-metrics.js';
+} from '../../locale/engines/narrative-lens.js';
+import { splitIntoSentences } from '../../locale/engines/text-metrics.js';
 import { generateHash } from '../../utils/common.js';
 import { getLogger } from '../../core/logger.js';
 import type { PredictiveCacheFactory } from '../../utils/predictive-cache.js';

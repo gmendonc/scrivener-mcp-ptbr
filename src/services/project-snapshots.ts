@@ -7,7 +7,7 @@ import {
 	type SnapshotEntry,
 } from './snapshots.js';
 import { RTFHandler } from './parsers/rtf-handler.js';
-import { getAccurateWordCount } from '../utils/text-metrics.js';
+import { getAccurateWordCount } from '../locale/engines/text-metrics.js';
 import { diffParagraphs, diffWordCounts } from '../utils/text-diff.js';
 import type { ScrivenerDocument } from '../types/index.js';
 import type { DocumentSnapshots, SnapshotContent, SnapshotComparison } from '../project-types.js';

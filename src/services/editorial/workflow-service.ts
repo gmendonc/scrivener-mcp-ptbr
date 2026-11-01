@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { checkGrammar } from 'narrative-lens';
+import { checkGrammar } from '../../locale/engines/narrative-lens.js';
 import { hostname } from 'node:os';
 import { join } from 'node:path';
 import { analyzeWorkflowDocument } from '../../handlers/async-handlers.js';

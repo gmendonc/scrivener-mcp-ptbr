@@ -6,7 +6,7 @@
 import { getLogger } from '../core/logger.js';
 import { createError, ErrorCode, generateHash } from '../utils/common.js';
 import type { ScrivenerDocument } from '../types/index.js';
-import { splitIntoWords } from '../utils/text-metrics.js';
+import { splitIntoWords } from '../locale/engines/text-metrics.js';
 
 const logger = getLogger('document-indexer');
 

@@ -4,7 +4,7 @@ import { findDraftFolder } from '../utils/binder-tree.js';
 import type { CompilationService } from './compilation-service.js';
 import type { DocumentManager } from './document-manager.js';
 import type { CompileMetadata } from './compile-settings.js';
-import { getAccurateWordCount } from '../utils/text-metrics.js';
+import { getAccurateWordCount } from '../locale/engines/text-metrics.js';
 import type {
 	DocumentInfo,
 	ProjectStatistics,

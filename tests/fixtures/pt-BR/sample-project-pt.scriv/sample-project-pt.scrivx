@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScrivenerProject Identifier="5B1F0C2E-7A61-4C1B-9E0A-2E5C3F7A9D10" Version="2.0" Creator="SCRMAC-3.4-16639" Device="test-device" Author="Autor de Teste" Modified="2026-11-01 10:00:00 -0300" ModID="6C2A1D3F-8B72-4D2C-AF1B-3F6D4A8BAE21">
+    <Binder>
+        <BinderItem UUID="A1B2C3D4-0000-4000-8000-0000000000D0" Type="DraftFolder" Created="2026-11-01 10:00:00 -0300" Modified="2026-11-01 10:00:00 -0300">
+            <Title>Manuscrito</Title>
+            <Children>
+                <BinderItem UUID="A1B2C3D4-0001-4000-8000-000000000001" Type="Text" Created="2026-11-01 10:00:00 -0300" Modified="2026-11-01 10:00:00 -0300">
+                    <Title>Capítulo 1</Title>
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                </BinderItem>
+                <BinderItem UUID="A1B2C3D4-0001-4000-8000-000000000002" Type="Text" Created="2026-11-01 10:00:00 -0300" Modified="2026-11-01 10:00:00 -0300">
+                    <Title>Capítulo 2</Title>
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                </BinderItem>
+                <BinderItem UUID="A1B2C3D4-0001-4000-8000-000000000003" Type="Text" Created="2026-11-01 10:00:00 -0300" Modified="2026-11-01 10:00:00 -0300">
+                    <Title>Capítulo 3</Title>
+                    <MetaData>
+                        <IncludeInCompile>Yes</IncludeInCompile>
+                    </MetaData>
+                </BinderItem>
+            </Children>
+        </BinderItem>
+        <BinderItem UUID="A1B2C3D4-0000-4000-8000-0000000000E0" Type="ResearchFolder" Created="2026-11-01 10:00:00 -0300" Modified="2026-11-01 10:00:00 -0300">
+            <Title>Pesquisa</Title>
+        </BinderItem>
+        <BinderItem UUID="A1B2C3D4-0000-4000-8000-0000000000F0" Type="TrashFolder" Created="2026-11-01 10:00:00 -0300" Modified="2026-11-01 10:00:00 -0300">
+            <Title>Lixeira</Title>
+        </BinderItem>
+    </Binder>
+</ScrivenerProject>

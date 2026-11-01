@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { getLogger } from '../../core/logger.js';
 import type { ProjectStatistics } from '../../types/index.js';
-import { getAccurateWordCount } from '../../utils/text-metrics.js';
+import { getAccurateWordCount } from '../../locale/engines/text-metrics.js';
 import { AIClient } from '../ai/ai-client.js';
 import { parseModelJson } from '../../utils/json-parse.js';
 import { untrustedBlock } from '../../utils/prompt-input.js';
