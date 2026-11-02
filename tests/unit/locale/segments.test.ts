@@ -64,6 +64,51 @@ describe('pt-BR segments (R3.3)', () => {
 		]);
 	});
 
+	it('reads a tag that starts with a name when the speech has no final mark (revisão 3a)', () => {
+		expect(shape('— Vamos — Ana disse.').map((s) => [s.kind, s.text])).toEqual([
+			['speech', 'Vamos'],
+			['tag', 'Ana disse.'],
+		]);
+		expect(shape('— Vamos. — Agora.').map((s) => s.kind)).toEqual(['speech', 'speech']);
+	});
+
+	it('keeps a long capitalized second speech as speech (revisão 3b)', () => {
+		expect(
+			shape("— Wait — Please don't go, I beg you, my dear friend, not now.").map(
+				(s) => s.kind
+			)
+		).toEqual(['speech', 'speech']);
+	});
+
+	it('gives each speech the speaker of its own tag', () => {
+		const segments = shape('— Você vem? — perguntou Maria. — Não — Pedro respondeu.');
+		expect(segments.map((s) => [s.kind, s.text, s.speakerHint])).toEqual([
+			['speech', 'Você vem?', 'Maria'],
+			['tag', 'perguntou Maria.', undefined],
+			['speech', 'Não', 'Pedro'],
+			['tag', 'Pedro respondeu.', undefined],
+		]);
+	});
+
+	it('splits a dash without spaces', () => {
+		expect(
+			shape('—I told you, this is not the place for that—disse John.').map((s) => [
+				s.kind,
+				s.text,
+			])
+		).toEqual([
+			['speech', 'I told you, this is not the place for that'],
+			['tag', 'disse John.'],
+		]);
+	});
+
+	it('keeps an en dash range inside a speech', () => {
+		expect(shape('— Foi entre 1910–1915 — disse ela.').map((s) => s.text)).toEqual([
+			'Foi entre 1910–1915',
+			'disse ela.',
+		]);
+	});
+
 	it('returns offsets that match text.slice', () => {
 		const text = 'Narração.\n— Fala um — disse Ana. — Fala dois.\n«Citação» final.';
 		for (const s of segmentText(text)) expect(text.slice(s.start, s.end)).toBe(s.text);

@@ -21,7 +21,9 @@ export interface Segment {
 }
 
 const DIALOGUE_DASH = /^[ \t]*[—–][ \t]*/u;
-const INNER_DASH = /[ \t]+[—–][ \t]*/gu;
+// Travessão interno, com ou sem espaço ("— I told you—disse John.").
+// Meia-risca só com espaço antes: sem espaço é intervalo ("1910–1915").
+const INNER_DASH = /[ \t]*—[ \t]*|[ \t]+–[ \t]*/gu;
 const PAIRS: ReadonlyArray<{
 	open: string;
 	close: string;
@@ -56,12 +58,10 @@ function paragraphs(text: string): Array<{ start: number; end: number; text: str
 }
 
 function dialogue(text: string, from: number, to: number): Segment[] {
-	const out: Segment[] = [];
 	const body = text.slice(from, to);
-	const dashes = [...body.matchAll(INNER_DASH)];
+	const dashes = [...body.matchAll(INNER_DASH)].filter((d) => d[0].length);
 	let cursor = 0;
 	let kind: SegmentKind = 'speech';
-	let speaker: string | undefined;
 	const pending: Segment[] = [];
 	for (const dash of dashes) {
 		const piece = trimmed(text, from + cursor, from + dash.index);
@@ -69,16 +69,33 @@ function dialogue(text: string, from: number, to: number): Segment[] {
 			pending.push({ ...piece, kind, ...(kind === 'speech' ? { marker: 'dash' } : {}) });
 		cursor = dash.index + dash[0].length;
 		const next = body.slice(cursor);
-		kind = /^\p{Ll}/u.test(next) && kind === 'speech' ? 'tag' : 'speech';
+		// Depois de uma fala, é tag quando começa em minúscula ("— Vamos — disse Ana.") ou quando
+		// a fala não terminou com pontuação ("— Vamos — Ana disse."); senão é fala nova.
+		// Tag curta com nome ("Ana disse."); fala longa em maiúscula continua fala.
+		const spokeOpen =
+			piece !== undefined &&
+			!/[.!?…]["”»’]*$/u.test(piece.text) &&
+			(next.split(/[.!?…]/u)[0].match(/\p{L}+/gu) ?? []).length <= 4;
+		kind = kind === 'speech' && (/^\p{Ll}/u.test(next) || spokeOpen) ? 'tag' : 'speech';
 	}
 	const last = trimmed(text, from + cursor, to);
 	if (last) pending.push({ ...last, kind, ...(kind === 'speech' ? { marker: 'dash' } : {}) });
-	for (const segment of pending) if (segment.kind === 'tag') speaker ??= speakerOf(segment.text);
-	for (const segment of pending)
-		out.push(
-			segment.kind === 'speech' && speaker ? { ...segment, speakerHint: speaker } : segment
-		);
-	return out;
+	return withSpeakers(pending);
+}
+
+/**
+ * Each speech takes the speaker of the nearest following tag in the paragraph, else of the
+ * nearest preceding one ("— Você vem? — perguntou Maria. — Não — Pedro respondeu.").
+ */
+function withSpeakers(pending: Segment[]): Segment[] {
+	const speakers = pending.map((s) => (s.kind === 'tag' ? speakerOf(s.text) : undefined));
+	return pending.map((segment, i) => {
+		if (segment.kind !== 'speech') return segment;
+		const after = speakers.slice(i + 1).find((s, k) => pending[i + 1 + k].kind === 'tag' && s);
+		const before = speakers.slice(0, i).reverse().find(Boolean);
+		const speaker = after ?? before;
+		return speaker ? { ...segment, speakerHint: speaker } : segment;
+	});
 }
 
 function narration(text: string, from: number, to: number): Segment[] {

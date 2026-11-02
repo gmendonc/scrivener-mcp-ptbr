@@ -35,12 +35,15 @@ const NEUTRAL = [
 	'bluepencil.sentenceStarters',
 ].sort();
 
+// R3.13: fórmulas publicadas conferidas com a fonte (R3.6–R3.8).
+const IMPLEMENTED = ['narrative-lens.computeReadability'];
+
 describe('pt-BR coverage (R2.1)', () => {
 	it('has exactly one entry per facade value function, in both directions', () => {
 		expect(Object.keys(PT_BR_COVERAGE).sort()).toEqual(FACADE_FEATURES);
 	});
 
-	it('marks only the listed functions language-neutral and the rest unavailable', () => {
+	it('marks only the listed functions language-neutral or implemented and the rest unavailable', () => {
 		const neutral = Object.entries(PT_BR_COVERAGE)
 			.filter(([, c]) => c.state === 'language-neutral')
 			.map(([name]) => name)
@@ -48,6 +51,14 @@ describe('pt-BR coverage (R2.1)', () => {
 		expect(neutral).toEqual(NEUTRAL);
 		for (const [name, c] of Object.entries(PT_BR_COVERAGE)) {
 			if (c.state === 'language-neutral') continue;
+			if (IMPLEMENTED.includes(name)) {
+				expect({ name, state: c.state, evaluation: c.evaluation }).toEqual({
+					name,
+					state: 'implemented',
+					evaluation: expect.any(String),
+				});
+				continue;
+			}
 			expect({ name, state: c.state }).toEqual({ name, state: 'unavailable' });
 			expect(c.reason).toBeDefined();
 			expect(c.alternative).toEqual(expect.any(String));

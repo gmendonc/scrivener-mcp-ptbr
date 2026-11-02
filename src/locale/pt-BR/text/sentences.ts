@@ -91,20 +91,36 @@ export interface SentenceSpan {
 }
 
 export function splitSentences(text: string): SentenceSpan[] {
+	// Quebra de linha fecha frase: título, verso ou fala sem ponto final não se juntam à linha
+	// seguinte (revisão do estágio 3a).
 	const spans: SentenceSpan[] = [];
-	let start = skipSpace(text, 0);
-	for (const match of text.matchAll(TERMINAL)) {
+	let lineStart = 0;
+	for (const line of text.split('\n')) {
+		spans.push(...splitLine(text, lineStart, lineStart + line.length));
+		lineStart += line.length + 1;
+	}
+	return spans;
+}
+
+// Tag de diálogo depois de ? ! … ("— Você vem? — perguntou ela."): a frase continua.
+const DIALOGUE_TAG = /^\s+[—–]\s*\p{Ll}/u;
+
+function splitLine(text: string, from: number, to: number): SentenceSpan[] {
+	const spans: SentenceSpan[] = [];
+	const line = text.slice(from, to);
+	let start = skipSpace(line, 0);
+	for (const match of line.matchAll(TERMINAL)) {
 		const end = match.index + match[0].length;
 		if (end <= start) continue;
-		const rest = text.slice(end, end + 80);
-		const opener = OPENER.exec(rest);
-		if (!opener) continue;
-		if (match[0] === '.' && keepsSentence(text.slice(start, end), rest.trimStart())) continue;
-		spans.push({ text: text.slice(start, end), start, end });
-		start = skipSpace(text, end);
+		const rest = line.slice(end, end + 80);
+		if (!OPENER.exec(rest) || DIALOGUE_TAG.test(rest)) continue;
+		if (match[0] === '.' && keepsSentence(line.slice(start, end), rest.trimStart())) continue;
+		spans.push({ text: line.slice(start, end), start: from + start, end: from + end });
+		start = skipSpace(line, end);
 	}
-	const end = trimEnd(text);
-	if (end > start) spans.push({ text: text.slice(start, end), start, end });
+	const end = trimEnd(line);
+	if (end > start)
+		spans.push({ text: line.slice(start, end), start: from + start, end: from + end });
 	return spans;
 }
 
@@ -114,7 +130,8 @@ function keepsSentence(before: string, next: string): boolean {
 	if (!word) return false;
 	const lower = word.toLowerCase();
 	if (TITLES.has(lower)) return true;
-	if (/^\p{Lu}\.$/u.test(word)) return true;
+	// Inicial de nome: consoante maiúscula isolada ("J.", "V."); vogal isolada é palavra ("É.", "A.").
+	if (/^[B-DF-HJ-NP-TV-Z]\.$/u.test(word)) return true;
 	if (OTHERS.has(lower)) return !/^\p{Lu}/u.test(next);
 	return false;
 }

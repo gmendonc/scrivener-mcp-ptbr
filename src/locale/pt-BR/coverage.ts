@@ -36,7 +36,11 @@ const ANALYSIS: FeatureCoverage = {
 };
 
 export const PT_BR_COVERAGE: Readonly<Record<FacadeFeature, FeatureCoverage>> = {
-	'narrative-lens.computeReadability': METRICS,
+	'narrative-lens.computeReadability': {
+		state: 'implemented',
+		// Fórmulas publicadas, promovidas por conferência com a fonte (R3.6), não por D5.
+		evaluation: 'docs/pt-br/semantica-campos.md',
+	},
 	'narrative-lens.collectProseExamples': ANALYSIS,
 	'narrative-lens.checkGrammar': ANALYSIS,
 	'narrative-lens.extractDialogue': ANALYSIS,

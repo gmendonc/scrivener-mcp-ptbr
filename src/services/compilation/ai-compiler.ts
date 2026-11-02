@@ -8,6 +8,7 @@ import { untrustedBlock } from '../../utils/prompt-input.js';
 import type { CompilationOptions } from '../compilation-service.js';
 import { CompilationService } from '../compilation-service.js';
 import type { RTFContent } from '../parsers/rtf-handler.js';
+import { withLanguageDirective } from '../../locale/pt-BR/prompts.js';
 
 export interface AICompilationOptions extends CompilationOptions {
 	target?:
@@ -99,7 +100,7 @@ export class AICompilationService extends CompilationService {
 			: 'You are a precise writing analyst.';
 		const directive = options.json ? '' : options.preferenceDirective?.trim();
 		return this.ai.chat(prompt, {
-			system: directive ? `${system}\n\n${directive}` : system,
+			system: withLanguageDirective(directive ? `${system}\n\n${directive}` : system, prompt),
 			temperature: 0.2,
 			maxTokens: options.maxTokens ?? 2000,
 		});

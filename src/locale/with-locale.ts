@@ -253,11 +253,13 @@ function localeHandler(tool: ToolDefinition, policy: LocaleToolPolicy): ToolDefi
 			try {
 				result = await tool.handler(rest, context, options);
 			} catch (error) {
-				if (error instanceof ForeignSpanChangedError) {
+				const changed =
+					error instanceof ForeignSpanChangedError ? error : ctx.foreignChange;
+				if (changed) {
 					return unavailable(ctx, hasOutputSchema, {
 						feature: tool.name,
 						reason: 'foreign-span-changed',
-						changedSpans: error.changed,
+						changedSpans: changed.changed,
 					});
 				}
 				const refused = refusalBehind(error, ctx);

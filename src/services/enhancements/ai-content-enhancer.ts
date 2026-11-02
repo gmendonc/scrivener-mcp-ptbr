@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { AIClient } from '../ai/ai-client.js';
 import { untrustedBlock } from '../../utils/prompt-input.js';
 import { computeReadability } from '../../locale/engines/narrative-lens.js';
+import { guardForeignSpans, withLanguageDirective } from '../../locale/pt-BR/prompts.js';
 
 export const ENHANCEMENT_INSTRUCTIONS = {
 	grammar: 'Fix grammar, spelling, and punctuation only. Make no stylistic changes.',
@@ -125,7 +126,11 @@ export class AIContentEnhancer {
 		const { context, ...preferences } = options;
 		const prompt = `${ENHANCEMENT_INSTRUCTIONS[request.type]}\n\nEditing preferences (length numbers are target words): ${JSON.stringify(preferences)}\n\n${context ? `Background context:\n${untrustedBlock(context as string)}\n\n` : ''}Passage:\n${untrustedBlock(original)}`;
 		const directive = request.preferenceDirective?.trim();
-		const system = directive ? `${SYSTEM_PROMPT}\n\n${directive}` : SYSTEM_PROMPT;
+		const system = withLanguageDirective(
+			directive ? `${SYSTEM_PROMPT}\n\n${directive}` : SYSTEM_PROMPT,
+			original,
+			request.type
+		);
 
 		let enhanced: string;
 		try {
@@ -139,6 +144,7 @@ export class AIContentEnhancer {
 			enhanced.length > MAX_ENHANCEMENT_RESULT
 		)
 			throw new EnhancementUnavailableError();
+		guardForeignSpans(original, enhanced);
 		const before = measuredMetrics(original);
 		const after = measuredMetrics(enhanced);
 		const metrics = {

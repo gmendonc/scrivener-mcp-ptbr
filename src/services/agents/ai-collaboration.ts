@@ -3,6 +3,7 @@ import { AIClient } from '../ai/ai-client.js';
 import { getLogger } from '../../core/logger.js';
 import { parseModelJson } from '../../utils/json-parse.js';
 import { untrustedBlock } from '../../utils/prompt-input.js';
+import { withLanguageDirective } from '../../locale/pt-BR/prompts.js';
 
 const logger = getLogger('ai-collaboration');
 export const COLLABORATION_ROLES = [
@@ -114,7 +115,10 @@ export class AICollaboration {
 				'{"perspectives":[{"role":"editor","feedback":"..."}],"synthesis":"...","consensus":"..."}. ' +
 				`Use only the requested role names.\n\nPassage:\n${untrustedBlock(content.slice(0, end))}`,
 			{
-				system: 'You are a writing workshop facilitator providing multiple perspectives in one response. Respond with STRICT JSON only.',
+				system: withLanguageDirective(
+					'You are a writing workshop facilitator providing multiple perspectives in one response. Respond with STRICT JSON only.',
+					content
+				),
 				temperature: 0.3,
 				maxTokens: 3000,
 			}

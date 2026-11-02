@@ -7,7 +7,7 @@ import type {
 	RequestedLanguage,
 	Resolution,
 } from './language.js';
-import type { LanguageUnsupportedError } from './errors.js';
+import type { ForeignSpanChangedError, LanguageUnsupportedError } from './errors.js';
 import type { ProjectLocale } from './project-locale.js';
 
 export interface ExcludedSpan {
@@ -31,6 +31,8 @@ export interface LocaleCallContext {
 	/** Funções que o gate recusou nesta chamada, na ordem; o invólucro as acha mesmo se o
 	 *  upstream embrulhar ou engolir o erro. */
 	readonly unsupported: LanguageUnsupportedError[];
+	/** Reescrita rejeitada por alterar trecho em outro idioma (D4); idem, mesmo se embrulhada. */
+	foreignChange?: ForeignSpanChangedError;
 }
 
 export interface LocaleSummary {
@@ -90,6 +92,11 @@ export function recordUnsupported(error: LanguageUnsupportedError): void {
 	if (!ctx) return;
 	ctx.unsupported.push(error);
 	ctx.unavailableMetrics.add(error.feature);
+}
+
+export function recordForeignSpanChange(error: ForeignSpanChangedError): void {
+	const ctx = currentLocale();
+	if (ctx) ctx.foreignChange ??= error;
 }
 
 export function summarize(ctx: LocaleCallContext): LocaleSummary {

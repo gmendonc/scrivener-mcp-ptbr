@@ -267,8 +267,10 @@ Commit: `________` — _mensagem_
 
 ### Estágio 3a — Dados e texto base (SPEC §11, §6.8, §13 Fase 3)
 
-- [ ] `scripts/locale/sources.json`, `fetch-data.mjs`, `loader.ts`, `describeWithData` (§11)
-- [ ] `docs/pt-br/SOURCES.md` com licença verificada na fonte primária para cada fonte (D8)
+- [x] `scripts/locale/sources.json`, `fetch-data.mjs`, `loader.ts`, `describeWithData` (§11)
+- [x] `docs/pt-br/SOURCES.md` com licença verificada na fonte primária para cada fonte (D8);
+  Biderman sem fonte baixável (Decisões devolvidas)
+- [x] Passo 3 da §10.2 no `ptbr.yml` (`fetch-data.mjs --ci`, cache pela chave do manifesto)
 - [x] `tokens.ts`, `sentences.ts`, `syllables.ts` — R3.1, R3.2 (lista de 238 palavras)
 - [x] `segments.ts`, `spans.ts` — R3.3, R3.4
 - [x] Exclusão de trechos e `recordCoverage` nas fachadas — R3.5 (`src/locale/pt-BR/adapt.ts`)
@@ -287,10 +289,11 @@ Commit: `________` — _mensagem_
 
 ### Estágio 3b — Legibilidade e prompts (SPEC §6.11, §7, §9.G, §13 Fase 3)
 
-- [ ] `docs/pt-br/semantica-campos.md` a partir do tipo `ReadabilityResult` — R3.8
-- [ ] Flesch adaptado — R3.6; Dale-Chall adaptado ou indisponível — R3.7
-- [ ] `prompts.ts` e injeção nos 6 arquivos (§9.G) — R3.10
-- [ ] `foreign-guard.ts` e chamada em `ai-content-enhancer.ts` — R3.11
+- [x] `docs/pt-br/semantica-campos.md` a partir do tipo `ReadabilityResult` — R3.8
+- [x] Flesch adaptado — R3.6 (fórmula e faixas conferidas no artigo de Martins et al., 1996, e em
+  arXiv 2201.03445); Dale-Chall indisponível sem a lista de Biderman — R3.7
+- [x] `prompts.ts` e injeção nos 6 arquivos (§9.G) — R3.10
+- [x] `foreign-guard.ts` e chamada em `ai-content-enhancer.ts` — R3.11
 
 **Pronto quando:**
 
@@ -298,14 +301,35 @@ Commit: `________` — _mensagem_
 npx jest tests/unit/locale tests/integration/locale --testTimeout=30000 && npm test -- --testTimeout=30000 && node scripts/check-output-conformance.mjs
 ```
 
-Saída (resumo): _a preencher_
+Saída (resumo, 2026-11-02, junto com as correções da revisão do 3a):
+
+- `typecheck`, `format:check`, `lint`, `build` → exit 0
+- `jest tests/unit/locale tests/integration/locale tests/unit/fixes tests/integration/fixes` →
+  39 suites, 269 testes passando (depois da segunda revisão)
+- `npm test -- --testTimeout=30000` → exit 0; suites 189 passed, 2 skipped (191); tests 2784
+  passed, 12 skipped (2796)
+- Revisão em contexto fresco (`revisor`) do 3b e das correções do 3a: 1 bloqueio (Flesch inflado
+  por fala estrangeira apagada) e 11 pontos, corrigidos com teste (ver Desvios, "3b (revisão)")
+- `check-locale-tools.mjs` (fases 1, C, 2 e 3) → 46 pontos, nenhum fora da §9; fachadas,
+  `coverage.ts` e `LOCALE_TOOLS` consistentes
+- `check-output-conformance.mjs` → 36 pass; `check-tool-registry.mjs` → 83 tools
+- R3.10: o teste passa pelos 6 arquivos com o provedor simulado; em inglês o prompt de sistema
+  não muda, em pt-BR termina com a diretiva. R3.11: tradução da fala inglesa do capítulo 2 →
+  `foreign-span-changed`, nenhuma proposta em `review_changes`; reescrita que preserva a fala →
+  resposta normal
 
 Commit: `________` — _mensagem_
 
 ### Estágio 3c — Corpus e calibração (SPEC §12, §13 Fase 3)
 
-- [ ] `evaluate-corpus.mjs` e `preannotate.mjs` (§12.3, §12.4)
-- [ ] ≥ 3 textos clássicos pré-anotados; **revisão do autor** (D6) — R3.14
+- [x] `evaluate-corpus.mjs` e `preannotate.mjs` (§12.3, §12.4), com os detectores em
+  `src/locale/pt-BR/detectors.ts` (`language.span`, `dialogue.speech`, `dialogue.tag`,
+  `text.sentence`)
+- [ ] ≥ 3 textos clássicos pré-anotados; **revisão do autor** (D6) — R3.14. Pré-anotados como
+  `draft` em `tests/fixtures/pt-BR/classicos/` (Machado de Assis, edições do Project Gutenberg,
+  domínio público): Dom Casmurro cap. III, Memórias Póstumas cap. VI, Quincas Borba cap. V.
+  Falta a revisão do autor: marcar `status: "reviewed"` e `reviewedBy` em cada
+  `*.annotations.json` depois de corrigir os trechos
 - [ ] Camadas `contemporaneos` e `autor` pré-anotadas em `$SCRIVENER_PTBR_CORPUS_DIR`; revisão do autor
 - [ ] Calibração de `DETECTION_MIN_TOKENS` e `DETECTION_MIN_MARGIN` — R3.9 (valores finais: _a preencher_)
 - [ ] Promoções da fase em `coverage.ts` — R3.13
@@ -422,6 +446,31 @@ Commit: `________` — _mensagem_
 | 2026-11-02 | 3a | R3.5 | O teste usa `analyzeRhythm` (promovida com adaptador), não `checkStyle` | `checkStyle` é `unavailable` em pt-BR: lançaria antes de analisar; a exclusão e a cobertura acontecem no adaptador | `bluepencil-adapter.test.ts` › "coverage of foreign spans" |
 | 2026-11-02 | 3a | R3.13, PLAN 3c | As quatro funções do bluepencil com adaptador foram promovidas no 3a, não no 3c | A promoção delas não depende de corpus (são neutras com adaptador); as que dependem (`splitIntoSentences` etc.) seguem para o 3c | `coverage.test.ts` |
 | 2026-11-02 | 3a | R3.2 | Lista com 238 palavras; fora dela, de propósito, ditongo crescente átono final ("história") e prefixos que quebram grupo ("sub-li-nhar") | São os casos em que as gramáticas divergem ou exigem morfologia; o algoritmo trata o primeiro como hiato | `tests/fixtures/pt-BR/silabas.tsv` (cabeçalho) |
+| 2026-11-02 | 3a | §11.1 | Fonte com vários arquivos: `files: [{name, url, sha256}]` no manifesto, cada um por URL `raw` fixada no commit | O PortiLexicon-UD é um conjunto de TSV; arquivo de repositório do GitHub não tem bytes garantidos, `raw` por commit tem | `fetch-data.test.ts`; download real de ADV.tsv e VERB.tsv com sha256 conferido |
+| 2026-11-02 | 3a | §11.2 | `--check` decide "usado por feature implementada" por `scripts/locale/implemented.json` (lista de detectores, vazia hoje); `--manifest <f>` para teste hermético | A SPEC não diz de onde vem a lista de detectores implementados; `coverage.ts` lista funções de fachada, não detectores | `fetch-data.test.ts` |
+| 2026-11-02 | 3a | §11.3 | `loader.ts` guarda as versões em `DATASET_VERSIONS`, sem ler o manifesto em runtime | `scripts/` não vai para o pacote | `fetch-data.test.ts` › loader |
+| 2026-11-02 | 3a (revisão) | R3.12, R3.13 | O adaptador troca o travessão de diálogo por espaço; as localizações do bluepencil (em bytes UTF-8) são convertidas de bytes do texto mascarado para bytes do original; os excertos inteiros são refeitos com o texto original | Achado do revisor (bloqueio): a nativa não separa frase antes de travessão ("— Sim.\n— Não." → 1 frase), e `sentenceStarters` contava 3 de 5. Ao corrigir, achei que o bluepencil devolve `offset`/`length` em bytes UTF-8, não em UTF-16; a máscara muda o tamanho em bytes | `bluepencil-adapter.test.ts` (diálogo; localizações em bytes) |
+| 2026-11-02 | 3a (revisão) | R3.1 | `splitSentences`: tag de diálogo depois de `? ! …` continua a frase; quebra de linha fecha frase; vogal maiúscula isolada não é inicial | Achados do revisor: "— Você vem? — perguntou ela." virava 2 frases; título sem ponto juntava com a frase seguinte; "É." era tratado como inicial | `sentences.test.ts` |
+| 2026-11-02 | 3a (revisão) | R3.2 | Sílabas: `a`/`u` + `i` + `ç` é hiato (tra-i-ção; mas fei-ção); `i` + `u` final é ditongo (sa-iu); prefixos `proib`, `reun`, `reut`, `sair`, `cair`, `trair`… com hiato; `y` antes de vogal é consoante. 15 palavras acrescentadas à lista (253) | Achados do revisor; os contraexemplos (fei-ção, e-lei-ção, reu-ma-tis-mo) estão na lista | `syllables.test.ts` |
+| 2026-11-02 | 3a (revisão) | R3.3 | Tag que começa com nome quando a fala não terminou com pontuação ("— Vamos — Ana disse."); falante pela tag mais próxima depois da fala, senão antes; travessão sem espaço divide; meia-risca só com espaço antes | Achados do revisor: o falante vazava entre falas e contaminava a herança de idioma | `segments.test.ts` |
+| 2026-11-02 | 3a (revisão) | §11.2 | `fetch-data.mjs` valida id, versão e nome de arquivo; compara o caminho do repositório sem caixa; apaga o parcial em queda de conexão; `--implemented <f>` | Achados do revisor: nome com `../` gravava fora do destino; caminho com outra caixa escapava da recusa no APFS | `fetch-data.test.ts` (8 casos) |
+| 2026-11-02 | 3a (revisão) | R3.5 | Teste da R3.5 movido para `coverage-record.test.ts`, como a SPEC nomeia | Achado do revisor | – |
+| 2026-11-02 | 3b | R3.8 | `gunningFog` implementado com a fórmula do NILC-Metrix (0,4 × (palavras/frase + % de palavras com mais de duas sílabas)); a SPEC não listava fórmula para ele | Fórmula publicada para o português, conferida no arXiv 2201.03445; a SPEC promove fórmulas publicadas por conferência com a fonte | `readability.test.ts`; `semantica-campos.md` |
+| 2026-11-02 | 3b | R3.8 | `gradeLevels.fleschEase` com os rótulos de Martins et al. (1996) ("1ª a 4ª série", "colegial e nível superior"); os outros graus `"indisponível em pt-BR"` | Faixas conferidas no artigo original; converter para o ensino de nove anos seria interpretação | `semantica-campos.md` |
+| 2026-11-02 | 3b | §9.G | A injeção é `withLanguageDirective(system, texto)` (e `guardForeignSpans` no enhancer), não `+ languageDirective(promptLanguage(texto))` literal | Uma chamada que devolve o prompt intacto em inglês evita repetir a concatenação em 7 pontos; o enhancer passa também o tipo de melhoria | `prompts.test.ts` |
+| 2026-11-02 | 3b | §6.7 e | `recordForeignSpanChange` no contexto: o invólucro reconhece a rejeição mesmo se o upstream embrulhar o erro | Mesmo motivo da recusa do gate (estágio 2) | `enhance-foreign.test.ts` |
+| 2026-11-02 | 3b (revisão) | R3.6 | Só frases com pelo menos uma letra contam no Flesch, no Gunning Fog e na Dale-Chall | Achado do revisor (bloqueio): o trecho estrangeiro apagado deixava o travessão sozinho, contado como frase; o Flesch subia de 75 para 88 | `readability.test.ts` |
+| 2026-11-02 | 3b (revisão) | §9.G, D3 | O idioma do prompt é detectado no texto do autor (conteúdo dos `untrustedBlock`), não no prompt com as instruções em inglês | Achado do revisor: em projeto sem idioma gravado, o prompt saía `en` e a diretiva não entrava | `prompts.test.ts` › "detects the language on the author text" (falha com a mutação) |
+| 2026-11-02 | 3b (revisão) | §6.11 | A diretiva diz que valores de lista fechada no esquema JSON (`low`/`medium`/`high`, papéis) ficam como pedidos | Achado do revisor: "valores em português" faria o parser do upstream rejeitar `severity` e `role`. A SPEC dizia "só os valores"; não conferido com provedor real | `prompts.test.ts` |
+| 2026-11-02 | 3b (revisão) | R3.11 | O teste verifica que a resposta traz só o bloco `locale`, sem a reescrita, em vez de "nenhuma proposta em `review_changes`" | O `enhance_content` da 0.14 não cria proposta: devolve a reescrita na resposta; a condição da SPEC é sempre verdadeira | `enhance-foreign.test.ts` |
+| 2026-11-02 | 3b (revisão) | D4, R3.11 | A guarda ignora tipografia de aspas e apóstrofos; fala removida sai com `languageAfter: 'undetermined'` e continua rejeitada; repassa a `allowlist` | Achados do revisor. Manter a rejeição da remoção segue D4 ("altera fala"); ela torna o `summarize` inútil em texto com fala estrangeira — se isso incomodar, é decisão do autor | `foreign-guard.test.ts` |
+| 2026-11-02 | 3b (revisão) | R3.12 | O adaptador recalcula a `column` pelo texto original | Achado do revisor: apagar emoji (2 unidades UTF-16) com 2 espaços mudava a coluna em pontos de código | `bluepencil-adapter.test.ts` › emoji |
+| 2026-11-02 | 3b (revisão) | R3.3 | Tag "com nome" só quando o trecho até a primeira pontuação tem até 4 palavras | Achado do revisor: a regra do 3a fazia "— Wait — Please don't go, I beg you…" virar tag, herdando pt | `segments.test.ts` |
+| 2026-11-02 | 3b (revisão) | R3.7 | `unavailableMetrics` usa o nome do campo (`daleChall`), sem prefixo | Achado do revisor: a R3.7 e a R7.2 usam o nome sem prefixo | `readability.test.ts` |
+| 2026-11-02 | 3b (revisão) | R3.8 | O teste lê a tabela de `semantica-campos.md` para saber quais campos são indisponíveis | Achado do revisor: lista fixa no teste podia divergir da documentação | `readability.test.ts` |
+| 2026-11-02 | 3b (revisão) | R3.2 | `a`/`u` + `i` + `ç` é hiato só antes de `-ção`/`-ções`; prefixos de hiato de `sair`/`cair`/`trair` por regex de conjugação | Achados do revisor: "caiçara", "Paiçandu", "Cairo" | `silabas.tsv` (+2) |
+| 2026-11-02 | 3c | §12.1 | Os clássicos vêm das edições do Project Gutenberg com ortografia de época; as linhas de cada parágrafo foram unidas e o `--` do Gutenberg trocado por `—` (registrado em `source.notes`) | O texto do Gutenberg quebra linhas a cada ~70 caracteres e transcreve o travessão como `--`; sem a normalização, a quebra de linha fecharia frase e nenhuma fala seria reconhecida | `*.annotations.json` (`source.notes`) |
+| 2026-11-02 | 3c | §12.3 | `--check` usa `scripts/locale/implemented.json` para saber quais detectores estão implementados (lista vazia hoje), como o `fetch-data --check` | `coverage.ts` lista funções de fachada, não detectores | – |
 
 Incorporados à SPEC em 2026-11-01, a pedido do autor: o agrupamento em `structuredContent.locale`
 (D15, D3, D11, §4.4, §6.7, §7, §8.1, §10.1, R1.9, R2.3–R2.6, R3.11, §14), a decoração de
@@ -435,6 +484,8 @@ desvios seguem só aqui.
 | 2026-11-01 | — | `Dicionário de Palavras Simples` (Biderman) ou CorPop26 para Dale-Chall: licença desconhecida | verificar na fonte; se não ficar clara, Dale-Chall fica indisponível (R3.7) | licença considerada ok pelo autor; registrar em `SOURCES.md` com `licenseVerified.status: "author-accepted"`; usar a lista de Biderman, porque os coeficientes da fórmula adaptada foram calibrados com ela | 2026-11-01 |
 | 2026-11-01 | 1 | O campo `coverage` de D15 colide com `coverage` do upstream em `analyze_document`, `analyze_writing_style`, `enhance_content`, `check_consistency`, `check_plot_consistency` e o sobrescreve em inglês (§7) | (a) renomear para `languageCoverage`: editar D15/§6.2/§6.7/§7/R1.9, sem colisão hoje; (b) agrupar em `structuredContent.locale`: muda a forma de D15, protege contra colisões futuras; (c) não sobrescrever quando existe: D15 deixa de ser uniforme | (b) agrupar numa chave `locale` | 2026-11-01 |
 | 2026-11-01 | C | Onde ficam as correções dos defeitos do upstream do relatório de erros (D21) | (a) `src/fixes/` + uma chamada por correção em §9.L: poucos conflitos, módulo removível quando o upstream corrigir; custo, indireção e mais uma lista; (b) editar o upstream direto: mais simples, conflitos maiores (`rtf-handler.ts` teve 9 commits do upstream em 90 dias); (c) PR no upstream + patch: reabre §3, prazo do mantenedor | (a) `src/fixes/` com injeção mínima | 2026-11-01 |
+| 2026-11-02 | 3a | De onde baixar o *Dicionário de Palavras Simples* (Biderman) para a Dale-Chall (R3.7)? O repositório público do NILC-Metrix não traz a lista como arquivo | (a) você fornece o arquivo ou uma URL e eu acrescento ao manifesto como `author-accepted`; (b) Dale-Chall fica indisponível (`unavailableMetrics`), como a R3.7 já prevê sem a lista; (c) trocar por CorPop26 exige recalibrar os coeficientes (a SPEC proíbe sem recalibrar) | _pendente_ (até lá, (b)) | – |
+| 2026-11-02 | 3a | Falas pt curtas empatam nas palavras funcionais e são excluídas como `undetermined` ("Me diga a verdade, por favor": pt 0,5 = es 0,5; 3 de 28 falas de teste do revisor). A R3.4 manda: "empate sem `embedded` → `undetermined` e excluído" | (a) se o idioma do documento está entre os empatados, a fala herda o documento; muda a R3.4 e o caso "Paco de Lucía" (pt = es) deixa de ser excluído; (b) esperar a calibração da R3.9 (3c), com as falas excluídas até lá; (c) declarar `embedded` não resolve: o empate é com o próprio pt. Recomendo (a): em documento pt-BR, falso negativo de idioma estrangeiro custa menos do que sumir com falas do autor | _pendente_ (até lá, regra atual da R3.4) | – |
 | 2026-11-01 | C | Quais erros entram (D22) | críticos + médios; só RTF/binder; todos os abertos (o 2 é difícil de testar sem o TCC) | críticos + médios: 4, 5, 9, 8/10, 12, 15, 21 com teste; 1, 2, 22 em documentação; 17 mensagem; 11 investigar | 2026-11-01 |
 
 ## Itens futuros (fora das fases)

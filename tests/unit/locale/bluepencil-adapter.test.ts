@@ -6,7 +6,6 @@ import {
 	findRepeats,
 	sentenceStarters,
 } from '../../../src/locale/engines/bluepencil.js';
-import { countWords } from '../../../src/locale/engines/text-metrics.js';
 
 function inPortuguese<T>(fn: () => T): T {
 	return runWithLocale(
@@ -46,6 +45,63 @@ describe('bluepencil adapter for pt-BR (R3.12, D18)', () => {
 		}
 	});
 
+	it('splits Brazilian dash dialogue into sentences (revisão 3a)', () => {
+		expect(native.analyzeRhythm('— Sim, vou agora.\n— Não vai não.').lengths).toEqual([6]);
+		expect(
+			inPortuguese(() => analyzeRhythm('— Sim, vou agora.\n— Não vai não.')).lengths
+		).toEqual([3, 3]);
+		expect(inPortuguese(() => analyzeRhythm('Ele saiu. — Ela ficou.')).lengths).toEqual([2, 2]);
+		const starters = inPortuguese(() =>
+			sentenceStarters(
+				'— Ela vai voltar.\n— Ela não vai.\n— Ela vai sim.\nEla saiu. Ela voltou.'
+			)
+		);
+		expect(starters.sentence.find((w) => w.word === 'ela')?.count).toBe(5);
+	});
+
+	it('returns locations in the native unit (UTF-8 bytes of the original) with original excerpts', () => {
+		// Narração com acentos, travessão parentético e abreviação: a máscara muda o tamanho em bytes.
+		const text =
+			'Ação: a Dra. Ana — calma — olhou a chuva da varanda.\nAção: a Dra. Ana — calma — olhou a chuva da varanda de novo.';
+		const adapted = inPortuguese(() => findRepeats(text));
+		const nativeRepeats = native.findRepeats(text);
+		const offsets = (rs: typeof adapted) =>
+			rs
+				.flatMap((r) => r.locations.map((l) => [l.offset, l.length]))
+				.sort((a, b) => a[0] - b[0]);
+		const locations = adapted.flatMap((r) => r.locations);
+		expect(locations.length).toBeGreaterThan(0);
+		const bytes = Buffer.from(text, 'utf8');
+		for (const l of locations) {
+			const slice = bytes.subarray(l.offset, l.offset + l.length).toString('utf8');
+			expect(slice.replace(/\s+/g, ' ')).toContain(l.excerpt.replace(/\s+/g, ' ').trim());
+		}
+		expect(locations.some((l) => l.excerpt.includes('—') && l.excerpt.includes('Dra.'))).toBe(
+			true
+		);
+		// A nativa sem máscara acha as mesmas frases repetidas nas mesmas posições em bytes.
+		expect(
+			offsets(adapted).filter((o) => offsets(nativeRepeats).some((n) => n[0] === o[0]))
+		).not.toHaveLength(0);
+	});
+
+	it('keeps the native column when a blanked foreign span has an emoji (revisão 3b)', () => {
+		const text =
+			'— I told you 😀, this is not the place for that — disse John, e olhou a janela. Depois a janela fechou.';
+		const echo = inPortuguese(() => findEchoes(text)).find((e) => e.word === 'janela');
+		const nativeEcho = native.findEchoes(text).find((e) => e.word === 'janela');
+		expect(echo?.first.column).toBe(nativeEcho?.first.column);
+		expect(echo?.first.offset).toBe(nativeEcho?.first.offset);
+	});
+
+	it('does not put a dot mask inside a blanked foreign span', () => {
+		const text = '— Dr. Smith, I told you this is not the place for that — disse John.';
+		inPortuguese(() => {
+			const { adaptForNative } = jest.requireActual('../../../src/locale/pt-BR/adapt.js');
+			expect(adaptForNative(text).text).not.toContain('\u2024');
+		});
+	});
+
 	it('ignores Portuguese function words as echoes', () => {
 		const text =
 			'Ela olhou para a janela e voltou para a cama. Depois foi para a cozinha olhar para a rua.';
@@ -58,42 +114,5 @@ describe('bluepencil adapter for pt-BR (R3.12, D18)', () => {
 		const text = 'Ela abriu. Ela olhou. Ela saiu. A Dra. Ana ficou.';
 		const report = inPortuguese(() => sentenceStarters(text));
 		expect(report.sentence.find((w) => w.word === 'ela')?.count).toBe(3);
-	});
-});
-
-describe('coverage of foreign spans (R3.5)', () => {
-	const english = '— I told you, this is not the place for that — disse John.';
-	const portuguese =
-		'Ana abriu a janela da cozinha e viu que a rua ainda estava molhada da chuva da noite. ' +
-		'O cheiro de terra subia do quintal, e ela ficou ali um tempo, sem pressa, ouvindo os ' +
-		'pássaros e pensando no que faria com a carta que tinha chegado na véspera. Depois ' +
-		'fechou a janela e voltou para a mesa.';
-
-	it('excludes an English speech from a language-dependent function and records coverage', () => {
-		const text = `${portuguese}\n${english}`;
-		inPortuguese(() => {
-			analyzeRhythm(text);
-			const ctx = currentLocale()!;
-			const foreign = 'I told you, this is not the place for that'.length;
-			expect(ctx.totalChars).toBe(text.length);
-			expect(ctx.analyzedChars).toBe(text.length - foreign);
-			expect(ctx.excluded).toEqual([
-				expect.objectContaining({ language: 'en', reason: 'foreign-language' }),
-			]);
-			const [span] = ctx.excluded;
-			expect(text.slice(span.start, span.end)).toBe(
-				'I told you, this is not the place for that'
-			);
-			expect(ctx.analyzedChars / ctx.totalChars).toBeGreaterThan(0.85);
-		});
-	});
-
-	it('does not exclude anything for a language-neutral count', () => {
-		inPortuguese(() => {
-			countWords(`${portuguese}\n${english}`);
-			const ctx = currentLocale()!;
-			expect(ctx.excluded).toEqual([]);
-			expect(ctx.totalChars).toBe(0);
-		});
 	});
 });

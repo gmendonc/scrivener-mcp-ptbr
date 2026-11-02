@@ -13,7 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 
 // Fases entregues; cada uma libera os arquivos do upstream que a SPEC §9 lista para ela.
-const DELIVERED_PHASES = [1, 'C', 2];
+const DELIVERED_PHASES = [1, 'C', 2, 3];
 
 const INJECTION_POINTS = {
 	1: [
@@ -102,9 +102,7 @@ const FORK_PATHS = [
 const FACADES = ['narrative-lens', 'bluepencil', 'compromise', 'compromise-pos', 'text-metrics'];
 
 function git(...args) {
-	return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' })
-		.split('\n')
-		.filter(Boolean);
+	return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
 }
 
 function argValue(name) {
@@ -131,7 +129,10 @@ function listImports() {
 			const names = imports[facade];
 			if (!names) throw new Error(`${rel}: unknown facade ${facade}`);
 			const named = clause.match(/\{([^}]*)\}/s);
-			const defaultName = clause.replace(/\{[^}]*\}/s, '').replace(/,/g, '').trim();
+			const defaultName = clause
+				.replace(/\{[^}]*\}/s, '')
+				.replace(/,/g, '')
+				.trim();
 			if (defaultName) names.add('default');
 			for (const spec of named ? named[1].split(',') : []) {
 				const s = spec.trim();
@@ -157,11 +158,17 @@ const changed = new Set([
 	...git('ls-files', '--others', '--exclude-standard'),
 ]);
 const extras = [...changed]
-	.filter((f) => !allowed.has(f) && !FORK_PATHS.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p)))
+	.filter(
+		(f) =>
+			!allowed.has(f) &&
+			!FORK_PATHS.some((p) => (p.endsWith('/') ? f.startsWith(p) : f === p))
+	)
 	.sort();
 
 if (extras.length) {
-	console.error(`Upstream files changed outside SPEC §9 (phases ${DELIVERED_PHASES.join(', ')}):`);
+	console.error(
+		`Upstream files changed outside SPEC §9 (phases ${DELIVERED_PHASES.join(', ')}):`
+	);
 	for (const f of extras) console.error(`  ${f}`);
 	process.exit(1);
 }
@@ -171,21 +178,27 @@ console.log(`Locale tools: ${touched} upstream injection points touched, none ou
 // R2.2 — fachadas, coverage.ts e LOCALE_TOOLS consistentes com o código do upstream.
 const problems = [];
 const coverageKeys = new Set(
-	[...readFileSync(join(ROOT, 'src/locale/pt-BR/coverage.ts'), 'utf8').matchAll(/^\t'([\w-]+\.\w+)':/gm)].map(
-		(m) => m[1]
-	)
+	[
+		...readFileSync(join(ROOT, 'src/locale/pt-BR/coverage.ts'), 'utf8').matchAll(
+			/^\t'([\w-]+\.\w+)':/gm
+		),
+	].map((m) => m[1])
 );
 const imports = listImports();
 for (const facade of ['narrative-lens', 'bluepencil', 'text-metrics', 'compromise-pos']) {
 	const source = readFileSync(join(ROOT, `src/locale/engines/${facade}.ts`), 'utf8');
 	const exported = new Set(
-		[...source.matchAll(/^export function (\w+)/gm)].map((m) => m[1]).concat(
-			/^export default /m.test(source) ? ['default'] : []
-		)
+		[...source.matchAll(/^export function (\w+)/gm)]
+			.map((m) => m[1])
+			.concat(/^export default /m.test(source) ? ['default'] : [])
 	);
 	for (const name of imports[facade]) {
-		if (!exported.has(name)) problems.push(`${facade}: upstream imports ${name}, facade lacks it`);
-		const key = facade === 'compromise-pos' && name === 'default' ? 'compromise-pos.nlp' : `${facade}.${name}`;
+		if (!exported.has(name))
+			problems.push(`${facade}: upstream imports ${name}, facade lacks it`);
+		const key =
+			facade === 'compromise-pos' && name === 'default'
+				? 'compromise-pos.nlp'
+				: `${facade}.${name}`;
 		if (!coverageKeys.has(key)) problems.push(`coverage.ts lacks ${key}`);
 	}
 }
@@ -196,13 +209,16 @@ for (const file of walk(join(ROOT, 'src'))) {
 	const rel = relative(ROOT, file).split(sep).join('/');
 	if (rel.startsWith('src/locale/') || rel === 'src/utils/text-metrics.ts') continue;
 	for (const m of readFileSync(file, 'utf8').matchAll(DIRECT))
-		if (!/locale\/engines\//.test(m[0])) problems.push(`${rel}: imports utils/text-metrics.js directly`);
+		if (!/locale\/engines\//.test(m[0]))
+			problems.push(`${rel}: imports utils/text-metrics.js directly`);
 }
 const dist = join(ROOT, 'dist');
 try {
 	process.env.SCRIVENER_MCP_EAGER_TOOLS = '1';
 	const registry = await import(pathToFileURL(join(dist, 'handlers/skill-registry.js')).href);
-	const { LOCALE_TOOLS } = await import(pathToFileURL(join(dist, 'locale/tool-policies.js')).href);
+	const { LOCALE_TOOLS } = await import(
+		pathToFileURL(join(dist, 'locale/tool-policies.js')).href
+	);
 	registry.initializeSkillRegistry();
 	const registered = new Set(registry.getRegisteredTools().map((t) => t.name));
 	for (const name of Object.keys(LOCALE_TOOLS))
@@ -215,5 +231,7 @@ if (problems.length) {
 	for (const p of problems) console.error(`  ${p}`);
 	process.exit(1);
 }
-console.log(`Locale tools: facades, coverage.ts (${coverageKeys.size} entries) and LOCALE_TOOLS consistent.`);
+console.log(
+	`Locale tools: facades, coverage.ts (${coverageKeys.size} entries) and LOCALE_TOOLS consistent.`
+);
 process.exit(0);

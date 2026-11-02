@@ -10,6 +10,7 @@ import {
 	parseStyleProfile,
 	type WritingStyleResult,
 } from './writing-style.js';
+import { withLanguageDirective } from '../../locale/pt-BR/prompts.js';
 
 const logger = getLogger('ai-writing-service');
 
@@ -182,7 +183,7 @@ export class AIWritingService {
 				: prompt;
 
 		return this.ai.chat(fullPrompt, {
-			system,
+			system: withLanguageDirective(system, fullPrompt),
 			temperature: options.temperature ?? 0.7,
 			maxTokens: options.maxTokens ?? 1000,
 		});
@@ -196,7 +197,10 @@ export class AIWritingService {
 			`Samples:\n${untrustedBlock(context)}`;
 
 		const raw = await this.ai.chat(prompt, {
-			system: 'You are a writing-style analyst. Respond with STRICT JSON only.',
+			system: withLanguageDirective(
+				'You are a writing-style analyst. Respond with STRICT JSON only.',
+				context
+			),
 			temperature: 0.2,
 			maxTokens: 1200,
 		});

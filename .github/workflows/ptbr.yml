@@ -39,7 +39,15 @@ jobs:
       - name: Typecheck, lint, build
         run: npm run typecheck && npm run lint && npm run build
 
-      # 3 — node scripts/locale/fetch-data.mjs --ci entra no estágio 3a, junto do script.
+      # 3 — dados de terceiros fora do repositório (D9), com cache pela versão do manifesto
+      - name: Cache locale data
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.scrivener-mcp/locale/pt-BR
+          key: locale-data-${{ hashFiles('scripts/locale/sources.json') }}
+
+      - name: Fetch locale data
+        run: node scripts/locale/fetch-data.mjs --ci
 
       # 4
       - name: Locale tests

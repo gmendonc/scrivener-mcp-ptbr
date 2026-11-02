@@ -42,7 +42,13 @@ interface Unit {
 	vowel: boolean;
 	/** Vogal que não forma núcleo: semivogal de ditongo. */
 	glide?: boolean;
+	/** Índice da primeira letra da unidade na palavra. */
+	at: number;
 }
+
+// Hiatos que só a formação da palavra explica (pro-i-bir, re-u-nir, sa-i-ri-a): o i/u logo
+// depois da primeira vogal do prefixo é núcleo (revisão do estágio 3a).
+const HIATUS_PREFIXES = [/^proib/, /^reun/, /^reut/, /^(?:sa|ca|tra|atra|distra)ir(?:i|á|e|ão|am)/];
 
 /** Letras → unidades: consoantes (dígrafos juntos) e vogais. */
 function units(word: string): Unit[] {
@@ -52,10 +58,11 @@ function units(word: string): Unit[] {
 	while (i < lower.length) {
 		const ch = lower[i];
 		const next = lower[i + 1];
-		if (!isVowel(ch)) {
+		// y antes de vogal é consoante ("Yara", "yoga").
+		if (!isVowel(ch) || (ch === 'y' && isVowel(next))) {
 			const pair = ch + (next ?? '');
 			if (pair === 'ch' || pair === 'lh' || pair === 'nh') {
-				out.push({ text: word.slice(i, i + 2), vowel: false });
+				out.push({ text: word.slice(i, i + 2), vowel: false, at: i });
 				i += 2;
 				continue;
 			}
@@ -65,18 +72,18 @@ function units(word: string): Unit[] {
 				(next === 'u' || next === 'ü') &&
 				isVowel(lower[i + 2])
 			) {
-				out.push({ text: word.slice(i, i + 2), vowel: false });
+				out.push({ text: word.slice(i, i + 2), vowel: false, at: i });
 				i += 2;
 				continue;
 			}
-			out.push({ text: word[i], vowel: false });
+			out.push({ text: word[i], vowel: false, at: i });
 			i++;
 			continue;
 		}
-		out.push({ text: word[i], vowel: true });
+		out.push({ text: word[i], vowel: true, at: i });
 		i++;
 	}
-	markGlides(out);
+	markGlides(out, forcedHiatus(lower));
 	return out;
 }
 
@@ -85,7 +92,14 @@ function lowerOf(unit: Unit | undefined): string {
 }
 
 /** Marca semivogais: i/u depois de vogal (ditongo decrescente) e o/e depois de ã/õ. */
-function markGlides(list: Unit[]): void {
+function forcedHiatus(lower: string): number | undefined {
+	const prefix = HIATUS_PREFIXES.map((p) => p.exec(lower)?.[0]).find(Boolean);
+	if (!prefix) return undefined;
+	const first = [...prefix].findIndex((ch) => isVowel(ch));
+	return first >= 0 && HIGH.has(prefix[first + 1]) ? first + 1 : undefined;
+}
+
+function markGlides(list: Unit[], hiatusAt?: number): void {
 	for (let k = 1; k < list.length; k++) {
 		const prev = list[k - 1];
 		const cur = list[k];
@@ -99,7 +113,19 @@ function markGlides(list: Unit[]): void {
 		if (!HIGH.has(c) || ACCENTED_HIGH.has(c)) continue;
 		// "iu", "ui" contam como ditongo; i/u seguido de i/u igual não.
 		if (HIGH.has(p) && p === c) continue;
+		if (cur.at === hiatusAt) continue;
 		if (closesOwnSyllable(list, k)) continue;
+		const next = lowerOf(list[k + 1]);
+		// "sa-iu", "ca-iu", "cons-tru-iu": i seguido de u final forma ditongo com ele.
+		if (c === 'i' && next === 'u' && !list[k + 2]?.vowel) continue;
+		// "tra-i-ção", "in-tu-i-ção" (mas "fei-ção", "e-lei-ção", "cai-ça-ra"): só antes de -ção/-ções.
+		if (
+			c === 'i' &&
+			(p === 'a' || p === 'u') &&
+			next === 'ç' &&
+			/^[ãõ]/u.test(lowerOf(list[k + 2]))
+		)
+			continue;
 		cur.glide = true;
 	}
 }

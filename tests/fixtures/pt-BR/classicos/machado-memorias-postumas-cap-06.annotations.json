@@ -1,0 +1,538 @@
+{
+  "schema": "scrivener-ptbr-corpus/1",
+  "text": "machado-memorias-postumas-cap-06.txt",
+  "sha256": "1dcf3c02ef319c843a1c51d91454a5dd69b33cda2977d2a0a4cab093f2a14543",
+  "layer": "classicos",
+  "source": {
+    "title": "Memorias Posthumas de Braz Cubas",
+    "author": "Machado de Assis",
+    "year": 1881,
+    "rights": "public-domain",
+    "url": "https://www.gutenberg.org/ebooks/54829",
+    "notes": "Capítulo VI. Edição do Project Gutenberg (ortografia da época); linhas de cada parágrafo unidas e \"--\" trocado por \"—\"."
+  },
+  "status": "draft",
+  "preannotatedBy": {
+    "tool": "scripts/locale/preannotate.mjs",
+    "commit": "623417d0a911b64f93e3be605cd908c54a060185",
+    "date": "2026-11-02"
+  },
+  "reviewedBy": null,
+  "scope": [
+    "language.span",
+    "dialogue.speech",
+    "dialogue.tag",
+    "text.sentence"
+  ],
+  "embedded": [
+    "fr"
+  ],
+  "spans": [
+    {
+      "id": "languagespan-1",
+      "detector": "language.span",
+      "start": 0,
+      "end": 50,
+      "text": "Chimène, qui l'eut dit? — Rodrigue, qui l'eut cru?",
+      "label": "positive",
+      "value": "fr"
+    },
+    {
+      "id": "dialoguespeech-2",
+      "detector": "dialogue.speech",
+      "start": 2197,
+      "end": 2238,
+      "text": "Anda visitando os defuntos? disse-lhe eu.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-3",
+      "detector": "dialogue.speech",
+      "start": 2241,
+      "end": 2321,
+      "text": "Ora, defuntos! respondeu Virgilia com um muxoxo. E depois de me apertar as mãos:",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-4",
+      "detector": "dialogue.speech",
+      "start": 2778,
+      "end": 2923,
+      "text": "Que idéas essas! interrompeu-me Virgilia um tanto zangada. Olhe que eu não volto mais. Morrer! Todos nós havemos de morrer; basta estarmos vivos.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-5",
+      "detector": "dialogue.speech",
+      "start": 2945,
+      "end": 2982,
+      "text": "Jesus! são tres horas. Vou-me embora.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-6",
+      "detector": "dialogue.speech",
+      "start": 2985,
+      "end": 2988,
+      "text": "Já?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-7",
+      "detector": "dialogue.speech",
+      "start": 2991,
+      "end": 3018,
+      "text": "Já; virei amanhã ou depois.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-8",
+      "detector": "dialogue.speech",
+      "start": 3021,
+      "end": 3103,
+      "text": "Não sei se faz bem, retorqui; o doente é um solteirão e a casa não tem senhoras...",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-9",
+      "detector": "dialogue.speech",
+      "start": 3106,
+      "end": 3115,
+      "text": "Sua mana?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-10",
+      "detector": "dialogue.speech",
+      "start": 3118,
+      "end": 3182,
+      "text": "Ha de vir cá passar uns dias, mas não póde ser antes de sabbado.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-11",
+      "detector": "dialogue.speech",
+      "start": 3260,
+      "end": 3346,
+      "text": "Estou velha! Ninguem mais repara em mim. Mas, para cortar duvidas, virei com o Nhonhô.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-12",
+      "detector": "dialogue.speech",
+      "start": 3699,
+      "end": 3803,
+      "text": "Nhonhô, não repares nosso grande manhoso que ahi está; não quer fallar para fazer crer que está á morte.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguetag-13",
+      "detector": "dialogue.tag",
+      "start": 2324,
+      "end": 2365,
+      "text": "Ando a ver se ponho os vadios para a rua.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-14",
+      "detector": "text.sentence",
+      "start": 0,
+      "end": 23,
+      "text": "Chimène, qui l'eut dit?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-15",
+      "detector": "text.sentence",
+      "start": 24,
+      "end": 50,
+      "text": "— Rodrigue, qui l'eut cru?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-16",
+      "detector": "text.sentence",
+      "start": 51,
+      "end": 238,
+      "text": "Vejo-a assomar á porta da alcova, pallida, commovida, trajada de preto, e alli ficar durante uns dez segundos, sem animo de entrar, ou detida pela presença de um homem que estava commigo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-17",
+      "detector": "text.sentence",
+      "start": 239,
+      "end": 346,
+      "text": "Da cama, onde jazia, contemplei-a durante esse tempo, esquecido de lhe dizer nada ou de fazer nenhum gesto.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-18",
+      "detector": "text.sentence",
+      "start": 347,
+      "end": 526,
+      "text": "Havia já dous annos que nos não viamos; e eu via-a agora não qual era, mas qual fora**, quaes foramos ambos, porque um Ezechias mysterioso fizera recuar o sol até os dias juvenis.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-19",
+      "detector": "text.sentence",
+      "start": 527,
+      "end": 686,
+      "text": "Recuou o sol, sacudi todas as miserias; e este punhado de pó, que a morte ia espalhar na eternidade do nada, pôde mais do que tempo, que é o ministro da morte.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-20",
+      "detector": "text.sentence",
+      "start": 687,
+      "end": 744,
+      "text": "Nenhuma agua de Juventa egualaria alli a simples saudade.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-21",
+      "detector": "text.sentence",
+      "start": 745,
+      "end": 852,
+      "text": "Cream-me, o menos mau é recordar; ninguem se fie da felicidade presente; ha nella uma gota da baba de Caim.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-22",
+      "detector": "text.sentence",
+      "start": 853,
+      "end": 1018,
+      "text": "Corrido o tempo e cessado o espasmo, então sim, então talvez se póde gozar deveras, porque entre uma e outra dessas duas illusões, melhor é a que se gosta, sem doer.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-23",
+      "detector": "text.sentence",
+      "start": 1019,
+      "end": 1103,
+      "text": "Não durou muito a evocação; a realidade dominou logo; o presente expelliu o passado.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-24",
+      "detector": "text.sentence",
+      "start": 1104,
+      "end": 1197,
+      "text": "Talvez eu exponha ao leitor, em algum canto deste livro, a minha theoria das edições humanas.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-25",
+      "detector": "text.sentence",
+      "start": 1198,
+      "end": 1367,
+      "text": "O que por agora importa saber é que Virgilia — chamava-se Virgilia — entrou na alcova, firme, com a gravidade que lhe davam as roupas e os annos, e veiu até o meu leito.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-26",
+      "detector": "text.sentence",
+      "start": 1368,
+      "end": 1399,
+      "text": "O extranho levantou-se e sahiu.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-27",
+      "detector": "text.sentence",
+      "start": 1400,
+      "end": 1574,
+      "text": "Era um sujeito, que me visitava todos os dias para fallar do cambio, da colonisação e da necessidade de desenvolver a viação ferrea; nada mais interessante para um moribundo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-28",
+      "detector": "text.sentence",
+      "start": 1575,
+      "end": 1688,
+      "text": "Saiu; Virgilia deixou-se estar de pé; durante algum tempo ficamos a olhar um para o outro, sem articular palavra.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-29",
+      "detector": "text.sentence",
+      "start": 1689,
+      "end": 1700,
+      "text": "Quem diria?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-30",
+      "detector": "text.sentence",
+      "start": 1701,
+      "end": 1917,
+      "text": "De dous grandes namorados, de duas paixões sem freio, nada mais havia alli, vinte annos depois; havia apenas dous corações murchos, devastados pela vida e saciados della, não sei se em egual dóse, mas emfim saciados.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-31",
+      "detector": "text.sentence",
+      "start": 1918,
+      "end": 2194,
+      "text": "Virgilia tinha agora a belleza da velhice, um ar austero e maternal; estava menos magra do que quando a vi, pela ultima vez, n'uma festa de S. João, na Tijuca; e porque era das que resistem muito, só agora começavam os cabellos escuros a intercalar-se de alguns fios de prata.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-32",
+      "detector": "text.sentence",
+      "start": 2195,
+      "end": 2238,
+      "text": "— Anda visitando os defuntos? disse-lhe eu.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-33",
+      "detector": "text.sentence",
+      "start": 2239,
+      "end": 2289,
+      "text": "— Ora, defuntos! respondeu Virgilia com um muxoxo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-34",
+      "detector": "text.sentence",
+      "start": 2290,
+      "end": 2365,
+      "text": "E depois de me apertar as mãos: — Ando a ver se ponho os vadios para a rua.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-35",
+      "detector": "text.sentence",
+      "start": 2366,
+      "end": 2439,
+      "text": "Não tinha a caricia lacrymosa de outro tempo; mas a voz era amiga e doce.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-36",
+      "detector": "text.sentence",
+      "start": 2440,
+      "end": 2450,
+      "text": "Sentou-se.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-37",
+      "detector": "text.sentence",
+      "start": 2451,
+      "end": 2541,
+      "text": "Eu estava só, em casa, com um simples enfermeiro; podiamos fallar um ao outro, sem perigo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-38",
+      "detector": "text.sentence",
+      "start": 2542,
+      "end": 2775,
+      "text": "Virgilia deu-me longas noticias de fóra, narrando-as com graça, com um certo travo de má lingua, que era o sal da palestra; eu, prestes a deixar o mundo, sentia um prazer satanico em mofar delle, em persuadir-me que não deixava nada.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-39",
+      "detector": "text.sentence",
+      "start": 2776,
+      "end": 2836,
+      "text": "— Que idéas essas! interrompeu-me Virgilia um tanto zangada.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-40",
+      "detector": "text.sentence",
+      "start": 2837,
+      "end": 2864,
+      "text": "Olhe que eu não volto mais.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-41",
+      "detector": "text.sentence",
+      "start": 2865,
+      "end": 2872,
+      "text": "Morrer!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-42",
+      "detector": "text.sentence",
+      "start": 2873,
+      "end": 2923,
+      "text": "Todos nós havemos de morrer; basta estarmos vivos.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-43",
+      "detector": "text.sentence",
+      "start": 2924,
+      "end": 2942,
+      "text": "E vendo o relogio:",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-44",
+      "detector": "text.sentence",
+      "start": 2943,
+      "end": 2967,
+      "text": "— Jesus! são tres horas.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-45",
+      "detector": "text.sentence",
+      "start": 2968,
+      "end": 2982,
+      "text": "Vou-me embora.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-46",
+      "detector": "text.sentence",
+      "start": 2983,
+      "end": 2988,
+      "text": "— Já?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-47",
+      "detector": "text.sentence",
+      "start": 2989,
+      "end": 3018,
+      "text": "— Já; virei amanhã ou depois.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-48",
+      "detector": "text.sentence",
+      "start": 3019,
+      "end": 3103,
+      "text": "— Não sei se faz bem, retorqui; o doente é um solteirão e a casa não tem senhoras...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-49",
+      "detector": "text.sentence",
+      "start": 3104,
+      "end": 3115,
+      "text": "— Sua mana?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-50",
+      "detector": "text.sentence",
+      "start": 3116,
+      "end": 3182,
+      "text": "— Ha de vir cá passar uns dias, mas não póde ser antes de sabbado.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-51",
+      "detector": "text.sentence",
+      "start": 3183,
+      "end": 3257,
+      "text": "Virgilia reflectiu um instante, levantou os hombros e disse com gravidade:",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-52",
+      "detector": "text.sentence",
+      "start": 3258,
+      "end": 3272,
+      "text": "— Estou velha!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-53",
+      "detector": "text.sentence",
+      "start": 3273,
+      "end": 3300,
+      "text": "Ninguem mais repara em mim.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-54",
+      "detector": "text.sentence",
+      "start": 3301,
+      "end": 3346,
+      "text": "Mas, para cortar duvidas, virei com o Nhonhô.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-55",
+      "detector": "text.sentence",
+      "start": 3347,
+      "end": 3475,
+      "text": "Nhonhô era um bacharel, unico filho de seu casamento, que, na edade de cinco annos, fôra complice inconsciente de nossos amores.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-56",
+      "detector": "text.sentence",
+      "start": 3476,
+      "end": 3656,
+      "text": "Vieram juntos, dous dias depois; e confesso que, ao vel-os alli, na minha alcova, fui tomado de um acanhamento que nem me permittiu corresponder logo ás palavras affaveis do rapaz.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-57",
+      "detector": "text.sentence",
+      "start": 3657,
+      "end": 3696,
+      "text": "Virgilia adivinhou-mo e disse ao filho:",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-58",
+      "detector": "text.sentence",
+      "start": 3697,
+      "end": 3803,
+      "text": "— Nhonhô, não repares nosso grande manhoso que ahi está; não quer fallar para fazer crer que está á morte.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-59",
+      "detector": "text.sentence",
+      "start": 3804,
+      "end": 3877,
+      "text": "Sorriu o filho; eu creio quo tambem sorri; e tudo acabou em pura galhofa.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-60",
+      "detector": "text.sentence",
+      "start": 3878,
+      "end": 3950,
+      "text": "Virgilia estava serena e risonha, tinha o aspecto das vidas immaculadas.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-61",
+      "detector": "text.sentence",
+      "start": 3951,
+      "end": 4120,
+      "text": "Nenhum olhar suspeito, nenhum gesto que pudesse denunciar nada; uma egualdade de palavra e de espirito, uma dominação sobre si mesma, que pareciam e talvez fossem raras.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-62",
+      "detector": "text.sentence",
+      "start": 4121,
+      "end": 4469,
+      "text": "Como tocassemos, casualmente, n'uns amores illegitimos, meio secretos, meio divulgados, vi-a fallar com desdem e um pouco de indignação da mulher de que se tratava, aliás sua amiga; e o filho sentia-se satisfeito, ouvindo aquella palavra digna e forte, e eu perguntava a mim mesmo o que diriam de nós os gaviões, se Buffon tivesse nascido gavião...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-63",
+      "detector": "text.sentence",
+      "start": 4470,
+      "end": 4501,
+      "text": "Era o meu delirio que começava.",
+      "label": "positive"
+    }
+  ],
+  "queries": []
+}

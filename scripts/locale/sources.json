@@ -1,0 +1,32 @@
+{
+	"schema": "scrivener-ptbr-sources/1",
+	"sources": [
+		{
+			"id": "portilexicon-ud",
+			"url": "https://github.com/LuceleneL/PortiLexicon-UD",
+			"version": "315e063da1f89c89e2097c6e72428ebefb9ab1d1",
+			"files": [
+				{
+					"name": "ADV.tsv",
+					"url": "https://raw.githubusercontent.com/LuceleneL/PortiLexicon-UD/315e063da1f89c89e2097c6e72428ebefb9ab1d1/ADV.tsv",
+					"sha256": "c1b6a9453a1192e080cd158dad57fc09158856892e3bf7a14ce843ad8aa2f9d3"
+				},
+				{
+					"name": "VERB.tsv",
+					"url": "https://raw.githubusercontent.com/LuceleneL/PortiLexicon-UD/315e063da1f89c89e2097c6e72428ebefb9ab1d1/VERB.tsv",
+					"sha256": "3c3ccbf94e0c6e7a1673722f6adceb36e75fde7a70fd5a1dc0edc5b7bcc69342"
+				}
+			],
+			"license": "MIT",
+			"licenseUrl": "https://github.com/LuceleneL/PortiLexicon-UD/blob/315e063da1f89c89e2097c6e72428ebefb9ab1d1/LICENSE",
+			"licenseVerified": {
+				"status": "verified",
+				"date": "2026-11-02",
+				"evidence": "LICENSE no repositório (MIT, Copyright (c) 2023 Lucelene Lopes) e campo license da API do GitHub (spdx_id MIT)"
+			},
+			"redistributable": true,
+			"ci": true,
+			"usedBy": ["style.adverb", "style.passive"]
+		}
+	]
+}

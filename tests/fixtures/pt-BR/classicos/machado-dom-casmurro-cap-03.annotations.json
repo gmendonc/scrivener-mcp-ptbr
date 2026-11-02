@@ -1,0 +1,679 @@
+{
+  "schema": "scrivener-ptbr-corpus/1",
+  "text": "machado-dom-casmurro-cap-03.txt",
+  "sha256": "986bdb6a792f4ff909270833d2c657e1410035496a7c440f405a4f6fd261a775",
+  "layer": "classicos",
+  "source": {
+    "title": "Dom Casmurro",
+    "author": "Machado de Assis",
+    "year": 1899,
+    "rights": "public-domain",
+    "url": "https://www.gutenberg.org/ebooks/55752",
+    "notes": "Capítulo III. Edição do Project Gutenberg (ortografia da época); linhas de cada parágrafo unidas e \"--\" trocado por \"—\"."
+  },
+  "status": "draft",
+  "preannotatedBy": {
+    "tool": "scripts/locale/preannotate.mjs",
+    "commit": "623417d0a911b64f93e3be605cd908c54a060185",
+    "date": "2026-11-02"
+  },
+  "reviewedBy": null,
+  "scope": [
+    "language.span",
+    "dialogue.speech",
+    "dialogue.tag",
+    "text.sentence"
+  ],
+  "spans": [
+    {
+      "id": "languagespan-1",
+      "detector": "language.span",
+      "start": 2454,
+      "end": 2539,
+      "text": "Governou como a cara d'elle! atalhou tio Cosme, cedendo a antigos rancores politicos.",
+      "label": "positive",
+      "value": "undetermined"
+    },
+    {
+      "id": "dialoguespeech-2",
+      "detector": "dialogue.speech",
+      "start": 317,
+      "end": 454,
+      "text": "D. Gloria, a senhora persiste na ideia de metter o nosso Bentinho no seminario? É mais que tempo, e já agora póde haver uma difficuldade.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-3",
+      "detector": "dialogue.speech",
+      "start": 457,
+      "end": 474,
+      "text": "Que difficuldade?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-4",
+      "detector": "dialogue.speech",
+      "start": 477,
+      "end": 501,
+      "text": "Uma grande difficuldade.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-5",
+      "detector": "dialogue.speech",
+      "start": 737,
+      "end": 754,
+      "text": "A gente do Padua?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-6",
+      "detector": "dialogue.speech",
+      "start": 757,
+      "end": 1018,
+      "text": "Ha algum tempo estou para lhe dizer isto, mas não me atrevia. Não me parece bonito que o nosso Bentinho ande mettido nos cantos com a filha do _Tartaruga_, e esta é a difficuldade, porque se elles pegam de namoro, a senhora terá muito que lutar para separal-os.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-7",
+      "detector": "dialogue.speech",
+      "start": 1021,
+      "end": 1051,
+      "text": "Não acho. Mettidos nos cantos?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-8",
+      "detector": "dialogue.speech",
+      "start": 1054,
+      "end": 1347,
+      "text": "É um modo de falar. Em segredinhos, sempre juntos. Bentinho quasi que não sae de lá. A pequena é uma desmiolada; o pae faz que não vê; tomara elle que as cousas corressem de maneira, que... Comprehendo o seu gesto; a senhora não crê em taes calculos, parece-lhe que todos têm a alma candida...",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-9",
+      "detector": "dialogue.speech",
+      "start": 1350,
+      "end": 1759,
+      "text": "Mas, Sr. José Dias, tenho visto os pequenos brincando, e nunca vi nada que faça desconfiar. Basta a edade; Bentinho mal tem quinze annos. Capitú fez quatorze á semana passada; são dous creançolas. Não se esqueça que foram criados juntos, desde aquella grande enchente, ha dez annos, em que a familia Padua perdeu tanta cousa; d'ahi vieram as nossas relações. Pois eu hei de crer...? Mano Cosme, você que acha?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-10",
+      "detector": "dialogue.speech",
+      "start": 1788,
+      "end": 1792,
+      "text": "Ora!",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-11",
+      "detector": "dialogue.speech",
+      "start": 1835,
+      "end": 1923,
+      "text": "São imaginações do José Dias; os pequenos divertem-se, eu divirto-me; onde está o gamão?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-12",
+      "detector": "dialogue.speech",
+      "start": 1927,
+      "end": 1965,
+      "text": "Sim, creio que o senhor está enganado.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-13",
+      "detector": "dialogue.speech",
+      "start": 1968,
+      "end": 2070,
+      "text": "Póde ser, minha senhora. Oxalá tenham razão; mas creia que não falei senão depois de muito examinar...",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-14",
+      "detector": "dialogue.speech",
+      "start": 2073,
+      "end": 2176,
+      "text": "Em todo caso, vae sendo tempo, interrompeu minha mãe; vou tratar de mettel-o no seminario quanto antes.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-15",
+      "detector": "dialogue.speech",
+      "start": 2179,
+      "end": 2451,
+      "text": "Bem, uma vez que não perdeu a ideia de o fazer padre, tem-se ganho o principal. Bentinho ha de satisfazer os desejos de sua mãe. E depois a egreja brasileira tem altos destinos. Não esqueçamos que um bispo presidiu a Constituinte, e que o padre Feijó governou o imperio...",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-16",
+      "detector": "dialogue.speech",
+      "start": 2454,
+      "end": 2539,
+      "text": "Governou como a cara d'elle! atalhou tio Cosme, cedendo a antigos rancores politicos.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-17",
+      "detector": "dialogue.speech",
+      "start": 2542,
+      "end": 2671,
+      "text": "Perdão, doutor, não estou defendendo ninguem, estou citando. O que eu quero é dizer que o clero ainda tem grande papel no Brasil.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-18",
+      "detector": "dialogue.speech",
+      "start": 2674,
+      "end": 2899,
+      "text": "Você o que quer é um capote; ande, vá buscar o gamão. Quanto ao pequeno, se tem de ser padre, realmente é melhor que não comece a dizer missa atraz das portas. Mas, olhe cá, mana Gloria, ha mesmo necessidade de fazel-o padre?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-19",
+      "detector": "dialogue.speech",
+      "start": 2902,
+      "end": 2931,
+      "text": "É promessa, ha de cumprir-se.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-20",
+      "detector": "dialogue.speech",
+      "start": 2934,
+      "end": 3056,
+      "text": "Sei que você fez promessa... mas, uma promessa assim... não sei... Creio que, bem pensado... Você que acha, prima Justina?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-21",
+      "detector": "dialogue.speech",
+      "start": 3059,
+      "end": 3062,
+      "text": "Eu?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-22",
+      "detector": "dialogue.speech",
+      "start": 3065,
+      "end": 3279,
+      "text": "Verdade é que cada um sabe melhor de si, continuou tio Cosme; Deus é que sabe do todos. Comtudo, uma promessa de tantos annos... Mas, que é isso, mana Gloria? Está chorando? Ora esta! Pois isto é cousa de lagrimas?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-23",
+      "detector": "dialogue.speech",
+      "start": 3570,
+      "end": 3597,
+      "text": "Prima Gloria! prima Gloria!",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-24",
+      "detector": "dialogue.speech",
+      "start": 3625,
+      "end": 3761,
+      "text": "Se soubesse, não teria falado, mas falei pela veneração, pela estima, pelo affecto, para cumprir um dever amargo, um dever amarissimo...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-25",
+      "detector": "text.sentence",
+      "start": 0,
+      "end": 11,
+      "text": "A denuncia.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-26",
+      "detector": "text.sentence",
+      "start": 12,
+      "end": 104,
+      "text": "Ia a entrar na sala de visitas, quando ouvi proferir o meu nome e escondi-me atraz da porta.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-27",
+      "detector": "text.sentence",
+      "start": 105,
+      "end": 314,
+      "text": "A casa era a da rua de Matacavallos, o mez Novembro, o anno é que é um tanto remoto, mas eu não hei de trocar as datas á minha vida só para agradar ás pessoas que não amam historias velhas; o anno era de 1857.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-28",
+      "detector": "text.sentence",
+      "start": 315,
+      "end": 396,
+      "text": "— D. Gloria, a senhora persiste na ideia de metter o nosso Bentinho no seminario?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-29",
+      "detector": "text.sentence",
+      "start": 397,
+      "end": 454,
+      "text": "É mais que tempo, e já agora póde haver uma difficuldade.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-30",
+      "detector": "text.sentence",
+      "start": 455,
+      "end": 474,
+      "text": "— Que difficuldade?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-31",
+      "detector": "text.sentence",
+      "start": 475,
+      "end": 501,
+      "text": "— Uma grande difficuldade.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-32",
+      "detector": "text.sentence",
+      "start": 502,
+      "end": 533,
+      "text": "Minha mãe quiz saber o que era.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-33",
+      "detector": "text.sentence",
+      "start": 534,
+      "end": 734,
+      "text": "José Dias, depois de alguns instantes de concentrarão, veiu ver se havia alguem no corredor; não deu por mim, voltou e, abafando a voz, disse que a difficuldade estava na casa ao pé, a gente do Padua.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-34",
+      "detector": "text.sentence",
+      "start": 735,
+      "end": 754,
+      "text": "— A gente do Padua?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-35",
+      "detector": "text.sentence",
+      "start": 755,
+      "end": 818,
+      "text": "— Ha algum tempo estou para lhe dizer isto, mas não me atrevia.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-36",
+      "detector": "text.sentence",
+      "start": 819,
+      "end": 1018,
+      "text": "Não me parece bonito que o nosso Bentinho ande mettido nos cantos com a filha do _Tartaruga_, e esta é a difficuldade, porque se elles pegam de namoro, a senhora terá muito que lutar para separal-os.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-37",
+      "detector": "text.sentence",
+      "start": 1019,
+      "end": 1030,
+      "text": "— Não acho.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-38",
+      "detector": "text.sentence",
+      "start": 1031,
+      "end": 1051,
+      "text": "Mettidos nos cantos?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-39",
+      "detector": "text.sentence",
+      "start": 1052,
+      "end": 1073,
+      "text": "— É um modo de falar.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-40",
+      "detector": "text.sentence",
+      "start": 1074,
+      "end": 1104,
+      "text": "Em segredinhos, sempre juntos.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-41",
+      "detector": "text.sentence",
+      "start": 1105,
+      "end": 1138,
+      "text": "Bentinho quasi que não sae de lá.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-42",
+      "detector": "text.sentence",
+      "start": 1139,
+      "end": 1243,
+      "text": "A pequena é uma desmiolada; o pae faz que não vê; tomara elle que as cousas corressem de maneira, que...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-43",
+      "detector": "text.sentence",
+      "start": 1244,
+      "end": 1347,
+      "text": "Comprehendo o seu gesto; a senhora não crê em taes calculos, parece-lhe que todos têm a alma candida...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-44",
+      "detector": "text.sentence",
+      "start": 1348,
+      "end": 1441,
+      "text": "— Mas, Sr. José Dias, tenho visto os pequenos brincando, e nunca vi nada que faça desconfiar.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-45",
+      "detector": "text.sentence",
+      "start": 1442,
+      "end": 1487,
+      "text": "Basta a edade; Bentinho mal tem quinze annos.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-46",
+      "detector": "text.sentence",
+      "start": 1488,
+      "end": 1546,
+      "text": "Capitú fez quatorze á semana passada; são dous creançolas.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-47",
+      "detector": "text.sentence",
+      "start": 1547,
+      "end": 1708,
+      "text": "Não se esqueça que foram criados juntos, desde aquella grande enchente, ha dez annos, em que a familia Padua perdeu tanta cousa; d'ahi vieram as nossas relações.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-48",
+      "detector": "text.sentence",
+      "start": 1709,
+      "end": 1732,
+      "text": "Pois eu hei de crer...?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-49",
+      "detector": "text.sentence",
+      "start": 1733,
+      "end": 1759,
+      "text": "Mano Cosme, você que acha?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-50",
+      "detector": "text.sentence",
+      "start": 1760,
+      "end": 1924,
+      "text": "Tio Cosme respondeu com um «Ora!» que, traduzido em vulgar, queria dizer: «São imaginações do José Dias; os pequenos divertem-se, eu divirto-me; onde está o gamão?»",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-51",
+      "detector": "text.sentence",
+      "start": 1925,
+      "end": 1965,
+      "text": "— Sim, creio que o senhor está enganado.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-52",
+      "detector": "text.sentence",
+      "start": 1966,
+      "end": 1992,
+      "text": "— Póde ser, minha senhora.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-53",
+      "detector": "text.sentence",
+      "start": 1993,
+      "end": 2070,
+      "text": "Oxalá tenham razão; mas creia que não falei senão depois de muito examinar...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-54",
+      "detector": "text.sentence",
+      "start": 2071,
+      "end": 2176,
+      "text": "— Em todo caso, vae sendo tempo, interrompeu minha mãe; vou tratar de mettel-o no seminario quanto antes.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-55",
+      "detector": "text.sentence",
+      "start": 2177,
+      "end": 2258,
+      "text": "— Bem, uma vez que não perdeu a ideia de o fazer padre, tem-se ganho o principal.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-56",
+      "detector": "text.sentence",
+      "start": 2259,
+      "end": 2307,
+      "text": "Bentinho ha de satisfazer os desejos de sua mãe.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-57",
+      "detector": "text.sentence",
+      "start": 2308,
+      "end": 2356,
+      "text": "E depois a egreja brasileira tem altos destinos.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-58",
+      "detector": "text.sentence",
+      "start": 2357,
+      "end": 2451,
+      "text": "Não esqueçamos que um bispo presidiu a Constituinte, e que o padre Feijó governou o imperio...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-59",
+      "detector": "text.sentence",
+      "start": 2452,
+      "end": 2539,
+      "text": "— Governou como a cara d'elle! atalhou tio Cosme, cedendo a antigos rancores politicos.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-60",
+      "detector": "text.sentence",
+      "start": 2540,
+      "end": 2602,
+      "text": "— Perdão, doutor, não estou defendendo ninguem, estou citando.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-61",
+      "detector": "text.sentence",
+      "start": 2603,
+      "end": 2671,
+      "text": "O que eu quero é dizer que o clero ainda tem grande papel no Brasil.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-62",
+      "detector": "text.sentence",
+      "start": 2672,
+      "end": 2727,
+      "text": "— Você o que quer é um capote; ande, vá buscar o gamão.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-63",
+      "detector": "text.sentence",
+      "start": 2728,
+      "end": 2833,
+      "text": "Quanto ao pequeno, se tem de ser padre, realmente é melhor que não comece a dizer missa atraz das portas.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-64",
+      "detector": "text.sentence",
+      "start": 2834,
+      "end": 2899,
+      "text": "Mas, olhe cá, mana Gloria, ha mesmo necessidade de fazel-o padre?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-65",
+      "detector": "text.sentence",
+      "start": 2900,
+      "end": 2931,
+      "text": "— É promessa, ha de cumprir-se.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-66",
+      "detector": "text.sentence",
+      "start": 2932,
+      "end": 3000,
+      "text": "— Sei que você fez promessa... mas, uma promessa assim... não sei...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-67",
+      "detector": "text.sentence",
+      "start": 3001,
+      "end": 3026,
+      "text": "Creio que, bem pensado...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-68",
+      "detector": "text.sentence",
+      "start": 3027,
+      "end": 3056,
+      "text": "Você que acha, prima Justina?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-69",
+      "detector": "text.sentence",
+      "start": 3057,
+      "end": 3062,
+      "text": "— Eu?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-70",
+      "detector": "text.sentence",
+      "start": 3063,
+      "end": 3152,
+      "text": "— Verdade é que cada um sabe melhor de si, continuou tio Cosme; Deus é que sabe do todos.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-71",
+      "detector": "text.sentence",
+      "start": 3153,
+      "end": 3193,
+      "text": "Comtudo, uma promessa de tantos annos...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-72",
+      "detector": "text.sentence",
+      "start": 3194,
+      "end": 3223,
+      "text": "Mas, que é isso, mana Gloria?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-73",
+      "detector": "text.sentence",
+      "start": 3224,
+      "end": 3238,
+      "text": "Está chorando?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-74",
+      "detector": "text.sentence",
+      "start": 3239,
+      "end": 3248,
+      "text": "Ora esta!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-75",
+      "detector": "text.sentence",
+      "start": 3249,
+      "end": 3279,
+      "text": "Pois isto é cousa de lagrimas?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-76",
+      "detector": "text.sentence",
+      "start": 3280,
+      "end": 3314,
+      "text": "Minha mãe assoou-se sem responder.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-77",
+      "detector": "text.sentence",
+      "start": 3315,
+      "end": 3370,
+      "text": "Prima Justina creio que se levantou e foi ter com ella.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-78",
+      "detector": "text.sentence",
+      "start": 3371,
+      "end": 3486,
+      "text": "Seguiu-se um alto silencio, durante o qual estive a pique de entrar na sala, mas outra força maior, outra emoção...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-79",
+      "detector": "text.sentence",
+      "start": 3487,
+      "end": 3543,
+      "text": "Não pude ouvir as palavras que tio Cosme entrou a dizer.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-80",
+      "detector": "text.sentence",
+      "start": 3544,
+      "end": 3598,
+      "text": "Prima Justina exhortava: «Prima Gloria! prima Gloria!»",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-81",
+      "detector": "text.sentence",
+      "start": 3599,
+      "end": 3762,
+      "text": "José Dias desculpava-se: «Se soubesse, não teria falado, mas falei pela veneração, pela estima, pelo affecto, para cumprir um dever amargo, um dever amarissimo...»",
+      "label": "positive"
+    }
+  ],
+  "queries": []
+}

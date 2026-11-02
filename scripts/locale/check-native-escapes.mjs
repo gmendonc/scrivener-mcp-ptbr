@@ -11,9 +11,18 @@ import { fileURLToPath } from 'node:url';
 const NATIVE = String.raw`(?:narrative-lens|bluepencil-node|compromise)(?:/[^'"\x60]*)?`;
 const QUOTED = String.raw`['"\x60]${NATIVE}['"\x60]`;
 const PATTERNS = [
-	{ kind: 'import from', re: new RegExp(String.raw`(?:^|[\n;])\s*import\s+(?!type\s)[^'";]*?from\s*${QUOTED}`, 'g') },
-	{ kind: 'export from', re: new RegExp(String.raw`(?:^|[\n;])\s*export\s+(?!type\s)[^'";]*?from\s*${QUOTED}`, 'g') },
-	{ kind: 'side-effect import', re: new RegExp(String.raw`(?:^|[\n;])\s*import\s*${QUOTED}`, 'g') },
+	{
+		kind: 'import from',
+		re: new RegExp(String.raw`(?:^|[\n;])\s*import\s+(?!type\s)[^'";]*?from\s*${QUOTED}`, 'g'),
+	},
+	{
+		kind: 'export from',
+		re: new RegExp(String.raw`(?:^|[\n;])\s*export\s+(?!type\s)[^'";]*?from\s*${QUOTED}`, 'g'),
+	},
+	{
+		kind: 'side-effect import',
+		re: new RegExp(String.raw`(?:^|[\n;])\s*import\s*${QUOTED}`, 'g'),
+	},
 	{ kind: 'dynamic import', re: new RegExp(String.raw`import\s*\(\s*${QUOTED}\s*\)`, 'g') },
 	{ kind: 'require', re: new RegExp(String.raw`require\s*\(\s*${QUOTED}\s*\)`, 'g') },
 	{ kind: 'resolve', re: new RegExp(String.raw`\.resolve\s*\(\s*${QUOTED}`, 'g') },
@@ -36,7 +45,8 @@ function* walk(dir) {
 	for (const entry of readdirSync(dir, { withFileTypes: true })) {
 		const path = join(dir, entry.name);
 		if (entry.isDirectory()) yield* walk(path);
-		else if (/\.(?:[cm]?ts|[cm]?js)$/.test(entry.name) && !entry.name.endsWith('.d.ts')) yield path;
+		else if (/\.(?:[cm]?ts|[cm]?js)$/.test(entry.name) && !entry.name.endsWith('.d.ts'))
+			yield path;
 	}
 }
 

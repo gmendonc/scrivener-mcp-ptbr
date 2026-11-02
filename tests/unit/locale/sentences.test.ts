@@ -34,6 +34,30 @@ describe('pt-BR sentences (R3.1)', () => {
 		]);
 	});
 
+	it('keeps a dialogue tag after ? ! … in the same sentence (revisão 3a)', () => {
+		expect(texts('— Você vem? — perguntou ela.')).toEqual(['— Você vem? — perguntou ela.']);
+		expect(texts('“Vem cá!” — gritou. Ninguém veio.')).toEqual([
+			'“Vem cá!” — gritou.',
+			'Ninguém veio.',
+		]);
+		expect(texts('— Espera… — murmurou. — Volta aqui.')).toEqual([
+			'— Espera… — murmurou.',
+			'— Volta aqui.',
+		]);
+	});
+
+	it('ends a sentence at a line break', () => {
+		expect(texts('Capítulo 1\n\nEra uma vez um rei.')).toEqual([
+			'Capítulo 1',
+			'Era uma vez um rei.',
+		]);
+		expect(texts('— Não sei\n— Sabe sim.')).toEqual(['— Não sei', '— Sabe sim.']);
+	});
+
+	it('does not take an isolated vowel for an initial', () => {
+		expect(texts('— Pois é. É. Eu sei.')).toEqual(['— Pois é.', 'É.', 'Eu sei.']);
+	});
+
 	it('returns offsets that match text.slice', () => {
 		const text = '  O Sr. Almeida, a Sra. Lima e o V. Exa. chegaram... Tarde.  — Sim! — Não?';
 		for (const s of splitSentences(text)) expect(text.slice(s.start, s.end)).toBe(s.text);

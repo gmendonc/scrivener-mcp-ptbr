@@ -1,5 +1,12 @@
 import * as native from 'narrative-lens';
+import { recordUnavailableMetric } from '../context.js';
+import { excludeForeign } from '../pt-BR/adapt.js';
+import { loadDataset } from '../pt-BR/data/loader.js';
+import { computeReadabilityPtBR } from '../pt-BR/readability/index.js';
 import { joinTexts, routeByContext, routeByText } from './route.js';
+
+// Lista de Biderman para a Dale-Chall (R3.7); fora do manifesto até a decisão do autor.
+const SIMPLE_WORDS_DATASET = 'biderman-palavras-simples';
 
 export type * from 'narrative-lens';
 
@@ -9,9 +16,27 @@ type R<F extends (...args: never[]) => unknown> = ReturnType<F>;
 export function computeReadability(
 	...args: P<typeof native.computeReadability>
 ): R<typeof native.computeReadability> {
-	return routeByText('narrative-lens.computeReadability', args[0], () =>
-		native.computeReadability(...args)
+	const [text] = args;
+	return routeByText(
+		'narrative-lens.computeReadability',
+		text,
+		() => native.computeReadability(...args),
+		() => readabilityPtBR(text)
 	);
+}
+
+/** Legibilidade pt-BR (R3.6–R3.8): mesmo tipo da nativa; campos sem fórmula vão para o bloco locale. */
+function readabilityPtBR(text: string): R<typeof native.computeReadability> {
+	const simple = loadDataset(SIMPLE_WORDS_DATASET);
+	const { result, unavailable } = computeReadabilityPtBR(
+		excludeForeign(text),
+		simple
+			? new Set(simple.read('palavras-simples.txt').split('\n').filter(Boolean))
+			: undefined
+	);
+	// Nome do campo, como na R3.7 ("unavailableMetrics contém daleChall").
+	for (const name of unavailable) recordUnavailableMetric(name);
+	return result;
 }
 
 export function collectProseExamples(

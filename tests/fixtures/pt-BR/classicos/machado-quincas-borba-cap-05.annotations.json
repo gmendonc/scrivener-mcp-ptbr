@@ -1,0 +1,486 @@
+{
+  "schema": "scrivener-ptbr-corpus/1",
+  "text": "machado-quincas-borba-cap-05.txt",
+  "sha256": "ad9d49dbd24c7ef4afd50a93225c57287c3f837391614d34091a40274adbb169",
+  "layer": "classicos",
+  "source": {
+    "title": "Quincas Borba",
+    "author": "Machado de Assis",
+    "year": 1891,
+    "rights": "public-domain",
+    "url": "https://www.gutenberg.org/ebooks/55682",
+    "notes": "Capítulo V. Edição do Project Gutenberg (ortografia da época); linhas de cada parágrafo unidas e \"--\" trocado por \"—\"."
+  },
+  "status": "draft",
+  "preannotatedBy": {
+    "tool": "scripts/locale/preannotate.mjs",
+    "commit": "623417d0a911b64f93e3be605cd908c54a060185",
+    "date": "2026-11-02"
+  },
+  "reviewedBy": null,
+  "scope": [
+    "language.span",
+    "dialogue.speech",
+    "dialogue.tag",
+    "text.sentence"
+  ],
+  "spans": [
+    {
+      "id": "dialoguespeech-1",
+      "detector": "dialogue.speech",
+      "start": 428,
+      "end": 619,
+      "text": "Desde que Humanitas, segundo a minha doutrina, é o principio da vida e reside em toda a parte, existe tambem no cão, e este póde assim receber um nome de gente, seja christão ou mussulmano...",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-2",
+      "detector": "dialogue.speech",
+      "start": 622,
+      "end": 741,
+      "text": "Bem, mas porque não lhe deu antes o nome de Bernardo, disse Rubião com o pensamento em um rival politico da localidade.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-3",
+      "detector": "dialogue.speech",
+      "start": 744,
+      "end": 866,
+      "text": "Esse agora é o motivo particular. Se eu morrer antes, como presumo, sobrevivirei no nome do meu bom cachorro. Ris-te, não?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-4",
+      "detector": "dialogue.speech",
+      "start": 899,
+      "end": 1122,
+      "text": "Pois devias rir, meu querido. Porque a immortalidade é o meu lote ou o meu dote, ou como melhor nome haja. Vivirei perpetuamente no meu grande livro. Os que, porém, não souberem ler, chamarão Quincas Borba ao cachorro, e...",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-5",
+      "detector": "dialogue.speech",
+      "start": 1215,
+      "end": 1263,
+      "text": "Meu pobre amigo! meu bom amigo! meu unico amigo!",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-6",
+      "detector": "dialogue.speech",
+      "start": 1266,
+      "end": 1272,
+      "text": "Unico!",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-7",
+      "detector": "dialogue.speech",
+      "start": 1275,
+      "end": 1425,
+      "text": "Desculpa-me, tu tambem o és, bem sei, e agradeço-te muito; mas a um doente perdoa-se tudo. Talvez esteja começando o meu delirio. Deixa ver o espelho.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-8",
+      "detector": "dialogue.speech",
+      "start": 1654,
+      "end": 1818,
+      "text": "Tudo o que está cá fóra corresponde ao que sinto cá dentro; vou morrer, meu caro Rubião... Não gesticules, vou morrer. E que é morrer, para ficares assim espantado?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-9",
+      "detector": "dialogue.speech",
+      "start": 1821,
+      "end": 1906,
+      "text": "Sei, sei que voce tem umas philosophias... Mas fallemos do jantar; que hade ser hoje?",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-10",
+      "detector": "dialogue.speech",
+      "start": 2032,
+      "end": 2063,
+      "text": "Que é! que quer? acudiu Rubião.",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-11",
+      "detector": "dialogue.speech",
+      "start": 2066,
+      "end": 2206,
+      "text": "Nada, respondeu o enfermo sorrindo. Umas philosophias! Com que desdem me dizes isso! Repete, anda, quero ouvir outra vez. Umas philosophias!",
+      "label": "positive"
+    },
+    {
+      "id": "dialoguespeech-12",
+      "detector": "dialogue.speech",
+      "start": 2209,
+      "end": 2377,
+      "text": "Mas não é por desdem... Pois eu tenho capacidade para desdenhar de philosophias? Digo só que você póde crêr que a morte não vale nada, porque terá razões, principios...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-13",
+      "detector": "text.sentence",
+      "start": 0,
+      "end": 128,
+      "text": "Rubião achou um rival no coração do Quincas Borba, — um cão, um bonito cão, meio tamanho, pello côr de chumbo, malhado de preto.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-14",
+      "detector": "text.sentence",
+      "start": 129,
+      "end": 193,
+      "text": "Quincas Borba levava-o para toda parte, dormiam no mesmo quarto.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-15",
+      "detector": "text.sentence",
+      "start": 194,
+      "end": 293,
+      "text": "De manhã, era o cão que acordara o senhor, trepando ao leito, onde trocavam as primeiras saudações.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-16",
+      "detector": "text.sentence",
+      "start": 294,
+      "end": 425,
+      "text": "Uma das extravagancias do dono foi dar-lhe o seu proprio nome; mas, explicava-o por dous motivos, um doutrinario, outro particular.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-17",
+      "detector": "text.sentence",
+      "start": 426,
+      "end": 619,
+      "text": "— Desde que Humanitas, segundo a minha doutrina, é o principio da vida e reside em toda a parte, existe tambem no cão, e este póde assim receber um nome de gente, seja christão ou mussulmano...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-18",
+      "detector": "text.sentence",
+      "start": 620,
+      "end": 741,
+      "text": "— Bem, mas porque não lhe deu antes o nome de Bernardo, disse Rubião com o pensamento em um rival politico da localidade.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-19",
+      "detector": "text.sentence",
+      "start": 742,
+      "end": 777,
+      "text": "— Esse agora é o motivo particular.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-20",
+      "detector": "text.sentence",
+      "start": 778,
+      "end": 853,
+      "text": "Se eu morrer antes, como presumo, sobrevivirei no nome do meu bom cachorro.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-21",
+      "detector": "text.sentence",
+      "start": 854,
+      "end": 866,
+      "text": "Ris-te, não?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-22",
+      "detector": "text.sentence",
+      "start": 867,
+      "end": 896,
+      "text": "Rubião fez um gesto negativo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-23",
+      "detector": "text.sentence",
+      "start": 897,
+      "end": 928,
+      "text": "— Pois devias rir, meu querido.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-24",
+      "detector": "text.sentence",
+      "start": 929,
+      "end": 1005,
+      "text": "Porque a immortalidade é o meu lote ou o meu dote, ou como melhor nome haja.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-25",
+      "detector": "text.sentence",
+      "start": 1006,
+      "end": 1048,
+      "text": "Vivirei perpetuamente no meu grande livro.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-26",
+      "detector": "text.sentence",
+      "start": 1049,
+      "end": 1122,
+      "text": "Os que, porém, não souberem ler, chamarão Quincas Borba ao cachorro, e...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-27",
+      "detector": "text.sentence",
+      "start": 1123,
+      "end": 1160,
+      "text": "O cão, ouvindo o nome, correu á cama.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-28",
+      "detector": "text.sentence",
+      "start": 1161,
+      "end": 1212,
+      "text": "Quincas Borba, commovido, olhou para Quincas Borba:",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-29",
+      "detector": "text.sentence",
+      "start": 1213,
+      "end": 1263,
+      "text": "— Meu pobre amigo! meu bom amigo! meu unico amigo!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-30",
+      "detector": "text.sentence",
+      "start": 1264,
+      "end": 1272,
+      "text": "— Unico!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-31",
+      "detector": "text.sentence",
+      "start": 1273,
+      "end": 1365,
+      "text": "— Desculpa-me, tu tambem o és, bem sei, e agradeço-te muito; mas a um doente perdoa-se tudo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-32",
+      "detector": "text.sentence",
+      "start": 1366,
+      "end": 1404,
+      "text": "Talvez esteja começando o meu delirio.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-33",
+      "detector": "text.sentence",
+      "start": 1405,
+      "end": 1425,
+      "text": "Deixa ver o espelho.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-34",
+      "detector": "text.sentence",
+      "start": 1426,
+      "end": 1451,
+      "text": "Rubião deu-lhe o espelho.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-35",
+      "detector": "text.sentence",
+      "start": 1452,
+      "end": 1609,
+      "text": "O doente contemplou por alguns segundos a cara magra, o olhar febril, com que descobria os suburbios da morte, para onde caminhava a passo lento, mas seguro.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-36",
+      "detector": "text.sentence",
+      "start": 1610,
+      "end": 1651,
+      "text": "Depois, com um sorriso pallido e ironico:",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-37",
+      "detector": "text.sentence",
+      "start": 1652,
+      "end": 1744,
+      "text": "— Tudo o que está cá fóra corresponde ao que sinto cá dentro; vou morrer, meu caro Rubião...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-38",
+      "detector": "text.sentence",
+      "start": 1745,
+      "end": 1772,
+      "text": "Não gesticules, vou morrer.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-39",
+      "detector": "text.sentence",
+      "start": 1773,
+      "end": 1818,
+      "text": "E que é morrer, para ficares assim espantado?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-40",
+      "detector": "text.sentence",
+      "start": 1819,
+      "end": 1863,
+      "text": "— Sei, sei que voce tem umas philosophias...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-41",
+      "detector": "text.sentence",
+      "start": 1864,
+      "end": 1906,
+      "text": "Mas fallemos do jantar; que hade ser hoje?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-42",
+      "detector": "text.sentence",
+      "start": 1907,
+      "end": 2029,
+      "text": "Quincas Borba sentou-se na cama, deixando pender as pernas, cuja estraordinaria magreza se adivinhava por fóra das calças.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-43",
+      "detector": "text.sentence",
+      "start": 2030,
+      "end": 2063,
+      "text": "— Que é! que quer? acudiu Rubião.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-44",
+      "detector": "text.sentence",
+      "start": 2064,
+      "end": 2101,
+      "text": "— Nada, respondeu o enfermo sorrindo.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-45",
+      "detector": "text.sentence",
+      "start": 2102,
+      "end": 2120,
+      "text": "Umas philosophias!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-46",
+      "detector": "text.sentence",
+      "start": 2121,
+      "end": 2150,
+      "text": "Com que desdem me dizes isso!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-47",
+      "detector": "text.sentence",
+      "start": 2151,
+      "end": 2187,
+      "text": "Repete, anda, quero ouvir outra vez.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-48",
+      "detector": "text.sentence",
+      "start": 2188,
+      "end": 2206,
+      "text": "Umas philosophias!",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-49",
+      "detector": "text.sentence",
+      "start": 2207,
+      "end": 2232,
+      "text": "— Mas não é por desdem...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-50",
+      "detector": "text.sentence",
+      "start": 2233,
+      "end": 2289,
+      "text": "Pois eu tenho capacidade para desdenhar de philosophias?",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-51",
+      "detector": "text.sentence",
+      "start": 2290,
+      "end": 2377,
+      "text": "Digo só que você póde crêr que a morte não vale nada, porque terá razões, principios...",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-52",
+      "detector": "text.sentence",
+      "start": 2378,
+      "end": 2502,
+      "text": "Quincas Borba procurou com os pés as chinellas; Rubião chegou-lh'as; elle calçou-as e poz-se a andar para esticar as pernas.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-53",
+      "detector": "text.sentence",
+      "start": 2503,
+      "end": 2539,
+      "text": "Affagou o cão e accendeu um cigarro.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-54",
+      "detector": "text.sentence",
+      "start": 2540,
+      "end": 2641,
+      "text": "Rubião quiz que se agazalhasse, e trouxe-lhe um fraque, um collete, um chambre, um capote, á escolha.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-55",
+      "detector": "text.sentence",
+      "start": 2642,
+      "end": 2680,
+      "text": "Quincas Borba recusou-os com um gesto.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-56",
+      "detector": "text.sentence",
+      "start": 2681,
+      "end": 2755,
+      "text": "Tinha outro ar agora; os olhos mettidos para dentro viam pensar o cerebro.",
+      "label": "positive"
+    },
+    {
+      "id": "textsentence-57",
+      "detector": "text.sentence",
+      "start": 2756,
+      "end": 2826,
+      "text": "Depois de muitos passos, parou, por alguns segundos, deante de Rubião.",
+      "label": "positive"
+    }
+  ],
+  "queries": []
+}
