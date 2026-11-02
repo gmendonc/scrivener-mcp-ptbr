@@ -4,6 +4,7 @@ import { createError, ErrorCode } from '../core/errors.js';
 import type { WriteFidelityReport } from '../project-types.js';
 import type { DocumentManager } from './document-manager.js';
 import { RTFHandler } from './parsers/rtf-handler.js';
+import { regenerateKeepingHeader } from '../fixes/rtf-header.js';
 import { spliceRtfText, describeReplacedConstructs } from './parsers/rtf-splice.js';
 import { isProjectOpenInScrivener } from '../utils/scrivener-app.js';
 import {
@@ -116,7 +117,7 @@ export class ProjectWriter {
 				},
 			};
 		}
-		const raw = handler.convertToRTF(newText);
+		const raw = regenerateKeepingHeader(oldRaw, newText, (text) => handler.convertToRTF(text));
 		if ((await handler.parseRTF(raw)).plainText !== afterText)
 			throw new Error(
 				'Proposed text cannot round-trip exactly through the RTF parser; check surrounding whitespace'

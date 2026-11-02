@@ -106,7 +106,8 @@ describe('DocumentManager binder moves', () => {
 		await manager.moveDocument(DOC, null, 0);
 		expect(singleton.ScrivenerProject.Binder.BinderItem).toEqual([
 			{ UUID: DOC, Type: 'Text' },
-			{ UUID: FOLDER, Type: 'Folder', Children: { BinderItem: null } },
+			// pt-BR fork (SPEC §9.L): an emptied container drops BinderItem instead of null.
+			{ UUID: FOLDER, Type: 'Folder', Children: {} },
 		]);
 	});
 

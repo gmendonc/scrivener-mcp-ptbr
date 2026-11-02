@@ -5,6 +5,7 @@
 import { createError, ErrorCode } from '../core/errors.js';
 import { validateInput, type ValidationSchema } from '../utils/common.js';
 import type { BinderItem, BinderContainer, ProjectStructure } from '../types/internal.js';
+import { dropEmptyBinderItem, isContainerType } from '../fixes/binder-containers.js';
 
 export function validateProjectStructure(
 	projectStructure?: ProjectStructure
@@ -159,7 +160,7 @@ export function removeBinderItem(container: BinderContainer, id: string): Binder
 		if (Array.isArray(container.BinderItem)) {
 			container.BinderItem = items;
 		} else {
-			container.BinderItem = items[0] || null;
+			dropEmptyBinderItem(container, items);
 		}
 
 		return removed;
@@ -212,7 +213,7 @@ export function addBinderChild(parent: BinderItem, item: BinderItem, position?: 
  */
 export function findParentFolder(container: BinderContainer, id: string): BinderItem | undefined {
 	const parent = findBinderItemById(container, id);
-	return parent && parent.Type === 'Folder' ? parent : undefined;
+	return parent && isContainerType(parent.Type) ? parent : undefined;
 }
 
 export function countBinderItems(container: BinderContainer): number {

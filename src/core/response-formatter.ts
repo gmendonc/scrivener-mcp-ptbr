@@ -2,8 +2,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 import * as crypto from 'crypto';
+import { spoolBaseDir } from '../fixes/spool.js';
 
 const PAYLOAD_THRESHOLD = 4000; // chars before spilling to disk
 let spoolDir: string | undefined;
@@ -15,7 +15,7 @@ const spoolEntries = new Map<string, { filepath: string; bytes: number; createdA
 
 function getSpoolDir(): string {
 	if (!spoolDir) {
-		spoolDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scrivener-mcp-spool-'));
+		spoolDir = fs.mkdtempSync(path.join(spoolBaseDir(), 'scrivener-mcp-spool-'));
 		fs.chmodSync(spoolDir, 0o700);
 	}
 	return spoolDir;

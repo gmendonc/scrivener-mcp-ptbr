@@ -12,6 +12,7 @@ import {
 	removeBinderItem,
 	validateProjectStructure,
 } from './document-manager-helpers.js';
+import { moveToNativeTrash, takeFromTrash, trashIsEmpty } from '../fixes/binder-trash.js';
 
 const logger = getLogger('document-manager');
 
@@ -120,28 +121,7 @@ export class BinderEditor {
 				);
 			}
 
-			// Move to trash - ensure SearchResults is an array
-			const searchResults = Array.isArray(binder.SearchResults)
-				? binder.SearchResults
-				: binder.SearchResults
-					? [binder.SearchResults]
-					: [];
-
-			if (searchResults.length === 0) {
-				searchResults.push({ Children: { BinderItem: [] } });
-				binder.SearchResults = searchResults;
-			} else if (!searchResults[0].Children) {
-				searchResults[0].Children = { BinderItem: [] };
-			}
-
-			const trashContainer = searchResults[0].Children!;
-			if (!trashContainer.BinderItem) {
-				trashContainer.BinderItem = [];
-			} else if (!Array.isArray(trashContainer.BinderItem)) {
-				trashContainer.BinderItem = [trashContainer.BinderItem];
-			}
-
-			(trashContainer.BinderItem as BinderItem[]).push(removed);
+			moveToNativeTrash(binder, removed);
 			logger.info(`Document ${documentId} moved to trash`);
 		} catch (error) {
 			throw handleError(error, 'deleteDocument');
@@ -320,37 +300,6 @@ export class BinderEditor {
 
 		const binder = this.projectStructure.ScrivenerProject.Binder as BinderContainer;
 
-		const searchResults = Array.isArray(binder.SearchResults)
-			? binder.SearchResults
-			: binder.SearchResults
-				? [binder.SearchResults]
-				: [];
-
-		if (!searchResults[0]?.Children?.BinderItem) {
-			throw createError(ErrorCode.NOT_FOUND, undefined, 'Trash is empty');
-		}
-
-		const trashItems = searchResults[0].Children.BinderItem;
-		// Ensure trashItems is an array
-		const trashArray = Array.isArray(trashItems) ? trashItems : [trashItems];
-
-		if (trashArray.length === 0) {
-			throw createError(ErrorCode.NOT_FOUND, undefined, 'Trash is empty');
-		}
-
-		const itemIndex = trashArray.findIndex(
-			(item) =>
-				(item as BinderItem).UUID === documentId || (item as BinderItem).ID === documentId
-		);
-
-		if (itemIndex === -1) {
-			throw createError(
-				ErrorCode.NOT_FOUND,
-				undefined,
-				`Document ${documentId} not found in trash`
-			);
-		}
-
 		let targetParent: BinderItem | undefined;
 		if (targetParentId) {
 			targetParent = findParentFolder(binder, targetParentId);
@@ -363,9 +312,16 @@ export class BinderEditor {
 			}
 		}
 
-		const recoveredItem = trashArray.splice(itemIndex, 1)[0];
-
-		searchResults[0].Children!.BinderItem = trashArray;
+		if (trashIsEmpty(binder))
+			throw createError(ErrorCode.NOT_FOUND, undefined, 'Trash is empty');
+		const recoveredItem = takeFromTrash(binder, documentId);
+		if (!recoveredItem) {
+			throw createError(
+				ErrorCode.NOT_FOUND,
+				undefined,
+				`Document ${documentId} not found in trash`
+			);
+		}
 
 		// Place in target location or root
 		if (targetParent) {

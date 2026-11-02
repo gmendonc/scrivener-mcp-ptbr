@@ -43,6 +43,7 @@ import {
 	type QueueScope,
 	type ScopedJob,
 } from './project-scope.js';
+import { PROVIDER_UNAVAILABLE_MESSAGE } from '../../fixes/messages.js';
 
 export enum JobType {
 	ANALYZE_DOCUMENT = 'analyze_document',
@@ -642,7 +643,7 @@ export class JobQueueService {
 
 	async analyzeWritingStyle(samples: string[]) {
 		if (!this.isInitialized || !this.aiWritingService?.isAvailable)
-			throw new Error('AI writing provider is unavailable');
+			throw new Error(PROVIDER_UNAVAILABLE_MESSAGE);
 		const { projectId } = this.requireScope();
 		const result = await this.aiWritingService.analyzeWritingStyle(samples);
 		return {

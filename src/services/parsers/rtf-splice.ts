@@ -1,5 +1,11 @@
 import { RTF_TEXT_CONTROLS } from './rtf-handler.js';
 import { isStructurallyValidRtf, readRtfControl, rtfGroupEnd } from './rtf-validation.js';
+import {
+	decodeRtfHex,
+	escapedLineBreakLength,
+	isRawLineBreak,
+	rtfCodepage,
+} from '../../fixes/rtf-decode.js';
 
 /** Header/table destinations that contribute no body text (mirrors the reader's strip). */
 const SKIP_GROUP_KEYWORDS = [
@@ -50,6 +56,7 @@ export function scanRawText(raw: string): ScanResult {
 	let uc = 1;
 	const ucStack: number[] = [];
 	let i = 0;
+	const codepage = rtfCodepage(raw);
 
 	// Skip the leading "{\rtf1..." declaration up to the first control-word boundary,
 	// matching the reader, without consuming body braces.
@@ -123,18 +130,21 @@ export function scanRawText(raw: string): ScanResult {
 					i += control[0].length; // formatting/other control word: no text
 				}
 			} else if (raw[i + 1] === "'") {
-				push(String.fromCharCode(parseInt(raw.slice(i + 2, i + 4), 16)), i, i + 4);
+				push(decodeRtfHex(raw.slice(i + 2, i + 4), codepage), i, i + 4);
 				i += 4;
 			} else if (raw[i + 1] === '\\' || raw[i + 1] === '{' || raw[i + 1] === '}') {
 				push(raw[i + 1], i, i + 2);
 				i += 2;
+			} else if (escapedLineBreakLength(raw, i)) {
+				push('\n', i, i + escapedLineBreakLength(raw, i));
+				i += escapedLineBreakLength(raw, i);
 			} else {
-				// Lone backslash (Cocoa line-wrap): the reader skips it and keeps the
-				// following newline as text, which we mirror.
+				// Other control symbols (\~, \-, \_, ...): the reader skips the backslash,
+				// which we mirror.
 				i++;
 			}
 		} else {
-			push(ch, i, i + 1);
+			if (!isRawLineBreak(ch)) push(ch, i, i + 1);
 			i++;
 		}
 	}

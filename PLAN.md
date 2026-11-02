@@ -145,30 +145,55 @@ métricas leem por ele. Cada item começa por um teste de caracterização que f
 atual; cole aqui a saída da falha antes de corrigir.
 
 Leitura e gravação RTF:
-- [ ] Fixture `tests/fixtures/fixes/cocoa-cp1252.rtf` (texto próprio) e `.txt` gerado com
+- [x] Fixture `tests/fixtures/fixes/cocoa-cp1252.rtf` (texto próprio) e `.txt` gerado com
   `textutil -convert txt -stdout` — RC.2
-- [ ] `src/fixes/rtf-decode.ts` e injeção no `rtf-handler.ts` e no `rtf-splice.ts` (§9.L) — RC.1, RC.2
-- [ ] Regressão: `npm test`; diferenças do fixture inglês (`notes.rtf`) em Desvios — RC.5
-- [ ] `src/fixes/rtf-encode.ts` — RC.3
-- [ ] `src/fixes/rtf-header.ts` e injeção no `project-writer.ts` — RC.4
+- [x] `src/fixes/rtf-decode.ts` e injeção no `rtf-handler.ts` e no `rtf-splice.ts` (§9.L) — RC.1, RC.2
+- [x] Regressão: `npm test`; nenhum teste do upstream mudou com o leitor novo — RC.5
+- [x] `src/fixes/rtf-encode.ts` — RC.3
+- [x] `src/fixes/rtf-header.ts` e injeção no `project-writer.ts` — RC.4
 
 Binder:
-- [ ] `src/fixes/binder-trash.ts` e injeção no `binder-editor.ts` — RC.6, RC.7
-- [ ] Verificação manual no Scrivener, **pelo autor** — RC.8 (resultado: _a preencher_)
+- [x] `src/fixes/binder-trash.ts` e injeção no `binder-editor.ts` — RC.6, RC.7 (mais
+  `binder-containers.ts`, `project-trash.ts` e `document-manager-helpers.ts`; ver Desvios)
+- [ ] Verificação manual no Scrivener, **pelo autor** — RC.8 (adiada pelo autor para a próxima
+  etapa, 2026-11-02)
 
 Demais:
-- [ ] `src/fixes/statistics.ts` e injeção no `project-reports.ts` — RC.9
-- [ ] `src/fixes/openai-params.ts` e injeção no `ai-client.ts` — RC.10
-- [ ] `src/fixes/spool.ts` e injeção no `response-formatter.ts` — RC.11
-- [ ] `src/fixes/messages.ts` e injeção no `async-handlers.ts` — RC.12
-- [ ] `docs/pt-br/configuracao-cliente.md` — RC.13
-- [ ] Investigação do `close_project` — RC.14 (resultado: _a preencher_)
+- [x] `src/fixes/statistics.ts` e injeção no `project-reports.ts` — RC.9 (título: uma linha em
+  `compilation-handlers.ts`; ver Desvios)
+- [x] `src/fixes/openai-params.ts` e injeção no `ai-client.ts` — RC.10
+- [x] `src/fixes/spool.ts` e injeção no `response-formatter.ts` — RC.11
+- [x] `src/fixes/messages.ts` e injeção no `async-handlers.ts`, `job-queue.ts` e
+  `writing-suggestions.ts` — RC.12
+- [x] `docs/pt-br/configuracao-cliente.md` — RC.13
+- [x] Investigação do `close_project` — RC.14 (resultado: não reproduzido; ver abaixo)
 
 Ferramentas:
-- [ ] `check-locale-tools.mjs`: fase C em `DELIVERED_PHASES` e os pontos de §9.L — RC.15
-- [ ] `ptbr.yml`, passo 4 com `tests/unit/fixes tests/integration/fixes` (§10.2)
-- [ ] Fixture pt-BR do estágio 1: conferir que a sugestão do `open_project` e os testes de
-  locale continuam verdes com os travessões `\'97` lidos como `—`
+- [x] `check-locale-tools.mjs`: fase C em `DELIVERED_PHASES` e os pontos de §9.L — RC.15
+- [x] `ptbr.yml`, passo 4 com `tests/unit/fixes tests/integration/fixes` (§10.2)
+- [x] Fixture pt-BR do estágio 1: testes de locale verdes com os travessões `\'97` lidos como `—`
+
+Caracterização (testes novos rodados contra o código do upstream, com `src/fixes/` presente mas
+sem as injeções), 2026-11-02:
+
+- RC.2 `rtf-reader.test.ts`: 2 de 3 falham. Recebido: `" Ninguém sobe ao convés antes do
+  amanhecer  disse a capitã"` (travessões `\'97` viram U+0097), `"O dirigível \nAlbatroz\n
+  balançava"` (quebra crua depois do itálico), `"escrevera proibido fumar"` (aspas `\'93`/`\'94`
+  somem). O terceiro (scanner = leitor) passava porque os dois erravam igual.
+- RC.3 `rtf-encode.test.ts`: falha "never turns straight quotes into curly-quote control
+  words". A ida e volta passava: o leitor traduz `\rdblquote` de volta para `"`.
+- RC.4 `write-preserving.test.ts`: 3 de 3 falham; o arquivo era regravado com
+  `{\rtf1\ansi\deff0\uc1…Helvetica…Cochin…Optima}` e sem `\ansicpg1252`.
+- RC.6/RC.7/erro 7 `binder-trash.test.ts`: 6 de 7 falham (só passa a recusa da TrashFolder
+  como destino de `move`).
+- RC.9 `statistics.test.ts`: `draftDocuments: 0`, `totalCharacters: 0`, `title: "Untitled"`.
+- RC.10 `openai-params.test.ts` › AIClient: falha, `max_tokens` e `temperature` enviados.
+- RC.11 `spool.test.ts`: falha com a variável definida.
+- RC.12 `provider-message.test.ts`: falha, mensagem sem as variáveis.
+
+RC.14: `close-project.test.ts` passa (`close_project` < 5 s depois de `open_project` no
+fixture). O Jest avisa "did not exit one second after the test run" e o processo sai sozinho em
+cerca de 2 s; `--detectOpenHandles` não aponta handle. Timeout do relatório não reproduzido.
 
 **Pronto quando:**
 
@@ -178,7 +203,21 @@ npm run typecheck && npm run format:check && npm run lint && npm run build && np
 
 mais RC.8 registrado pelo autor e o `ptbr.yml` verde no GitHub Actions.
 
-Saída (resumo): _a preencher_
+Saída (resumo, 2026-11-02, antes do commit):
+
+- `typecheck`, `format:check`, `lint`, `build` → exit 0
+- `jest tests/unit/fixes tests/integration/fixes tests/unit/locale tests/integration/locale`
+  → 24 suites, 167 testes, todos passando
+- `npm test -- --testTimeout=30000` → exit 0; suites 174 passed, 2 skipped (176); tests 2682
+  passed, 12 skipped (2694); 64 s
+- `check-tool-registry.mjs` → 83 tools, 0 duplicados, 69 data tools
+- `check-output-conformance.mjs` → 36 pass, 0 fail, 0 skip
+- `check-native-escapes.mjs` → nenhum escape
+- `check-locale-tools.mjs` → 42 pontos de injeção, nenhum fora da §9
+- Revisão em contexto fresco (`revisor`): **interrompida** pelo limite de uso da API; o autor
+  autorizou o commit sem ela (2026-11-02). Fica pendente, para rodar sobre este commit
+- RC.8 (Scrivener, autor): adiado pelo autor para a próxima etapa
+- `ptbr.yml` no Actions: pendente (sem push)
 
 Commit: `________` — _mensagem_
 
@@ -331,6 +370,16 @@ Commit: `________` — _mensagem_
 | 2026-11-01 | 1 | §6.7 f | Mantida a linha `pt-BR:` anexada ao último bloco de texto, embora deixe inválido o JSON em texto de ferramentas que usam `formatPayload` (só em pt-BR) | Segue a SPEC; clientes devem ler `structuredContent` | achado do revisor; sem teste |
 | 2026-11-01 | 1 | — | Observação: `tests/integration/locale/open-project.test.ts` deixa um worker do Jest sem encerrar (aviso "failed to exit gracefully"); persiste sem a injeção do fork, vem do ciclo `open_project`/`close_project` do upstream rodado no processo de teste | Corrigir exigiria mexer no upstream; os testes passam | bissecção por arquivo e por caso; `--detectOpenHandles` em série não aponta handle |
 | 2026-11-01 | 1 | R1.17 | `ci.yml` do upstream aceito vermelho no `windows-latest` por `server-shutdown.test.ts` instável; R1.17 cobre só o `ptbr.yml`, que está verde | Decisão do autor: Windows fora do uso atual; o teste já falhava no Windows no upstream. Mitigação possível, não aplicada: amostragem menor no gate de processo filho | runs 41359219068 (fork, 2 tentativas) e 41243134078 (upstream); 5/5 local em fork e upstream |
+| 2026-11-02 | C | §15.1 (erro 7), §9.L | `findParentFolder` (`document-manager-helpers.ts`) aceita `DraftFolder` e `ResearchFolder` como destino, via `src/fixes/binder-containers.ts` | A triagem da §15 deu o erro 7 como corrigido; está aberto na 0.14: `move_document` e `restore_document` para o Draft respondiam "Target parent folder … not found" (só `create_document` aceitava) | `binder-trash.test.ts` › "moves a document into the DraftFolder" falha sem a correção; sonda no `dist` antes da mudança |
+| 2026-11-02 | C | §9.L | `removeBinderItem` apaga a chave em vez de gravar `null` quando a pasta fica vazia (`dropEmptyBinderItem`) | Defeito novo: o `null` vira `<BinderItem/>` sem UUID no `.scrivx` ao tirar o único filho de uma pasta (apagar, mover, restaurar). Pode sobrar `<Children/>` vazio; aceitação pelo Scrivener entra na RC.8 | `binder-trash.test.ts` (asserção `not.toMatch(/<BinderItem\s*\/>/)`); dump do `.scrivx` antes da correção |
+| 2026-11-02 | C | RC.6, §9.L | `getTrashDocuments` (`project-trash.ts`) usa `trashedDocuments`, que percorre a lixeira inteira | Defeito novo: só olhava o primeiro nível da árvore e listava a própria TrashFolder, nunca o conteúdo; o `list_trash` nunca mostrou documentos apagados. Itens legados em `SearchResults` continuam fora do `list_trash` (a árvore não os inclui), mas o `restore_document` os acha | `binder-trash.test.ts` › primeiro caso |
+| 2026-11-02 | C | RC.7 | Lixeira vazia mantém "Trash is empty"; "not found in trash" só com itens na lixeira | Evita mudar uma mensagem do upstream sem necessidade; o teste do upstream que a cobre continua igual | `document-manager.test.ts` (upstream) e `binder-trash.test.ts` |
+| 2026-11-02 | C | RC.9, §9.L | Uma linha em `compilation-handlers.ts`: `title: metadata.title \|\| stats.metadata?.title \|\| 'Untitled'`; `completeStatistics` grava o nome do pacote em `stats.metadata.title` | O título é montado no handler, não no `getStatistics`; mexer no `getProjectMetadata` mudaria também o texto do `open_project` | `statistics.test.ts` |
+| 2026-11-02 | C | RC.12, §9.L | A mensagem foi trocada também em `job-queue.ts` e `writing-suggestions.ts` ("AI writing provider is unavailable") | Na 0.14 é essa a mensagem do `analyze_writing_style` e do `suggest_improvements`; as duas de `async-handlers.ts` são de `build_vector_store` e `semantic_search`. A mensagem nova começa com a frase antiga | `provider-message.test.ts` falha sem a correção |
+| 2026-11-02 | C | §4.3 | `src/fixes/rtf-header.ts` importa `scanRawText` de `rtf-splice.ts`; `binder-trash.ts` importa helpers de `document-manager-helpers.ts` e `generateScrivenerUUID` | Funções sem estado do upstream; duplicá-las criaria um terceiro decodificador | typecheck, lint |
+| 2026-11-02 | C | §9.L | `rtf-handler.ts`: o corpo de `encodeTextForRTF` (20 linhas) foi substituído pela chamada; `tokenizeRTF` ganhou parâmetro e quebra de linha na assinatura (Prettier) | Delegar exige remover o corpo antigo; código morto confundiria | `git diff src/services/parsers/rtf-handler.ts` |
+| 2026-11-02 | C | R1.14 | Dois testes do upstream ajustados (`document-manager.test.ts`, `document-manager-binder-moves.test.ts`), com comentário "pt-BR fork" | Afirmavam o defeito: lixeira em `SearchResults[0]` e `Children: { BinderItem: null }` | `npm test` verde; `check-locale-tools.mjs` os aceita na fase C |
+| 2026-11-02 | C | — | Observação: o leitor ainda mapeia `\ldblquote`/`\rdblquote` para `"` reta (`RTF_TEXT_CONTROLS`), e `\~` vira `~` (o regex de palavra de controle não casa símbolos) | Fora da §9.L; o Scrivener grava `\'93`/`\'94`, já corrigidos. Arquivos gravados pelo MCP 0.12–0.14 com `\rdblquote` são lidos com aspa reta | leitura de `rtf-handler.ts:16-28`, `384` |
 
 Incorporados à SPEC em 2026-11-01, a pedido do autor: o agrupamento em `structuredContent.locale`
 (D15, D3, D11, §4.4, §6.7, §7, §8.1, §10.1, R1.9, R2.3–R2.6, R3.11, §14), a decoração de

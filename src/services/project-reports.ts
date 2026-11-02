@@ -5,6 +5,7 @@ import type { CompilationService } from './compilation-service.js';
 import type { DocumentManager } from './document-manager.js';
 import type { CompileMetadata } from './compile-settings.js';
 import { getAccurateWordCount } from '../locale/engines/text-metrics.js';
+import { completeStatistics } from '../fixes/statistics.js';
 import type {
 	DocumentInfo,
 	ProjectStatistics,
@@ -29,7 +30,12 @@ export class ProjectReports {
 		// it report zero words. Read content into the tree first, then aggregate.
 		const tree = await this.documentManager.getProjectStructure();
 		await this.annotateWordCounts(tree);
-		return this.compilationService.getStatistics(tree);
+		return completeStatistics(this.compilationService.getStatistics(tree), {
+			tree,
+			treeWithTrash: await this.documentManager.getProjectStructure(true),
+			readDocument: this.readDocument,
+			projectPath: this.projectPath,
+		});
 	}
 
 	/**

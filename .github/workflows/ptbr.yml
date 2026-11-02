@@ -43,7 +43,7 @@ jobs:
 
       # 4
       - name: Locale tests
-        run: npx jest tests/unit/locale tests/integration/locale --testTimeout=30000
+        run: npx jest tests/unit/locale tests/integration/locale tests/unit/fixes tests/integration/fixes --testTimeout=30000
 
       # 5
       - name: Native escapes

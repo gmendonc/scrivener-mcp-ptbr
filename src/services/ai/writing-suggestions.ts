@@ -1,6 +1,7 @@
 import { analysisEnvelope, type AnalysisEnvelope } from '../editorial/analysis-envelope.js';
 import type { ManuscriptSource, SourceDocument } from '../editorial/types.js';
 import type { AIWritingService } from './ai-writing-service.js';
+import { PROVIDER_UNAVAILABLE_MESSAGE } from '../../fixes/messages.js';
 
 export const MAX_SUGGESTION_PROMPT = 16000;
 export const MAX_SUGGESTION_CONTEXT = 16000;
@@ -86,7 +87,7 @@ export class WritingSuggestions {
 				: expectedRevision !== undefined)
 		)
 			throw new Error('Suggestion context requires an admitted saved source revision');
-		if (!this.writing.isAvailable) throw new Error('AI writing provider is unavailable');
+		if (!this.writing.isAvailable) throw new Error(PROVIDER_UNAVAILABLE_MESSAGE);
 		const source = useContext ? this.source() : undefined;
 		const document = source ? await this.read(source, documentId!) : undefined;
 		if (document && document.revision !== expectedRevision)

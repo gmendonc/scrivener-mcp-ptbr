@@ -3,6 +3,7 @@ import { DOCUMENT_TYPES } from '../core/constants.js';
 import type { CompilationService } from './compilation-service.js';
 import type { DocumentManager } from './document-manager.js';
 import type { ScrivenerDocument } from '../types/index.js';
+import { trashedDocuments } from '../fixes/binder-trash.js';
 
 const logger = getLogger('scrivener-project');
 
@@ -19,16 +20,7 @@ export class ProjectTrash {
 	) {}
 
 	async getTrashDocuments(): Promise<ScrivenerDocument[]> {
-		const allDocs = await this.getProjectStructure(true);
-		const trashDocs: ScrivenerDocument[] = [];
-
-		for (const doc of allDocs) {
-			if (doc.path && doc.path.startsWith('Trash/')) {
-				trashDocs.push(doc);
-			}
-		}
-
-		return trashDocs;
+		return trashedDocuments(await this.getProjectStructure(true));
 	}
 
 	async searchTrash(

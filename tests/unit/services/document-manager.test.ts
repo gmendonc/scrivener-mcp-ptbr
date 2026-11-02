@@ -167,7 +167,9 @@ describe('DocumentManager', () => {
 		structure.ScrivenerProject.Binder.SearchResults = [];
 		await manager.deleteDocument(DOC);
 		expect(draftChildren().map((item) => item.UUID)).toEqual([FOLDER]);
-		expect(trash().map((item) => item.UUID)).toEqual([DOC]);
+		// pt-BR fork (SPEC §9.L, erro 8): deletes go to the native TrashFolder, not SearchResults.
+		const nativeTrash = roots().find((item) => item.Type === 'TrashFolder')!;
+		expect(nativeTrash.Children!.BinderItem.map((item) => item.UUID)).toEqual([DOC]);
 		await expect(manager.deleteDocument(MISSING)).rejects.toThrow(/not found/i);
 	});
 

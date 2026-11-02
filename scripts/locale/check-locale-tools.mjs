@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 
 // Fases entregues; cada uma libera os arquivos do upstream que a SPEC §9 lista para ela.
-const DELIVERED_PHASES = [1];
+const DELIVERED_PHASES = [1, 'C'];
 
 const INJECTION_POINTS = {
 	1: [
@@ -58,15 +58,38 @@ const INJECTION_POINTS = {
 		'src/services/ai/ai-writing-service.ts',
 	],
 	4: ['src/services/editorial/passage-search.ts', 'src/services/editorial/continuity-service.ts'],
+	C: [
+		// §9.L — correções do upstream (D21)
+		'src/services/parsers/rtf-handler.ts',
+		'src/services/parsers/rtf-splice.ts',
+		'src/services/project-writer.ts',
+		'src/services/binder-editor.ts',
+		'src/services/document-manager-helpers.ts',
+		'src/services/project-trash.ts',
+		'src/services/project-reports.ts',
+		'src/handlers/compilation-handlers.ts',
+		'src/services/ai/ai-client.ts',
+		'src/services/ai/writing-suggestions.ts',
+		'src/core/response-formatter.ts',
+		'src/handlers/async-handlers.ts',
+		'src/services/queue/job-queue.ts',
+		// testes do upstream que afirmavam o defeito (Desvios do estágio C)
+		'tests/unit/services/document-manager.test.ts',
+		'tests/unit/services/document-manager-binder-moves.test.ts',
+	],
 };
 
 // Arquivos e diretórios próprios do fork (SPEC §0).
 const FORK_PATHS = [
 	'src/locale/',
+	'src/fixes/',
 	'scripts/locale/',
 	'tests/unit/locale/',
 	'tests/integration/locale/',
+	'tests/unit/fixes/',
+	'tests/integration/fixes/',
 	'tests/fixtures/pt-BR/',
+	'tests/fixtures/fixes/',
 	'docs/pt-br/',
 	'docs/adr/',
 	'.github/workflows/ptbr.yml',

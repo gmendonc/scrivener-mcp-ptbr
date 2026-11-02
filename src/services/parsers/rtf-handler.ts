@@ -4,6 +4,13 @@ import { promisify } from 'util';
 import { safeReadFile, safeWriteFile } from '../../utils/common.js';
 import { getLogger } from '../../core/logger.js';
 import { isStructurallyValidRtf, readRtfControl, rtfGroupEnd } from './rtf-validation.js';
+import {
+	decodeRtfHex,
+	escapedLineBreakLength,
+	isRawLineBreak,
+	rtfCodepage,
+} from '../../fixes/rtf-decode.js';
+import { encodeRtfText } from '../../fixes/rtf-encode.js';
 import type {
 	RTFParserDocument,
 	RTFParserContent,
@@ -244,7 +251,7 @@ export class RTFHandler {
 
 		const content = this.stripRTFHeaders(rtfString);
 
-		const segments = this.parseRTFSegments(content);
+		const segments = this.parseRTFSegments(content, 1, rtfCodepage(rtfString));
 
 		const plainTextParts: string[] = [];
 		segments.forEach((segment) => {
@@ -312,7 +319,8 @@ export class RTFHandler {
 
 	private parseRTFSegments(
 		content: string,
-		documentUc = 1
+		documentUc = 1,
+		codepage?: number
 	): Array<{ text: string; style?: RTFStyle }> {
 		const segments: Array<{ text: string; style?: RTFStyle }> = [];
 		const stack: RTFStyle[] = [{}];
@@ -320,7 +328,7 @@ export class RTFHandler {
 		let currentStyle = { ...stack[0] };
 
 		// Enhanced tokenization
-		const tokens = this.tokenizeRTF(content, documentUc);
+		const tokens = this.tokenizeRTF(content, documentUc, codepage);
 
 		for (const token of tokens) {
 			if (token.type === 'control') {
@@ -367,7 +375,11 @@ export class RTFHandler {
 	/**
 	 * Tokenize RTF content for easier parsing
 	 */
-	private tokenizeRTF(content: string, initialUc = 1): Array<{ type: string; value: string }> {
+	private tokenizeRTF(
+		content: string,
+		initialUc = 1,
+		codepage?: number
+	): Array<{ type: string; value: string }> {
 		const tokens: Array<{ type: string; value: string }> = [];
 		let i = 0;
 		// Number of fallback characters that follow each \u escape (RTF \uc, default 1).
@@ -426,7 +438,7 @@ export class RTFHandler {
 				} else if (content[i + 1] === "'") {
 					// Hex character
 					const hex = content.slice(i + 2, i + 4);
-					tokens.push({ type: 'text', value: String.fromCharCode(parseInt(hex, 16)) });
+					tokens.push({ type: 'text', value: decodeRtfHex(hex, codepage) });
 					i += 4;
 				} else if (
 					content[i + 1] === '\\' ||
@@ -436,6 +448,9 @@ export class RTFHandler {
 					// Escaped character
 					tokens.push({ type: 'text', value: content[i + 1] });
 					i += 2;
+				} else if (escapedLineBreakLength(content, i)) {
+					tokens.push({ type: 'text', value: '\n' });
+					i += escapedLineBreakLength(content, i);
 				} else {
 					i++;
 				}
@@ -456,7 +471,7 @@ export class RTFHandler {
 					content[i] !== '{' &&
 					content[i] !== '}'
 				) {
-					text += content[i];
+					if (!isRawLineBreak(content[i])) text += content[i];
 					i++;
 				}
 				if (text) {
@@ -673,25 +688,7 @@ export class RTFHandler {
 	 * Helper: Encode text for RTF
 	 */
 	private encodeTextForRTF(text: string): string {
-		let encoded = text;
-
-		// Escape special characters
-		encoded = encoded.replace(/\\/g, '\\\\');
-		encoded = encoded.replace(/\{/g, '\\{');
-		encoded = encoded.replace(/\}/g, '\\}');
-
-		encoded = encoded.replace(/\n/g, '\\par\n');
-		encoded = encoded.replace(/\t/g, '\\tab ');
-
-		// Replace special characters with RTF equivalents
-		for (const [char, rtfEquiv] of this.SPECIAL_CHARS_REVERSE) {
-			encoded = encoded.replace(new RegExp(char, 'g'), rtfEquiv);
-		}
-
-		// Encode non-ASCII characters
-		encoded = this.encodeNonASCII(encoded);
-
-		return encoded;
+		return encodeRtfText(text);
 	}
 
 	/**

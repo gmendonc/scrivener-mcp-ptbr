@@ -22,6 +22,7 @@ import {
 	retry,
 	validateInput,
 } from '../utils/common.js';
+import { PROVIDER_UNAVAILABLE_MESSAGE } from '../fixes/messages.js';
 
 let jobQueueService: JobQueueService | null = null;
 let aiWritingService: AIWritingService | null = null;
@@ -301,7 +302,7 @@ export async function buildVectorStore(params: {
 
 		// Otherwise, process synchronously with the AI writing service
 		if (!aiWritingService) {
-			throw createError(ErrorCode.AI_SERVICE_ERROR, null, 'AI writing service not available');
+			throw createError(ErrorCode.AI_SERVICE_ERROR, null, PROVIDER_UNAVAILABLE_MESSAGE);
 		}
 
 		await aiWritingService.buildVectorStore(params.documents, { rebuild: params.rebuild });
@@ -323,7 +324,7 @@ export async function semanticSearch(params: { query: string; topK?: number }): 
 		validateInput(params, { query: { required: true } });
 
 		if (!aiWritingService) {
-			throw createError(ErrorCode.AI_SERVICE_ERROR, null, 'AI writing service not available');
+			throw createError(ErrorCode.AI_SERVICE_ERROR, null, PROVIDER_UNAVAILABLE_MESSAGE);
 		}
 
 		const results = await aiWritingService.semanticSearch(params.query, params.topK ?? 5);

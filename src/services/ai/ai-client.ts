@@ -6,6 +6,7 @@ import OpenAI from 'openai';
 import { getLogger } from '../../core/logger.js';
 import { ErrorCode, createError } from '../../utils/common.js';
 import { getSamplingServer } from './sampling-bridge.js';
+import { openAICompletionParams } from '../../fixes/openai-params.js';
 
 const logger = getLogger('ai-client');
 
@@ -325,8 +326,7 @@ export class AIClient {
 			const response = await compatClient.chat.completions.create(
 				{
 					model,
-					max_tokens: maxTokens,
-					temperature,
+					...openAICompletionParams(model, maxTokens, temperature),
 					messages,
 				},
 				{ signal: AbortSignal.timeout(this.timeoutMs) }

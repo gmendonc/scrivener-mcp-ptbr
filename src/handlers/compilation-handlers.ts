@@ -806,7 +806,7 @@ export const getStatisticsHandler: ToolDefinition = {
 
 		const fullStats = {
 			...stats,
-			title: metadata.title || 'Untitled',
+			title: metadata.title || stats.metadata?.title || 'Untitled',
 			author: metadata.author,
 			lastModified: new Date().toISOString(),
 		};
