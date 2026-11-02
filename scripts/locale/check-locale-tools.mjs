@@ -8,12 +8,12 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..');
 
 // Fases entregues; cada uma libera os arquivos do upstream que a SPEC §9 lista para ela.
-const DELIVERED_PHASES = [1, 'C'];
+const DELIVERED_PHASES = [1, 'C', 2];
 
 const INJECTION_POINTS = {
 	1: [
@@ -46,6 +46,8 @@ const INJECTION_POINTS = {
 		'src/services/document-indexer.ts',
 		'src/services/project-reports.ts',
 		'src/services/project-snapshots.ts',
+		// reexportação de text-metrics que contornava a fachada (Desvios, estágio 2)
+		'src/utils/common.ts',
 		// §9.C, §9.D, §9.E, §9.F
 		'src/handlers/skill-registry.ts',
 		'eslint.config.js',
@@ -165,3 +167,53 @@ if (extras.length) {
 }
 const touched = [...changed].filter((f) => allowed.has(f)).length;
 console.log(`Locale tools: ${touched} upstream injection points touched, none outside SPEC §9.`);
+
+// R2.2 — fachadas, coverage.ts e LOCALE_TOOLS consistentes com o código do upstream.
+const problems = [];
+const coverageKeys = new Set(
+	[...readFileSync(join(ROOT, 'src/locale/pt-BR/coverage.ts'), 'utf8').matchAll(/^\t'([\w-]+\.\w+)':/gm)].map(
+		(m) => m[1]
+	)
+);
+const imports = listImports();
+for (const facade of ['narrative-lens', 'bluepencil', 'text-metrics', 'compromise-pos']) {
+	const source = readFileSync(join(ROOT, `src/locale/engines/${facade}.ts`), 'utf8');
+	const exported = new Set(
+		[...source.matchAll(/^export function (\w+)/gm)].map((m) => m[1]).concat(
+			/^export default /m.test(source) ? ['default'] : []
+		)
+	);
+	for (const name of imports[facade]) {
+		if (!exported.has(name)) problems.push(`${facade}: upstream imports ${name}, facade lacks it`);
+		const key = facade === 'compromise-pos' && name === 'default' ? 'compromise-pos.nlp' : `${facade}.${name}`;
+		if (!coverageKeys.has(key)) problems.push(`coverage.ts lacks ${key}`);
+	}
+}
+// Ninguém fora das fachadas importa ou reexporta src/utils/text-metrics.ts direto: um caminho
+// assim contorna o gate sem aparecer na lista de imports das fachadas.
+const DIRECT = /(?:import|export)\s[^;]*?from\s*['"][./]*(?:utils\/)?text-metrics\.js['"]/gs;
+for (const file of walk(join(ROOT, 'src'))) {
+	const rel = relative(ROOT, file).split(sep).join('/');
+	if (rel.startsWith('src/locale/') || rel === 'src/utils/text-metrics.ts') continue;
+	for (const m of readFileSync(file, 'utf8').matchAll(DIRECT))
+		if (!/locale\/engines\//.test(m[0])) problems.push(`${rel}: imports utils/text-metrics.js directly`);
+}
+const dist = join(ROOT, 'dist');
+try {
+	process.env.SCRIVENER_MCP_EAGER_TOOLS = '1';
+	const registry = await import(pathToFileURL(join(dist, 'handlers/skill-registry.js')).href);
+	const { LOCALE_TOOLS } = await import(pathToFileURL(join(dist, 'locale/tool-policies.js')).href);
+	registry.initializeSkillRegistry();
+	const registered = new Set(registry.getRegisteredTools().map((t) => t.name));
+	for (const name of Object.keys(LOCALE_TOOLS))
+		if (!registered.has(name)) problems.push(`LOCALE_TOOLS names ${name}, not in the registry`);
+} catch (error) {
+	problems.push(`cannot load dist/ (run npm run build): ${error.message}`);
+}
+if (problems.length) {
+	console.error('Locale tools inconsistent (R2.2):');
+	for (const p of problems) console.error(`  ${p}`);
+	process.exit(1);
+}
+console.log(`Locale tools: facades, coverage.ts (${coverageKeys.size} entries) and LOCALE_TOOLS consistent.`);
+process.exit(0);

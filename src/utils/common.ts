@@ -800,7 +800,7 @@ export {
 	splitIntoSentences,
 	splitIntoWords,
 	getWordPairs,
-} from './text-metrics.js';
+} from '../locale/engines/text-metrics.js';
 
 // Text processing functions moved to text-metrics.js and re-exported above
 

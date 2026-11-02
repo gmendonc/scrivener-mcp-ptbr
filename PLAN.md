@@ -214,10 +214,12 @@ Saída (resumo, 2026-11-02, antes do commit):
 - `check-output-conformance.mjs` → 36 pass, 0 fail, 0 skip
 - `check-native-escapes.mjs` → nenhum escape
 - `check-locale-tools.mjs` → 42 pontos de injeção, nenhum fora da §9
-- Revisão em contexto fresco (`revisor`): **interrompida** pelo limite de uso da API; o autor
-  autorizou o commit sem ela (2026-11-02). Fica pendente, para rodar sobre este commit
+- Revisão em contexto fresco (`revisor`): interrompida pelo limite de uso; o autor autorizou o
+  commit sem ela. Feita depois, sobre `72f99fd` (2026-11-02): 2 defeitos reais, corrigidos no
+  commit do estágio 2 (ver Desvios: destino de restauração na lixeira; regeneração com o texto
+  começando em grupo aninhado)
 - RC.8 (Scrivener, autor): adiado pelo autor para a próxima etapa
-- `ptbr.yml` no Actions: pendente (sem push)
+- `ptbr.yml` no Actions para `72f99fd`: success (run 41386970368)
 
 Commit: `________` — _mensagem_
 
@@ -225,9 +227,9 @@ Commit: `________` — _mensagem_
 
 ### Estágio 2 — Gate, opção A (SPEC §13 Fase 2)
 
-- [ ] `src/locale/pt-BR/coverage.ts` e `dispatchPtBR` nas fachadas (§6.5, §6.6) — R2.1
-- [ ] `check-locale-tools.mjs` confere `LOCALE_TOOLS` e `coverage.ts` — R2.2
-- [ ] `tests/integration/locale/gate.test.ts` — R2.3, R2.4, R2.5, R2.6
+- [x] `src/locale/pt-BR/coverage.ts` e `dispatchPtBR` nas fachadas (§6.5, §6.6) — R2.1
+- [x] `check-locale-tools.mjs` confere `LOCALE_TOOLS` e `coverage.ts` — R2.2
+- [x] `tests/integration/locale/gate.test.ts` — R2.3, R2.4, R2.5, R2.6
 
 **Pronto quando:**
 
@@ -235,7 +237,31 @@ Commit: `________` — _mensagem_
 npx jest tests/unit/locale tests/integration/locale --testTimeout=30000 && node scripts/locale/check-locale-tools.mjs && node scripts/check-output-conformance.mjs && npm test -- --testTimeout=30000
 ```
 
-Saída (resumo): _a preencher_
+Saída (resumo, 2026-11-02, depois das correções da revisão; a árvore já inclui o texto base do
+estágio 3a):
+
+- `typecheck`, `format:check`, `lint`, `build` → exit 0
+- `jest tests/unit/locale tests/integration/locale tests/unit/fixes tests/integration/fixes` →
+  32 suites, 223 testes passando
+- `npm test -- --testTimeout=30000` → exit 0; suites 182 passed, 2 skipped (184); tests 2738
+  passed, 12 skipped (2750); 72 s
+- Revisão em contexto fresco (`revisor`) dos estágios C e 2: 2 bloqueios no estágio C e 5 pontos
+  menores, todos corrigidos com teste que falha sem a correção (ver Desvios)
+- Primeira rodada, antes da revisão:
+- `check-locale-tools.mjs` → 42 pontos de injeção, nenhum fora da §9; fachadas, `coverage.ts`
+  (38 entradas) e `LOCALE_TOOLS` consistentes. Mutação: sem `bluepencil.checkStyle` no
+  `coverage.ts` → "coverage.ts lacks bluepencil.checkStyle", exit 1
+- `check-output-conformance.mjs` → 36 pass; `check-tool-registry.mjs` → 83 tools
+- `npm test -- --testTimeout=30000` → exit 0; suites 176 passed, 2 skipped (178); tests 2692
+  passed, 12 skipped (2704); 70 s
+- Mutações no `route.ts`: gate desligado (unavailable → nativa) → R2.3, R2.4 e R2.6 falham;
+  gate aplicado também em inglês → R2.5 falha
+- Varredura pt-BR (fixture com `primary: 'pt-BR'`, sem provedor de IA): 4 ferramentas de processo
+  filho e 12 de análise respondem `available: false`; `analyze_document` responde com
+  `readability=unavailable` e `unavailableMetrics: [text-metrics.getWritingTextMetrics,
+  narrative-lens.checkGrammar]`; `compile_documents`, `queue_document_analysis`, listas de
+  `editorial_workflow` e `continuity_findings` respondem normalmente; `analyze_writing_style` e
+  `suggest_improvements` falham por falta de provedor, como em inglês
 
 Commit: `________` — _mensagem_
 
@@ -243,10 +269,11 @@ Commit: `________` — _mensagem_
 
 - [ ] `scripts/locale/sources.json`, `fetch-data.mjs`, `loader.ts`, `describeWithData` (§11)
 - [ ] `docs/pt-br/SOURCES.md` com licença verificada na fonte primária para cada fonte (D8)
-- [ ] `tokens.ts`, `sentences.ts`, `syllables.ts` — R3.1, R3.2
-- [ ] `segments.ts`, `spans.ts` — R3.3, R3.4
-- [ ] Exclusão de trechos e `recordCoverage` nas fachadas — R3.5
-- [ ] Adaptador do bluepencil (D18) — R3.12
+- [x] `tokens.ts`, `sentences.ts`, `syllables.ts` — R3.1, R3.2 (lista de 238 palavras)
+- [x] `segments.ts`, `spans.ts` — R3.3, R3.4
+- [x] Exclusão de trechos e `recordCoverage` nas fachadas — R3.5 (`src/locale/pt-BR/adapt.ts`)
+- [x] Adaptador do bluepencil (D18) — R3.12; `analyzeRhythm`, `findEchoes`, `findRepeats`,
+  `sentenceStarters` promovidas a `language-neutral` com adaptador (R3.13, parte)
 
 **Pronto quando:**
 
@@ -380,6 +407,21 @@ Commit: `________` — _mensagem_
 | 2026-11-02 | C | §9.L | `rtf-handler.ts`: o corpo de `encodeTextForRTF` (20 linhas) foi substituído pela chamada; `tokenizeRTF` ganhou parâmetro e quebra de linha na assinatura (Prettier) | Delegar exige remover o corpo antigo; código morto confundiria | `git diff src/services/parsers/rtf-handler.ts` |
 | 2026-11-02 | C | R1.14 | Dois testes do upstream ajustados (`document-manager.test.ts`, `document-manager-binder-moves.test.ts`), com comentário "pt-BR fork" | Afirmavam o defeito: lixeira em `SearchResults[0]` e `Children: { BinderItem: null }` | `npm test` verde; `check-locale-tools.mjs` os aceita na fase C |
 | 2026-11-02 | C | — | Observação: o leitor ainda mapeia `\ldblquote`/`\rdblquote` para `"` reta (`RTF_TEXT_CONTROLS`), e `\~` vira `~` (o regex de palavra de controle não casa símbolos) | Fora da §9.L; o Scrivener grava `\'93`/`\'94`, já corrigidos. Arquivos gravados pelo MCP 0.12–0.14 com `\rdblquote` são lidos com aspa reta | leitura de `rtf-handler.ts:16-28`, `384` |
+| 2026-11-02 | 2 | R2.1 | `text-metrics.splitIntoWords` e `text-metrics.getWordPairs` ficam `language-neutral` | Usam a mesma tokenização do `compromise` que `countWords` (já neutra na R2.1); `unavailable` desligaria a busca do `document-indexer` em projetos pt-BR | `coverage.test.ts`; varredura pt-BR |
+| 2026-11-02 | 2 | §6.2, §6.7 e | `LocaleCallContext.unsupported` e `recordUnsupported`: a fachada registra a recusa antes de lançar; o `withLocale` responde indisponível a qualquer erro ou resultado `isError` quando houve recusa, e lista em `unavailableMetrics` as recusas que o upstream engoliu | O upstream embrulha erros com `handleError` (o `AppError` perde a identidade de `LanguageUnsupportedError`) e às vezes engole o erro e degrada (`analyze_document`) | `with-locale.test.ts` › "upstream wraps the error" e "swallows the error" |
+| 2026-11-02 | 2 | §6.6 | Alternativas: `get_statistics` para métricas de texto e `read_document` para análises de estilo, diálogo e narrativa | A SPEC exige `alternative` mas não diz qual; quase toda análise é indisponível em pt-BR nesta fase, então a alternativa honesta é contar palavras ou ler o texto | `coverage.ts` |
+| 2026-11-02 | 2 | R1.13 | `queue-locale.test.ts`: o job pt-BR de `ANALYZE_DOCUMENT` agora termina `failed` com "is not available for pt-BR (not-implemented)", não `completed` | Efeito esperado do gate: o worker reabre o contexto pt-BR e a análise é recusada | `queue-locale.test.ts` |
+| 2026-11-02 | 2 | R2.3, R2.5 | `gate.test.ts` pula, nos dois testes, `queue_project_analysis` (exige `projectId` de fila), `suggest_improvements` e `analyze_writing_style` (sem provedor falham nos dois idiomas antes de qualquer fachada); `generate_content` e `enhance_content` podem responder `isError` sem provedor. A garantia de "nenhuma métrica inglesa" é provada com `jest.mock` de passagem nas nativas: nenhuma função `unavailable` roda | Sem provedor de IA no teste; a cobertura dessas ferramentas com provedor é a R3.10 | `gate.test.ts` |
+| 2026-11-02 | 2 | §1, R2.3 | Observação: `check_consistency`, `check_plot_consistency`, `continuity_findings`, `search_passages` e `semantic_search` rodam padrões e vocabulário em inglês fora das fachadas e respondem "0 achados" em pt-BR, sem aviso | Não passam por fachada; a correção é a das fases 4 (§9.H, §9.I). Até lá, é falha silenciosa | varredura pt-BR |
+| 2026-11-02 | 2 (revisão C) | RC.7 | `restore_document` recusa destino dentro da TrashFolder (o próprio item, um descendente ou outra pasta apagada), com `isInTrash` | Achado do revisor: com a lixeira dentro da árvore, `recoverFromTrash(F, F)` pendurava a pasta em si mesma e ela sumia do Binder na gravação seguinte | `binder-trash.test.ts` › "restore targets inside the trash" falha sem a correção |
+| 2026-11-02 | 2 (revisão C) | RC.4 | `regenerateKeepingHeader` corta o prefixo antes do grupo aberto mais externo além do `{\rtf1` | Achado do revisor: documento que começa em itálico (epígrafe) ou num campo fazia o corpo regenerado inteiro sair em itálico ou como link | `rtf-header.test.ts`: 2 de 3 falham sem a correção |
+| 2026-11-02 | 2 (revisão) | §9.B | `src/utils/common.ts` reexporta as funções de `text-metrics` pela fachada (1 linha); `check-locale-tools.mjs` acusa importação ou reexportação direta de `utils/text-metrics.js` fora das fachadas | Achado do revisor: 4 arquivos do upstream importam por `common.ts` e contornariam o gate quando `getWritingTextMetrics` virar `implemented` (fase 3) | mutação: reverter a linha faz o script sair com "src/utils/common.ts: imports utils/text-metrics.js directly" |
+| 2026-11-02 | 2 (revisão) | §6.7 e | `ForeignSpanChangedError` tem precedência sobre recusa registrada; erro lançado só vira indisponível se for a recusa ou a embrulhar (mensagem contida); resultado `isError` sai como veio | Achado do revisor: a ordem anterior trocaria `foreign-span-changed` por `not-implemented` (§9.G) e esconderia erros sem relação, como provedor ausente | `with-locale.test.ts` (2 casos novos) |
+| 2026-11-02 | 2 (revisão C) | RC.10 | `o1-mini` e `o1-preview` recebem `max_completion_tokens` sem `reasoning_effort` | Achado do revisor; **não conferido contra a API** (sem chave). `gpt-5-chat-latest` segue como modelo de raciocínio, também não conferido | `openai-params.test.ts` |
+| 2026-11-02 | 3a | §6.8, R3.4 | Narração empatada herda o idioma do documento; só fala e citação empatadas viram `undetermined` | Narração curta empata pt/es/it nas palavras funcionais ("A Dra. Ana olhou a chuva.") e era excluída; a SPEC dá "abaixo da margem herda" e "empate é undetermined" sem distinguir | `spans.test.ts` › "pt-BR narration spans" |
+| 2026-11-02 | 3a | R3.5 | O teste usa `analyzeRhythm` (promovida com adaptador), não `checkStyle` | `checkStyle` é `unavailable` em pt-BR: lançaria antes de analisar; a exclusão e a cobertura acontecem no adaptador | `bluepencil-adapter.test.ts` › "coverage of foreign spans" |
+| 2026-11-02 | 3a | R3.13, PLAN 3c | As quatro funções do bluepencil com adaptador foram promovidas no 3a, não no 3c | A promoção delas não depende de corpus (são neutras com adaptador); as que dependem (`splitIntoSentences` etc.) seguem para o 3c | `coverage.test.ts` |
+| 2026-11-02 | 3a | R3.2 | Lista com 238 palavras; fora dela, de propósito, ditongo crescente átono final ("história") e prefixos que quebram grupo ("sub-li-nhar") | São os casos em que as gramáticas divergem ou exigem morfologia; o algoritmo trata o primeiro como hiato | `tests/fixtures/pt-BR/silabas.tsv` (cabeçalho) |
 
 Incorporados à SPEC em 2026-11-01, a pedido do autor: o agrupamento em `structuredContent.locale`
 (D15, D3, D11, §4.4, §6.7, §7, §8.1, §10.1, R1.9, R2.3–R2.6, R3.11, §14), a decoração de

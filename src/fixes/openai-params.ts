@@ -17,7 +17,11 @@ export function isReasoningModel(model: string): boolean {
 
 export type OpenAICompletionParams =
 	| { max_tokens: number; temperature: number }
-	| { max_completion_tokens: number; reasoning_effort: ReasoningEffort };
+	| { max_completion_tokens: number; reasoning_effort?: ReasoningEffort };
+
+// Os primeiros modelos de raciocínio não aceitam reasoning_effort (revisão do estágio C; não
+// conferido contra a API, sem chave).
+const WITHOUT_EFFORT = /^o1-(?:mini|preview)/;
 
 export function openAICompletionParams(
 	model: string,
@@ -25,9 +29,12 @@ export function openAICompletionParams(
 	temperature: number
 ): OpenAICompletionParams {
 	if (!isReasoningModel(model)) return { max_tokens: maxTokens, temperature };
+	const budget = Math.max(maxTokens * 4, 4000);
+	if (WITHOUT_EFFORT.test(model.replace(/^openai\//i, '').toLowerCase()))
+		return { max_completion_tokens: budget };
 	const configured = process.env.OPENAI_REASONING_EFFORT?.trim().toLowerCase();
 	const effort = (
 		configured && EFFORTS.includes(configured) ? configured : 'low'
 	) as ReasoningEffort;
-	return { max_completion_tokens: Math.max(maxTokens * 4, 4000), reasoning_effort: effort };
+	return { max_completion_tokens: budget, reasoning_effort: effort };
 }

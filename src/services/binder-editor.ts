@@ -12,7 +12,12 @@ import {
 	removeBinderItem,
 	validateProjectStructure,
 } from './document-manager-helpers.js';
-import { moveToNativeTrash, takeFromTrash, trashIsEmpty } from '../fixes/binder-trash.js';
+import {
+	isInTrash,
+	moveToNativeTrash,
+	takeFromTrash,
+	trashIsEmpty,
+} from '../fixes/binder-trash.js';
 
 const logger = getLogger('document-manager');
 
@@ -302,7 +307,9 @@ export class BinderEditor {
 
 		let targetParent: BinderItem | undefined;
 		if (targetParentId) {
-			targetParent = findParentFolder(binder, targetParentId);
+			targetParent = isInTrash(binder, targetParentId)
+				? undefined
+				: findParentFolder(binder, targetParentId);
 			if (!targetParent) {
 				throw createError(
 					ErrorCode.NOT_FOUND,

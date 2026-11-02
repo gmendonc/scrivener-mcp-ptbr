@@ -2,6 +2,7 @@ import type { HandlerContext, ToolDefinition } from '../../../src/handlers/types
 import { ENV_VAR } from '../../../src/locale/language.js';
 import { LanguageUnsupportedError, ForeignSpanChangedError } from '../../../src/locale/errors.js';
 import { checkStyle } from '../../../src/locale/engines/bluepencil.js';
+import { countWords } from '../../../src/locale/engines/text-metrics.js';
 import { withLocale } from '../../../src/locale/with-locale.js';
 
 function tool(name: string, overrides: Partial<ToolDefinition> = {}): ToolDefinition {
@@ -107,7 +108,7 @@ describe('output fields in English (R1.9, D15)', () => {
 
 	it('reports the project language and a pt-BR note in Portuguese', async () => {
 		const handler = jest.fn(async () => {
-			checkStyle('Ela abriu a porta da casa e viu que o jardim estava coberto de neve.');
+			countWords('Ela abriu a porta da casa e viu que o jardim estava coberto de neve.');
 			return { content: [{ type: 'text', text: 'X' }], structuredContent: { a: 1 } };
 		});
 		const result = await withLocale(tool('check_style_local', { handler })).handler(
@@ -251,5 +252,92 @@ describe('augmented output schema', () => {
 			},
 		});
 		expect(() => withLocale(colliding)).toThrow(/locale.*collides/);
+	});
+
+	it('answers unavailable when a facade refuses and the upstream wraps the error', async () => {
+		const handler = jest.fn(async () => {
+			try {
+				checkStyle('Ela abriu a porta da casa e viu que o jardim estava coberto de neve.');
+			} catch (error) {
+				throw new Error(`wrapped: ${(error as Error).message}`);
+			}
+			return { content: [{ type: 'text', text: 'X' }], structuredContent: { a: 1 } };
+		});
+		const result = await withLocale(tool('check_style_local', { handler })).handler(
+			{ documentId: 'd' },
+			context({ primary: 'pt-BR' })
+		);
+		expect(result.isError).toBe(false);
+		expect(result.structuredContent).toEqual({
+			locale: expect.objectContaining({
+				available: false,
+				reason: 'not-implemented',
+				alternative: 'read_document',
+				language: 'pt-BR',
+			}),
+		});
+	});
+
+	it('lists a refused function when the upstream swallows the error', async () => {
+		const handler = jest.fn(async () => {
+			try {
+				checkStyle('Ela abriu a porta da casa e viu que o jardim estava coberto de neve.');
+			} catch {
+				// upstream degrade path
+			}
+			return { content: [{ type: 'text', text: 'X' }], structuredContent: { a: 1 } };
+		});
+		const result = await withLocale(tool('check_style_local', { handler })).handler(
+			{ documentId: 'd' },
+			context({ primary: 'pt-BR' })
+		);
+		expect(result.structuredContent).toMatchObject({
+			a: 1,
+			locale: { language: 'pt-BR', unavailableMetrics: ['bluepencil.checkStyle'] },
+		});
+	});
+
+	it('keeps an unrelated error thrown after a swallowed refusal', async () => {
+		const handler = jest.fn(async () => {
+			try {
+				checkStyle('Ela abriu a porta da casa e viu que o jardim estava coberto de neve.');
+			} catch {
+				// upstream degrade path
+			}
+			throw new Error('AI writing provider is unavailable');
+		});
+		await expect(
+			withLocale(tool('check_style_local', { handler })).handler(
+				{ documentId: 'd' },
+				context({ primary: 'pt-BR' })
+			)
+		).rejects.toThrow('AI writing provider is unavailable');
+	});
+
+	it('reports a changed foreign span even after a swallowed refusal', async () => {
+		const handler = jest.fn(async () => {
+			try {
+				checkStyle('Ela abriu a porta da casa e viu que o jardim estava coberto de neve.');
+			} catch {
+				// upstream degrade path
+			}
+			throw new ForeignSpanChangedError([
+				{
+					start: 0,
+					end: 4,
+					before: 'Okay',
+					after: 'Certo',
+					languageBefore: 'en',
+					languageAfter: 'pt-BR',
+				},
+			]);
+		});
+		const result = await withLocale(tool('enhance_content', { handler })).handler(
+			{ documentId: 'd' },
+			context({ primary: 'pt-BR' })
+		);
+		expect(result.structuredContent).toMatchObject({
+			locale: { available: false, reason: 'foreign-span-changed' },
+		});
 	});
 });

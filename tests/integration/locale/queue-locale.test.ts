@@ -37,7 +37,7 @@ describe('locale through the embedded queue (R1.13, §8.2)', () => {
 		return context.runWithLocale(ctx, fn);
 	}
 
-	it('reopens the pt-BR context in the worker and completes the job', async () => {
+	it('reopens the pt-BR context in the worker, where the gate refuses the analysis', async () => {
 		const created = jest.spyOn(context, 'createCallContext');
 		const id = await inPortugueseProject(() =>
 			queue.addJob(JobType.ANALYZE_DOCUMENT, {
@@ -45,9 +45,14 @@ describe('locale through the embedded queue (R1.13, §8.2)', () => {
 				content: 'Ana abriu a janela e viu que a rua ainda estava molhada da chuva.',
 			})
 		);
-		expect(await queue.waitForJob(JobType.ANALYZE_DOCUMENT, id)).toMatchObject({
-			state: 'completed',
-		});
+		// Fase 2: a análise de documento não existe em pt-BR; o job falha com a recusa do gate,
+		// em vez de calcular métricas inglesas sobre o texto.
+		const status = (await queue.waitForJob(JobType.ANALYZE_DOCUMENT, id)) as {
+			state: string;
+			error?: string;
+		};
+		expect(status.state).toBe('failed');
+		expect(status.error).toMatch(/is not available for pt-BR \(not-implemented\)/);
 		const worker = created.mock.results
 			.map((r) => r.value as context.LocaleCallContext)
 			.find((ctx) => ctx.toolName === JobType.ANALYZE_DOCUMENT);

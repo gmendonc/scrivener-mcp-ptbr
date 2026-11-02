@@ -253,13 +253,6 @@ function localeHandler(tool: ToolDefinition, policy: LocaleToolPolicy): ToolDefi
 			try {
 				result = await tool.handler(rest, context, options);
 			} catch (error) {
-				if (error instanceof LanguageUnsupportedError) {
-					return unavailable(ctx, hasOutputSchema, {
-						feature: error.feature,
-						reason: error.reason,
-						alternative: error.alternative,
-					});
-				}
 				if (error instanceof ForeignSpanChangedError) {
 					return unavailable(ctx, hasOutputSchema, {
 						feature: tool.name,
@@ -267,11 +260,29 @@ function localeHandler(tool: ToolDefinition, policy: LocaleToolPolicy): ToolDefi
 						changedSpans: error.changed,
 					});
 				}
+				const refused = refusalBehind(error, ctx);
+				if (refused) return unavailableFrom(ctx, hasOutputSchema, refused);
 				throw error;
 			}
+			// Resultado com isError sai como veio: o erro pode não ter relação com o gate (provedor
+			// ausente); recusas engolidas aparecem em unavailableMetrics.
 			return decorate(result, ctx, hasOutputSchema);
 		});
 	};
+}
+
+/**
+ * The gate refusal behind a thrown error: the error itself, or an upstream wrapper of it
+ * (`handleError` builds a new AppError that keeps the original message). An unrelated error
+ * thrown after a swallowed refusal is not one.
+ */
+function refusalBehind(
+	error: unknown,
+	ctx: LocaleCallContext
+): LanguageUnsupportedError | undefined {
+	if (error instanceof LanguageUnsupportedError) return error;
+	const message = error instanceof Error ? error.message : String(error);
+	return ctx.unsupported.find((refusal) => message.includes(refusal.message));
 }
 
 async function childProcessLanguage(
@@ -287,6 +298,18 @@ async function childProcessLanguage(
 	return isLanguage(detection.language)
 		? { language: detection.language, source: 'detected', detection }
 		: { language: 'en', source: 'default' };
+}
+
+function unavailableFrom(
+	ctx: LocaleCallContext,
+	hasOutputSchema: boolean,
+	error: LanguageUnsupportedError
+): HandlerResult {
+	return unavailable(ctx, hasOutputSchema, {
+		feature: error.feature,
+		reason: error.reason,
+		alternative: error.alternative,
+	});
 }
 
 function unavailable(

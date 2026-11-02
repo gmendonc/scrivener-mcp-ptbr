@@ -18,20 +18,23 @@ export function regenerateKeepingHeader(
 	const scan = scanRawText(originalRaw);
 	const first = scan.text.search(/\S/u);
 	if (first === -1) return fallback(newText);
-	const prefix = originalRaw.slice(0, scan.offsets[first]);
-	const depth = openGroups(prefix);
-	if (depth < 1) return fallback(newText);
+	// O primeiro texto pode estar dentro de um grupo (epígrafe em itálico, campo): corta antes
+	// do grupo aberto mais externo além do {\rtf1, para o corpo novo não herdar o estilo dele.
+	const open = openGroupStarts(originalRaw.slice(0, scan.offsets[first]));
+	if (open.length < 1) return fallback(newText);
+	const prefix = originalRaw.slice(0, open.length > 1 ? open[1] : scan.offsets[first]);
 	// `\uc1` makes the `?` after each `\uN` a fallback character even if the header set `\uc0`.
-	const raw = `${prefix}{\\uc1 ${encodeRtfText(newText)}}${'}'.repeat(depth)}`;
+	const raw = `${prefix}{\\uc1 ${encodeRtfText(newText)}}}`;
 	return isStructurallyValidRtf(raw) ? raw : fallback(newText);
 }
 
-function openGroups(raw: string): number {
-	let depth = 0;
+/** Offsets of the `{` of every group still open at the end of `raw`, outermost first. */
+function openGroupStarts(raw: string): number[] {
+	const stack: number[] = [];
 	for (let i = 0; i < raw.length; i++) {
 		if (raw[i] === '\\') i++;
-		else if (raw[i] === '{') depth++;
-		else if (raw[i] === '}') depth--;
+		else if (raw[i] === '{') stack.push(i);
+		else if (raw[i] === '}') stack.pop();
 	}
-	return depth;
+	return stack;
 }

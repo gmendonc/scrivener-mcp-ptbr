@@ -7,6 +7,7 @@ import type {
 	RequestedLanguage,
 	Resolution,
 } from './language.js';
+import type { LanguageUnsupportedError } from './errors.js';
 import type { ProjectLocale } from './project-locale.js';
 
 export interface ExcludedSpan {
@@ -27,6 +28,9 @@ export interface LocaleCallContext {
 	analyzedChars: number;
 	totalChars: number;
 	readonly unavailableMetrics: Set<string>;
+	/** Funções que o gate recusou nesta chamada, na ordem; o invólucro as acha mesmo se o
+	 *  upstream embrulhar ou engolir o erro. */
+	readonly unsupported: LanguageUnsupportedError[];
 }
 
 export interface LocaleSummary {
@@ -61,6 +65,7 @@ export function createCallContext(init: {
 		analyzedChars: 0,
 		totalChars: 0,
 		unavailableMetrics: new Set(),
+		unsupported: [],
 	};
 }
 
@@ -78,6 +83,13 @@ export function recordCoverage(analyzed: number, total: number, excluded: Exclud
 
 export function recordUnavailableMetric(name: string): void {
 	currentLocale()?.unavailableMetrics.add(name);
+}
+
+export function recordUnsupported(error: LanguageUnsupportedError): void {
+	const ctx = currentLocale();
+	if (!ctx) return;
+	ctx.unsupported.push(error);
+	ctx.unavailableMetrics.add(error.feature);
 }
 
 export function summarize(ctx: LocaleCallContext): LocaleSummary {

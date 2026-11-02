@@ -3,6 +3,7 @@ import type { ScrivenerDocument } from '../types/index.js';
 import {
 	addBinderChild,
 	addBinderItem,
+	findBinderItemById,
 	iterateBinderItems,
 	removeBinderItem,
 } from '../services/document-manager-helpers.js';
@@ -28,6 +29,18 @@ export function moveToNativeTrash(binder: BinderContainer, item: BinderItem): vo
 		addBinderItem(binder, trash);
 	}
 	addBinderChild(trash, item);
+}
+
+/**
+ * True when `id` is the TrashFolder or lies inside it. A restore target there is invalid: with
+ * the trash inside the binder tree, restoring a folder into itself (or into another trashed
+ * folder) would detach it from the binder and lose it on the next save.
+ */
+export function isInTrash(binder: BinderContainer, id: string): boolean {
+	const trash = findNativeTrash(binder);
+	if (!trash) return false;
+	if (trash.UUID === id || (trash as { ID?: string }).ID === id) return true;
+	return trash.Children ? findBinderItemById(trash.Children, id) !== undefined : false;
 }
 
 /** True when neither the TrashFolder nor a legacy `SearchResults` container holds anything. */

@@ -25,6 +25,15 @@ describe('OpenAI parameters per model family (RC.10)', () => {
 		}
 	);
 
+	it.each(['o1-mini', 'o1-preview', 'openai/o1-mini'])(
+		'omits reasoning_effort for %s',
+		(model) => {
+			expect(openAICompletionParams(model, 1024, 0.8)).toEqual({
+				max_completion_tokens: 4096,
+			});
+		}
+	);
+
 	it('keeps a 4000-token floor and honors OPENAI_REASONING_EFFORT', () => {
 		process.env.OPENAI_REASONING_EFFORT = 'high';
 		expect(openAICompletionParams('o3', 200, 0.7)).toEqual({

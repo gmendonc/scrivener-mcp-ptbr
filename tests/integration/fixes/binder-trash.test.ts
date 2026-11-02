@@ -123,6 +123,31 @@ describe('delete_document and restore_document use the native trash (RC.6, RC.7)
 	});
 });
 
+describe('restore targets inside the trash (revisão do estágio C)', () => {
+	it('refuses to restore a folder into itself or its child and keeps it in the trash', async () => {
+		await withProjectCopy(async ({ project, scrivx }) => {
+			const folder = await project.createDocument('Pasta', '', DRAFT, 'Folder', {
+				force: true,
+			});
+			const child = await project.createDocument('Filho', 'texto', folder, 'Text', {
+				force: true,
+			});
+			await project.deleteDocument(folder, { force: true });
+			for (const target of [folder, child]) {
+				await expect(
+					project.recoverFromTrash(folder, target, { force: true })
+				).rejects.toThrow('not found');
+			}
+			const { items } = await binderOf(await scrivx());
+			const trash = items.find((item) => item.$.UUID === TRASH);
+			expect(childIds(trash)).toEqual([folder]);
+			await project.recoverFromTrash(folder, DRAFT, { force: true });
+			const after = await binderOf(await scrivx());
+			expect(childIds(after.items.find((item) => item.$.UUID === DRAFT))).toContain(folder);
+		});
+	});
+});
+
 describe('the Draft is a valid move and restore target (erro 7)', () => {
 	it('moves a document into the DraftFolder', async () => {
 		await withProjectCopy(async ({ project, scrivx }) => {
