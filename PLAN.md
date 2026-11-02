@@ -113,12 +113,74 @@ GitHub Actions no commit `8f11023`:
   `node_modules/.bin/eslint`, que no Windows é `.cmd` e o `spawnSync` sem shell não executa.
   Corrigido para `process.execPath` + `node_modules/eslint/bin/eslint.js`; Linux e macOS
   passaram nas 7 combinações. "Release verification" falha por depender da matriz completa.
-  Correção ainda não verificada no Windows (exige novo push).
+  Correção verificada em `9a59893` (abaixo).
 - `Changelog` (workflow do upstream): failure em "Open changelog PR" — "GitHub Actions is not
-  permitted to create or approve pull requests" (configuração do fork, não código).
+  permitted to create or approve pull requests" (configuração do fork, não código). Workflow
+  desativado no fork a pedido do autor.
 - `CodeQL`, `Scorecard`: success.
 
+GitHub Actions no commit `9a59893` (correção do `lint-rule` no Windows):
+
+- `CI` run 41359219068: `lint-rule.test.ts` passa no Windows. `windows-2022` verde nas duas
+  tentativas; `windows-latest` 24.x falhou nas duas, cada vez num caso diferente de
+  `tests/integration/server-shutdown.test.ts` (`cancel-zero`: timeout no
+  `analyze_manuscript_local`; no rerun, `cancel-empty`: servidor não saiu em 2 s).
+  Linux e macOS verdes.
+- Aceito como instabilidade do upstream, decisão do autor (Windows fora do uso atual): o mesmo
+  teste falhou no Windows no CI do próprio upstream (run 41243134078, commit `4fc8895`), e
+  localmente fork e upstream `a48ef5b` passam 5/5 em ~11 s. Não descartado: a amostragem do
+  Draft que o fork faz antes de liberar ferramentas de processo filho sem idioma configurado
+  pode pesar no prazo do teste no Windows; não reproduzível no macOS. Ver Desvios.
+
 Commit: ver `git log` — `feat(locale): esqueleto andante pt-BR (estágio 1)`
+
+---
+
+## Correções do upstream (estágio C)
+
+### Estágio C — Correções do upstream (SPEC §13 Fase C, §9.L, §15; D21, D22)
+
+Roda antes do estágio 2. Ordem: o leitor primeiro, porque o splice, as estatísticas e todas as
+métricas leem por ele. Cada item começa por um teste de caracterização que falha no código
+atual; cole aqui a saída da falha antes de corrigir.
+
+Leitura e gravação RTF:
+- [ ] Fixture `tests/fixtures/fixes/cocoa-cp1252.rtf` (texto próprio) e `.txt` gerado com
+  `textutil -convert txt -stdout` — RC.2
+- [ ] `src/fixes/rtf-decode.ts` e injeção no `rtf-handler.ts` e no `rtf-splice.ts` (§9.L) — RC.1, RC.2
+- [ ] Regressão: `npm test`; diferenças do fixture inglês (`notes.rtf`) em Desvios — RC.5
+- [ ] `src/fixes/rtf-encode.ts` — RC.3
+- [ ] `src/fixes/rtf-header.ts` e injeção no `project-writer.ts` — RC.4
+
+Binder:
+- [ ] `src/fixes/binder-trash.ts` e injeção no `binder-editor.ts` — RC.6, RC.7
+- [ ] Verificação manual no Scrivener, **pelo autor** — RC.8 (resultado: _a preencher_)
+
+Demais:
+- [ ] `src/fixes/statistics.ts` e injeção no `project-reports.ts` — RC.9
+- [ ] `src/fixes/openai-params.ts` e injeção no `ai-client.ts` — RC.10
+- [ ] `src/fixes/spool.ts` e injeção no `response-formatter.ts` — RC.11
+- [ ] `src/fixes/messages.ts` e injeção no `async-handlers.ts` — RC.12
+- [ ] `docs/pt-br/configuracao-cliente.md` — RC.13
+- [ ] Investigação do `close_project` — RC.14 (resultado: _a preencher_)
+
+Ferramentas:
+- [ ] `check-locale-tools.mjs`: fase C em `DELIVERED_PHASES` e os pontos de §9.L — RC.15
+- [ ] `ptbr.yml`, passo 4 com `tests/unit/fixes tests/integration/fixes` (§10.2)
+- [ ] Fixture pt-BR do estágio 1: conferir que a sugestão do `open_project` e os testes de
+  locale continuam verdes com os travessões `\'97` lidos como `—`
+
+**Pronto quando:**
+
+```bash
+npm run typecheck && npm run format:check && npm run lint && npm run build && npx jest tests/unit/fixes tests/integration/fixes tests/unit/locale tests/integration/locale --testTimeout=30000 && npm test -- --testTimeout=30000 && node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs && node scripts/locale/check-native-escapes.mjs && node scripts/locale/check-locale-tools.mjs
+```
+
+mais RC.8 registrado pelo autor e o `ptbr.yml` verde no GitHub Actions.
+
+Saída (resumo): _a preencher_
+
+Commit: `________` — _mensagem_
 
 ---
 
@@ -268,6 +330,7 @@ Commit: `________` — _mensagem_
 | 2026-11-01 | 1 | §8.3, R1.14 | `check-native-escapes.mjs --root <dir>` para teste hermético; `check-locale-tools.mjs` conta também mudanças não commitadas e arquivos não rastreados | Testar sem escrever em `src/`; valer antes do commit | `check-native-escapes.test.ts`; arquivo `src/zz-probe.ts` fez o script sair com 1 |
 | 2026-11-01 | 1 | §6.7 f | Mantida a linha `pt-BR:` anexada ao último bloco de texto, embora deixe inválido o JSON em texto de ferramentas que usam `formatPayload` (só em pt-BR) | Segue a SPEC; clientes devem ler `structuredContent` | achado do revisor; sem teste |
 | 2026-11-01 | 1 | — | Observação: `tests/integration/locale/open-project.test.ts` deixa um worker do Jest sem encerrar (aviso "failed to exit gracefully"); persiste sem a injeção do fork, vem do ciclo `open_project`/`close_project` do upstream rodado no processo de teste | Corrigir exigiria mexer no upstream; os testes passam | bissecção por arquivo e por caso; `--detectOpenHandles` em série não aponta handle |
+| 2026-11-01 | 1 | R1.17 | `ci.yml` do upstream aceito vermelho no `windows-latest` por `server-shutdown.test.ts` instável; R1.17 cobre só o `ptbr.yml`, que está verde | Decisão do autor: Windows fora do uso atual; o teste já falhava no Windows no upstream. Mitigação possível, não aplicada: amostragem menor no gate de processo filho | runs 41359219068 (fork, 2 tentativas) e 41243134078 (upstream); 5/5 local em fork e upstream |
 
 Incorporados à SPEC em 2026-11-01, a pedido do autor: o agrupamento em `structuredContent.locale`
 (D15, D3, D11, §4.4, §6.7, §7, §8.1, §10.1, R1.9, R2.3–R2.6, R3.11, §14), a decoração de
@@ -280,6 +343,8 @@ desvios seguem só aqui.
 |---|---|---|---|---|---|
 | 2026-11-01 | — | `Dicionário de Palavras Simples` (Biderman) ou CorPop26 para Dale-Chall: licença desconhecida | verificar na fonte; se não ficar clara, Dale-Chall fica indisponível (R3.7) | licença considerada ok pelo autor; registrar em `SOURCES.md` com `licenseVerified.status: "author-accepted"`; usar a lista de Biderman, porque os coeficientes da fórmula adaptada foram calibrados com ela | 2026-11-01 |
 | 2026-11-01 | 1 | O campo `coverage` de D15 colide com `coverage` do upstream em `analyze_document`, `analyze_writing_style`, `enhance_content`, `check_consistency`, `check_plot_consistency` e o sobrescreve em inglês (§7) | (a) renomear para `languageCoverage`: editar D15/§6.2/§6.7/§7/R1.9, sem colisão hoje; (b) agrupar em `structuredContent.locale`: muda a forma de D15, protege contra colisões futuras; (c) não sobrescrever quando existe: D15 deixa de ser uniforme | (b) agrupar numa chave `locale` | 2026-11-01 |
+| 2026-11-01 | C | Onde ficam as correções dos defeitos do upstream do relatório de erros (D21) | (a) `src/fixes/` + uma chamada por correção em §9.L: poucos conflitos, módulo removível quando o upstream corrigir; custo, indireção e mais uma lista; (b) editar o upstream direto: mais simples, conflitos maiores (`rtf-handler.ts` teve 9 commits do upstream em 90 dias); (c) PR no upstream + patch: reabre §3, prazo do mantenedor | (a) `src/fixes/` com injeção mínima | 2026-11-01 |
+| 2026-11-01 | C | Quais erros entram (D22) | críticos + médios; só RTF/binder; todos os abertos (o 2 é difícil de testar sem o TCC) | críticos + médios: 4, 5, 9, 8/10, 12, 15, 21 com teste; 1, 2, 22 em documentação; 17 mensagem; 11 investigar | 2026-11-01 |
 
 ## Itens futuros (fora das fases)
 

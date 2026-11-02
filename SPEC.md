@@ -2,9 +2,12 @@
 
 Status: aprovada para implementação em 2026-11-01. Fases 0 a 7.
 Revisões: 2026-11-01, campos de locale agrupados em `structuredContent.locale` (D15, decisão do
-autor depois da revisão do estágio 1; ver Decisões devolvidas no `PLAN.md`).
+autor depois da revisão do estágio 1; ver Decisões devolvidas no `PLAN.md`). 2026-11-01, Fase C
+(correções de defeitos do upstream, D21–D22, §15), a partir de
+`docs/pt-br/scrivener-mcp-erros-encontrados.md`.
 Insumos: `docs/pt-br/decisoes-planejamento.md`, `docs/pt-br/arquitetura-locale.md`,
-`docs/pt-br/integracao-escrita-criativa.md`, `docs/pt-br/pesquisa-recursos-pt-br.md`.
+`docs/pt-br/integracao-escrita-criativa.md`, `docs/pt-br/pesquisa-recursos-pt-br.md`,
+`docs/pt-br/scrivener-mcp-erros-encontrados.md`.
 Decisões estruturais: `docs/adr/0001` a `0004`.
 
 ## 0. Como usar este documento
@@ -16,9 +19,10 @@ Decisões estruturais: `docs/adr/0001` a `0004`.
   `PLAN.md` antes do commit. Se a divergência exigir uma decisão do autor, registre em
   **Decisões devolvidas** e pare o estágio. Não edite esta SPEC para acomodar o código.
 - "Upstream" é `writerslogic/scrivener-mcp`. "Arquivo do upstream" é qualquer arquivo fora de
-  `src/locale/`, `scripts/locale/`, `tests/unit/locale/`, `tests/integration/locale/`,
-  `tests/fixtures/pt-BR/`, `docs/pt-br/`, `docs/adr/`, `.github/workflows/ptbr.yml`, `SPEC.md`
-  e `PLAN.md`.
+  `src/locale/`, `src/fixes/`, `scripts/locale/`, `tests/unit/locale/`,
+  `tests/integration/locale/`, `tests/unit/fixes/`, `tests/integration/fixes/`,
+  `tests/fixtures/pt-BR/`, `tests/fixtures/fixes/`, `docs/pt-br/`, `docs/adr/`,
+  `.github/workflows/ptbr.yml`, `SPEC.md` e `PLAN.md`.
 
 ## 1. Objetivo
 
@@ -26,6 +30,11 @@ Todas as ferramentas do servidor funcionam em pt-BR com qualidade medida, ou res
 explicitamente que não funcionam. Nenhuma ferramenta devolve métrica calculada por regra inglesa
 sobre texto português. O comportamento em inglês não muda: todo campo que o upstream devolve
 mantém o mesmo valor. Um mesmo processo atende projetos nos dois idiomas.
+
+Exceção: a Fase C corrige defeitos do upstream que corrompem texto ou o projeto nos dois
+idiomas (acentos, aspas e travessões lidos ou gravados errado, lixeira fora do lugar,
+estatísticas zeradas). Os campos e comportamentos que mudam em inglês por causa disso estão
+listados em §15.3. A paridade inglesa vale para todo o resto.
 
 ## 2. Decisões de partida (não reabrir)
 
@@ -45,12 +54,14 @@ mantém o mesmo valor. Um mesmo processo atende projetos nos dois idiomas.
 | D12 | Idioma do projeto na memória de projeto (`customContext.locale`) | arquitetura §10.3 |
 | D13 | Descrições das ferramentas continuam em inglês | arquitetura §10.4 |
 | D14 | `compromise`: fachada parcial sobre `text-metrics` | arquitetura §6.4 |
-| D15 | Um bloco `locale` com `language`, `languageSource`, `coverage` e `excludedSpans` aparece **sempre**, em todos os idiomas, como acréscimo no `structuredContent` (`structuredContent.locale`); os demais campos de locale (`available`, `reason`, `alternative`, `unavailableMetrics`, `changedSpans`) ficam no mesmo bloco. Nenhum campo de locale fica solto no topo: `coverage` já existe no upstream em 5 ferramentas. O texto de `content` não muda em inglês. Paridade em inglês = todo campo do upstream com o mesmo valor | autor, 2026-11-01 (sessão da SPEC; agrupamento em `locale` decidido na revisão do estágio 1) |
+| D15 | Um bloco `locale` com `language`, `languageSource`, `coverage` e `excludedSpans` aparece **sempre**, em todos os idiomas, como acréscimo no `structuredContent` (`structuredContent.locale`); os demais campos de locale (`available`, `reason`, `alternative`, `unavailableMetrics`, `changedSpans`) ficam no mesmo bloco. Nenhum campo de locale fica solto no topo: `coverage` já existe no upstream em 5 ferramentas. O texto de `content` não muda em inglês. Paridade em inglês = todo campo do upstream com o mesmo valor, salvo os listados em §15.3 (Fase C) | autor, 2026-11-01 (sessão da SPEC; agrupamento em `locale` decidido na revisão do estágio 1) |
 | D16 | Promoção exige pelo menos **30 predições revisadas por camada**; abaixo disso o relatório marca `insufficient-sample` e não promove. O limite inferior de Wilson (95%) é reportado só como informação | autor, 2026-11-01 |
 | D17 | Busca por conceito pt-BR segue D5 com **precision@10 ≥ 0,80 por camada**; recall é medido e reportado, sem bloquear | autor, 2026-11-01 |
 | D18 | Abreviações no bluepencil: contorno (a) por substituição do ponto (arquitetura §6.9) | arquitetura §6.9 |
 | D19 | Dados grandes: resolvido por D9 (fora do repo, por script). Substitui a alternativa "subconjunto derivado no repositório" da arquitetura §5 | decisoes §9 |
 | D20 | Palavras por fala (`wordCount` em `attributions`) só em pt-BR, acrescentadas pela fachada do bluepencil; a saída em inglês fica sem o campo e nenhum handler do upstream muda | autor, 2026-11-01 |
+| D21 | Correções de defeitos do upstream vivem em `src/fixes/`, com testes em `tests/unit/fixes/` e `tests/integration/fixes/`. O arquivo do upstream recebe só a chamada ao módulo, num ponto listado em §9.L. Quando o upstream corrigir o mesmo defeito, o módulo e o ponto de injeção são removidos no merge. Nenhum PR no upstream (§3 continua valendo) | autor, 2026-11-01 |
+| D22 | Escopo da Fase C: erros 4, 5, 9, 8/10, 12, 15 e 21 do relatório, corrigidos com teste; 1, 2 e 22 viram documentação; 17 vira mensagem com a configuração; 11 é investigado e, se reproduzir, vira decisão devolvida. Triagem completa em §15 | autor, 2026-11-01 |
 
 ## 3. Fora de escopo
 
@@ -68,6 +79,12 @@ mantém o mesmo valor. Um mesmo processo atende projetos nos dois idiomas.
 - Nova dependência npm de runtime sem ADR próprio. As fases 0–5 não adicionam nenhuma.
 - Embeddings ou modelos neurais na busca semântica (o upstream usa vetores de conceito fixos).
 - Versionar texto protegido por direito autoral ou escrita do autor (só métricas agregadas).
+- Fase C: converter aspas retas em tipográficas ao gravar (o servidor grava os caracteres que
+  recebe); restaurar da lixeira para o pai anterior (o `.scrivx` não guarda esse dado; restaura
+  para o destino pedido ou para o Draft); popular o registro do `check_consistency` a partir
+  das pastas de personagens do Binder (recurso novo, erro 18); timeout de leitura para pasta do
+  iCloud (erro 2, só documentação); mudar o padrão de divulgação progressiva de ferramentas
+  (erro 1, só documentação).
 
 ## 4. Avaliação estrutural (Ousterhout e Martin)
 
@@ -105,6 +122,10 @@ de ferramentas.
   das bibliotecas nativas. `src/locale/*.ts` (raiz) pode importar **tipos** do upstream
   (`ToolDefinition`, `HandlerContext`, `MemoryManager`), não valores, exceto `with-locale.ts`,
   que importa `HandlerError` de `src/handlers/types.ts`.
+- **`src/fixes/` (D21):** é chamado pelo upstream e pode importar do upstream tipos e utilitários
+  sem estado (`rtf-validation.ts`, `RTF_TEXT_CONTROLS`, `core/logger.ts`). Não importa de
+  `src/locale/`, e `src/locale/` não importa dele: os dois só se encontram no código do
+  upstream.
 - **Fronteiras formais além disso seriam excesso** nesta escala (um autor, um processo). Uma
   regra de lint (`no-restricted-imports`) e um script de escapes (seção 8.3) bastam.
 
@@ -141,10 +162,19 @@ src/locale/
     text/               tokens.ts, sentences.ts, syllables.ts, segments.ts, spans.ts, foreign-guard.ts
     readability/        flesch.ts, dale-chall.ts, index.ts
     style/  dialogue/  search/  continuity/  emotion/  voice/   (fases 4–6)
-    prompts.ts          languageDirective, definições pt-BR dos 12 tipos de melhoria
+    prompts.ts          languageDirective, definições pt-BR dos tipos de melhoria (§6.11)
     data/               listas de curadoria própria (.ts) + loader.ts para dados baixados
   sidecar/
     nilc-metrix.ts      fase 7
+src/fixes/              Fase C (D21, §15)
+  rtf-decode.ts         página de código, \'hh, quebras cruas: um decodificador para leitor e splice
+  rtf-encode.ts         texto → RTF sem mapa reverso (aspas retas literais)
+  rtf-header.ts         cabeçalho do documento original na regeneração
+  binder-trash.ts       lixeira nativa (TrashFolder) para apagar e restaurar
+  statistics.ts         contagens por pasta, caracteres e título no get_statistics
+  openai-params.ts      parâmetros para modelos de raciocínio da OpenAI
+  spool.ts              diretório de spool configurável
+  messages.ts           mensagem de provedor de IA ausente
 scripts/locale/
   sources.json          manifesto de dados de terceiros
   fetch-data.mjs        download para ~/.scrivener-mcp/locale/pt-BR/
@@ -156,7 +186,10 @@ scripts/locale/
 tests/unit/locale/      um arquivo por módulo
 tests/integration/locale/
 tests/fixtures/pt-BR/   classicos/ (versionado), sample-project-pt.scriv/
+tests/unit/fixes/  tests/integration/fixes/   Fase C
+tests/fixtures/fixes/   cocoa-cp1252.rtf + .txt esperado (texto próprio), cópias de projeto
 docs/pt-br/SOURCES.md   procedência e licença de cada fonte
+docs/pt-br/configuracao-cliente.md   variáveis de ambiente e armadilhas do cliente (Fase C)
 ```
 
 Todo código novo segue as convenções do upstream: tabs, prettier, ESM com sufixo `.js` nos
@@ -528,12 +561,21 @@ ou se a detecção do Draft der `'en'`; senão uma linha em inglês
 // src/locale/pt-BR/prompts.ts
 export function languageDirective(language: Language): string; // '' para 'en'
 export function promptLanguage(text: string): Language;        // resolveLanguage(text).language
-export const IMPROVEMENT_DEFINITIONS_PT_BR: Readonly<Record<string, string>>; // os 12 tipos
+export const IMPROVEMENT_DEFINITIONS_PT_BR: Readonly<Record<string, string>>;
 ```
+
+As chaves são as de `ENHANCEMENT_INSTRUCTIONS` (`src/services/enhancements/ai-content-enhancer.ts`).
+Conferido em 2026-11-01 (0.14.0): 6 tipos, `grammar`, `style`, `clarity`, `expand`,
+`summarize` e `creative`. A versão anterior desta SPEC dizia 12, e o relatório de erros, 19
+(medido na 0.12.0). `prompts.test.ts` compara os dois conjuntos de chaves (R3.10), para que um
+merge que mude o conjunto falhe; `src/locale/pt-BR` não importa o upstream (§4.3).
+`grammar` em pt-BR segue a norma brasileira e o Acordo Ortográfico de 1990, incluindo crase e
+colocação pronominal. `style` e `creative` preservam a pontuação de diálogo com travessão.
 
 A diretiva pt-BR manda responder em português do Brasil, no registro do texto, e **não traduzir
 falas, citações ou trechos em outro idioma**; os trechos excluídos chegam marcados no texto
-enviado. Em `ai-content-enhancer.ts`, o texto reescrito passa por
+enviado. Nos prompts que pedem JSON, as **chaves** continuam em inglês (os parsers do upstream
+dependem delas) e só os **valores** vêm em português. Em `ai-content-enhancer.ts`, o texto reescrito passa por
 `assertForeignSpansPreserved(original, reescrito, …)` antes de virar resultado (D4).
 
 ## 7. Contrato de saída
@@ -672,6 +714,25 @@ fachada `bluepencil.analyzeDialogue`, só em pt-BR (D20). Conferido em 2026-11-0
 
 **K. Sidecar (fase 7):** nenhum. Métricas extras entram pela fachada.
 
+**L. Correções (fase C, D21):** cada linha é uma chamada a `src/fixes/`. Quando o upstream corrigir
+o mesmo defeito, o ponto sai da lista no merge.
+
+| Arquivo | Ponto | Módulo | Erro |
+|---|---|---|---|
+| `src/services/parsers/rtf-handler.ts` | `enhancedRTFParse` lê a página de código com `rtfCodepage(rtfString)` e a repassa até `tokenizeRTF`; no tokenizador, o ramo `\'hh` chama `decodeRtfHex`, `\` seguido de quebra emite `\n` e a coleta de texto pula CR/LF crus (`isRawLineBreak`) | `rtf-decode.ts` | 4 |
+| `src/services/parsers/rtf-handler.ts` | `encodeTextForRTF` delega a `encodeRtfText`; o `SPECIAL_CHARS_REVERSE` deixa de ser usado (não é apagado) | `rtf-encode.ts` | 5 |
+| `src/services/parsers/rtf-splice.ts` | `scanRawText`: os mesmos três pontos do tokenizador (`rtfCodepage`, `decodeRtfHex`, `isRawLineBreak`), para que leitor e splice decodifiquem igual | `rtf-decode.ts` | 4, 9 |
+| `src/services/project-writer.ts` | ramo `regenerated` com documento existente: `handler.convertToRTF(newText)` → `regenerateKeepingHeader(oldRaw, newText, handler)` | `rtf-header.ts` | 9 |
+| `src/services/binder-editor.ts` | `deleteDocument`: o bloco de `SearchResults` vira `moveToNativeTrash(binder, removed)`; `recoverFromTrash`: a busca vira `takeFromTrash(binder, documentId)` | `binder-trash.ts` | 8, 10 |
+| `src/services/project-reports.ts` | `getStatistics` passa o resultado por `completeStatistics(stats, contexto)` antes de devolver | `statistics.ts` | 12 |
+| `src/services/ai/ai-client.ts` | chamada OpenAI/OpenRouter: `max_tokens` e `temperature` → `...openAICompletionParams(model, maxTokens, temperature)` | `openai-params.ts` | 15 |
+| `src/core/response-formatter.ts` | `os.tmpdir()` do spool → `spoolBaseDir()` | `spool.ts` | 21 |
+| `src/handlers/async-handlers.ts` | as duas mensagens `'AI writing service not available'` → `PROVIDER_UNAVAILABLE_MESSAGE` | `messages.ts` | 17 |
+
+`check-locale-tools.mjs` passa a aceitar estes arquivos quando a fase C estiver entregue
+(R1.14, RC.15). Se a implementação precisar de mais linhas que o descrito na coluna "Ponto", o
+excesso vai para Desvios no `PLAN.md`.
+
 Fora desta lista, arquivos novos do fork: `.github/workflows/ptbr.yml`, `docs/adr/*`,
 `docs/pt-br/*`, `SPEC.md`, `PLAN.md` e os diretórios da seção 5.
 
@@ -702,7 +763,8 @@ Dispara em `push` e `pull_request` para `main`. Um job, `ubuntu-latest`, Node `2
 2. `npm run typecheck && npm run lint && npm run build`
 3. `node scripts/locale/fetch-data.mjs --ci` (só fontes com `"ci": true` no manifesto; cache do
    diretório de dados com chave = hash de `scripts/locale/sources.json`)
-4. `npx jest tests/unit/locale tests/integration/locale --testTimeout=30000`
+4. `npx jest tests/unit/locale tests/integration/locale --testTimeout=30000` (a partir da fase C,
+   também `tests/unit/fixes tests/integration/fixes`)
 5. `node scripts/locale/check-native-escapes.mjs`
 6. `node scripts/locale/check-locale-tools.mjs`
 7. `node scripts/check-tool-registry.mjs && node scripts/check-output-conformance.mjs`
@@ -865,6 +927,34 @@ Testes unitários ficam em `tests/unit/locale/<módulo>.test.ts`; integração e
 Nesta fase, em pt-BR, todas as fachadas ainda delegam ao nativo (o gate vem na fase 2). O
 esqueleto só prova o caminho: idioma resolvido, campos na saída, gates verdes.
 
+### Fase C — Correções do upstream (D21, D22, §15)
+
+Roda entre as fases 1 e 2: o leitor RTF errado contamina toda métrica pt-BR e o corpus das
+fases seguintes. Testes em `tests/unit/fixes/` e `tests/integration/fixes/`. Cada correção
+começa por um teste de caracterização que falha no código atual. A saída dessa falha vai para o
+`PLAN.md`. Fixtures em `tests/fixtures/fixes/` usam só texto próprio.
+
+| ID | Requisito | Teste |
+|---|---|---|
+| RC.1 | Decodificação por página de código (erro 4) | `rtf-decode.test.ts`: `decodeRtfHex('92', 1252) === '’'`; `'93'`→`“`, `'94'`→`”`, `'96'`→`–`, `'97'`→`—`, `'85'`→`…`, `'e9'`→`é`, `'e3'`→`ã`, `'e7'`→`ç`, `'ab'`→`«`; `rtfCodepage('{\\rtf1\\ansi\\ansicpg1252 …')` → 1252; sem `\ansicpg` → 1252; página não suportada pelo `TextDecoder` → Latin-1 e um `logger.warn` |
+| RC.2 | Leitor igual ao `textutil` (erro 4) | `rtf-reader.test.ts`: `tests/fixtures/fixes/cocoa-cp1252.rtf` (texto próprio no formato que o Scrivener grava: `\ansicpg1252`, `\'92 \'93 \'94 \'97`, acentos em `\'hh`, `\uc0舒`, `« »`, itálico com quebra crua depois da troca de fonte, parágrafo = `\` + quebra) → `parseRTF(raw).plainText` igual a `cocoa-cp1252.txt`, gerado uma vez com `textutil -convert txt -stdout` no macOS e versionado (só os espaços das pontas podem diferir, porque o parser faz `trim`); nenhum caractere em U+0080–U+009F; `scanRawText(raw).text` igual ao texto do parser antes do `trim` |
+| RC.3 | Gravação de aspas (erro 5) | `rtf-encode.test.ts`: `parseRTF(convertToRTF(t)).plainText === t` para `t` com `"oi"`, `'tchau'`, `“ ” ‘ ’ « » — – …` e acentos; a saída para entrada só ASCII não contém `\ldblquote`, `\rdblquote`, `\lquote` nem `\rquote` |
+| RC.4 | Gravação preserva o documento (erro 9) | `write-preserving.test.ts` (integração, cópia temporária de um projeto com `cocoa-cp1252.rtf` como `content.rtf`): (a) `write_document` com o texto lido → `fidelity.mode: 'preserved'` e `content.rtf` idêntico byte a byte (`Buffer.equals`); (b) trocar uma palavra fora do itálico → `preserved`, os bytes fora do intervalo da palavra são iguais e `fonttbl`, `colortbl`, `\ansicpg1252` e o grupo do itálico continuam lá; (c) uma edição que force `regenerated` → o cabeçalho (`fonttbl`, `colortbl`, `\ansicpg`) é o do original, não o Helvetica/Cochin/Optima fixo |
+| RC.5 | Regressão do leitor no upstream | `npm test` verde. Se algum teste do upstream mudar por causa da decodificação (o fixture inglês tem `\'8x`/`\'9x` em `684ADA52…/notes.rtf`), a mudança e o diff vão para Desvios; o valor novo tem de ser o do `textutil` |
+| RC.6 | Apagar vai para a lixeira nativa (erro 8) | `binder-trash.test.ts` (integração, cópia do `sample-project-pt.scriv`): `delete_document` → o item fica em `Children` do `BinderItem` com `Type="TrashFolder"`; o `.scrivx` não ganha `<SearchResults>`; projeto sem `TrashFolder` ganha uma (`Type="TrashFolder"`, `Title="Trash"`, UUID novo) no fim do Binder; `list_trash` lista o item |
+| RC.7 | Restaurar acha a lixeira nativa (erro 10) | `binder-trash.test.ts`: item posto direto na `TrashFolder` (como o Scrivener faz) → `restore_document` o move para `targetFolderId` ou, sem ele, para o fim do Draft; item legado em `SearchResults` (gravado por versões anteriores) também é restaurado; id ausente → `NOT_FOUND` "not found in trash" |
+| RC.8 | Scrivener abre o projeto (erros 6, 8) | manual, pelo autor (não há Scrivener no CI): numa cópia de um projeto real, `create_document`, `move_document`, `delete_document` e `restore_document`; o Scrivener abre sem "Recovered Files". Resultado registrado no `PLAN.md`. Se falhar, decisão devolvida |
+| RC.9 | Estatísticas (erro 12) | `statistics.test.ts` (integração): `get_statistics` em `sample-project-pt.scriv` → `draftDocuments: 3`, `researchDocuments: 0`, `trashedDocuments: 0` (depois de um `delete_document`, 1 e 2); `totalCharacters` = soma de `plainText.length` dos documentos de texto, > 0; `title` = título dos metadados ou, sem ele, o nome do pacote sem `.scriv` (`sample-project-pt`), nunca `Untitled` quando houver nome |
+| RC.10 | Modelos de raciocínio da OpenAI (erro 15) | `openai-params.test.ts`: `gpt-4o-mini` → `{max_tokens, temperature}`; `gpt-5`, `gpt-6.1-terra`, `gpt-10`, `o3`, `o4-mini` e `openai/gpt-5` (OpenRouter) → `{max_completion_tokens: max(4 × maxTokens, 4000), reasoning_effort}` sem `temperature`; `reasoning_effort` = `OPENAI_REASONING_EFFORT` ou `'low'`. `ai-client` com cliente OpenAI mockado recebe esses parâmetros. Sem chave real no CI: chamada real fica como verificação manual opcional do autor |
+| RC.11 | Spool configurável (erro 21) | `spool.test.ts`: com `SCRIVENER_MCP_SPOOL_DIR=<tmp>`, o arquivo de spool é criado dentro dele; sem a variável, em `os.tmpdir()`, como no upstream |
+| RC.12 | Provedor ausente (erro 17) | `messages.test.ts`: `analyze_writing_style` sem provedor → mensagem contém `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `OPENROUTER_API_KEY` e informa que o cliente pode não suportar sampling; o `code` do erro não muda |
+| RC.13 | Documentação do cliente (erros 1, 2, 22) | `docs/pt-br/configuracao-cliente.md`: `SCRIVENER_MCP_EAGER_TOOLS=1` para clientes que ignoram `notifications/tools/list_changed` (Claude desktop); projeto no iCloud (`~/Library/Mobile Documents`) e o bloqueio do TCC; modo assíncrono sem Redis (fila embutida); `OPENAI_REASONING_EFFORT` e `SCRIVENER_MCP_SPOOL_DIR`; gravação síncrona do `write_document` |
+| RC.14 | `close_project` (erro 11) | `close-project.test.ts` (integração): `open_project` + `close_project` no fixture responde em < 5 s e o processo do Jest encerra sem o aviso "failed to exit gracefully". Se não reproduzir o timeout, o resultado vai para o `PLAN.md` e o erro fecha como "não reproduzido". Se reproduzir, a causa vai para Decisões devolvidas antes de qualquer correção |
+| RC.15 | Pontos de injeção | `check-locale-tools.mjs` com a fase C entregue aceita os arquivos de §9.L e nenhum outro novo; `check-native-escapes.mjs` continua verde |
+
+Esta fase muda valores em inglês só nos pontos de §15.3. R2.5 (paridade) compara o handler
+envolto com o handler original no mesmo código, então já inclui as correções dos dois lados.
+
 ### Fase 2 — Gate (opção A)
 
 | ID | Requisito | Teste |
@@ -889,7 +979,7 @@ esqueleto só prova o caminho: idioma resolvido, campos na saída, gates verdes.
 | R3.7 | Dale-Chall adaptado | com a lista de palavras simples de Biderman disponível (`author-accepted`, §11.1; os coeficientes foram calibrados com ela, então não trocar por CorPop26 sem recalibrar): `0.1579×%não familiares + 0.0496×palavras por frase + 3.6365`, caso numérico no teste; sem lista → `unavailableMetrics` contém `daleChall` |
 | R3.8 | Campos sem fórmula | Tipo conferido em 2026-11-01 (`ReadabilityResultJs`, `node_modules/narrative-lens/index.d.ts:334`): `fkgl`, `gunningFog`, `smog` + `smogAvailable`, `ari`, `colemanLiau`, `fleschEase`, `daleChall`, `sentenceCount`, `wordCount`, `syllableCount`, `charCount`, `polysyllableCount`, `readabilityVariance` e `gradeLevels` (strings para `fkgl`, `gunningFog`, `ari`, `colemanLiau`, `fleschEase`, `daleChall`). Só `smog` tem flag de disponibilidade. `readability.test.ts`: tabela de `docs/pt-br/semantica-campos.md` (escrita no passo 1 da fase); todo campo marcado indisponível aparece com flag `false` ou em `unavailableMetrics`; `gradeLevels` usa faixas brasileiras |
 | R3.9 | Limiares de detecção calibrados | `evaluate-corpus.mjs --detector language.span` nas três camadas cumpre D5/D16; os valores finais de `DETECTION_MIN_TOKENS`/`MIN_MARGIN` e o relatório entram no `PLAN.md` |
-| R3.10 | Diretiva de idioma | `prompts.test.ts`: `languageDirective('en') === ''`; em pt-BR contém "português do Brasil" e "não traduza"; para cada um dos 6 arquivos de prompt, com provedor mockado, o prompt de sistema em en é byte a byte o do upstream e em pt-BR termina com a diretiva |
+| R3.10 | Diretiva de idioma | `prompts.test.ts`: `languageDirective('en') === ''`; em pt-BR contém "português do Brasil" e "não traduza"; para cada um dos 6 arquivos de prompt, com provedor mockado, o prompt de sistema em en é byte a byte o do upstream e em pt-BR termina com a diretiva; `Object.keys(IMPROVEMENT_DEFINITIONS_PT_BR)` = `Object.keys(ENHANCEMENT_INSTRUCTIONS)`; a definição de `grammar` cita a norma brasileira e o Acordo de 1990; nos prompts com esquema JSON, as chaves pedidas em pt-BR são as mesmas de en |
 | R3.11 | Rejeição de tradução (D4) | `tests/integration/locale/enhance-foreign.test.ts`: `enhance_content` em texto pt com `— I told you, this is not the place for that — disse John.`; provedor mockado devolve a fala traduzida → `locale.available:false`, `locale.reason:'foreign-span-changed'`, trecho em `locale.changedSpans` com `languageBefore:'en'`, `languageAfter:'pt-BR'`; nenhuma proposta criada em `review_changes`; provedor que preserva a fala → resposta normal |
 | R3.12 | Adaptador do bluepencil (D18) | `bluepencil-adapter.test.ts`: `analyzeRhythm` sobre `'A Dra. Ana chegou. Ela saiu.'` → 2 frases; linha/coluna dos achados iguais às do texto original; excerto restaurado com `.`; `findEchoes` ignora palavras funcionais pt (`para` não aparece) |
 | R3.13 | Promoções da fase | `analyzeRhythm`, `findEchoes`, `findRepeats`, `sentenceStarters` → `language-neutral` com adaptador; `computeReadability` → `implemented` (R3.6–R3.8); `splitIntoSentences`, `getAccurateSentenceCount`, `getWordFrequency` → `implemented` com relatório de frases do corpus cumprindo D5/D16 |
@@ -915,6 +1005,7 @@ esqueleto só prova o caminho: idioma resolvido, campos na saída, gates verdes.
 | R5.4 | Tags de diálogo | unitário: `— Vamos — disse Ana.` → `neutral`; `— Vamos — sibilou Ana.` → `showy`; `— Vamos — disse Ana, angustiada.` → `adverb`/adjetivo na tag |
 | R5.5 | Palavras por fala (D20) | unitário: a fachada `bluepencil.analyzeDialogue` em pt-BR devolve cada item de `attributions` com `wordCount` = palavras de `text.slice(dialogue.offset, dialogue.offset + dialogue.length)`; `— Não vou ficar aqui — disse Ana.` → `wordCount: 4`. Em en, a fachada continua repassando o objeto nativo sem `wordCount` (R1.4 sem exceção). Integração: `analyze_dialogue_tags_local` em pt-BR devolve `wordCount` em `attributions` e valida contra o `outputSchema` atual (que declara só `type: 'array'`); `bluepencil-handlers.ts` não muda |
 | R5.6 | Promoção | cada detector (`style.adverb`, `style.passive`, `style.filter`, `style.hedge`, `style.cliche`, `dialogue.speech`, `dialogue.tag`) só vira `implemented` com D5/D16 nas três camadas; relatórios em `docs/pt-br/avaliacao/` |
+| R5.7 | Percentual de diálogo (erro 14) | integração: `analyze_writing_style` sobre um documento pt-BR em que metade das palavras está em falas com travessão de abertura (`— …`, sem aspas) devolve `dialoguePercentage` entre 40 e 60; com aspas `“…”` e `«…»`, idem. Antes da promoção de `dialogue.speech`, o campo vem em `unavailableMetrics`, não como 0 |
 
 ### Fase 6 — Emoção, voz, `compromise`
 
@@ -958,3 +1049,60 @@ Saídas resumidas no `PLAN.md`.
    `tests/sample-project.scriv` e `check_style_local` devolvem os mesmos valores do upstream
    mais o bloco `locale` de D15 com `language:'en'`.
 8. Workflow `ptbr.yml` e `ci.yml` verdes no GitHub Actions para o commit final.
+9. Fase C, sessão real: `read_document` de um capítulo com acentos, travessões e itálico igual
+   ao `textutil`; `write_document` com o mesmo texto não muda nenhum byte; RC.8 registrado.
+
+## 15. Triagem do relatório de erros (Fase C)
+
+Fonte: `docs/pt-br/scrivener-mcp-erros-encontrados.md`, medido na 0.12.0 (`dist` do npm). Esta
+triagem confere cada erro no código deste fork (0.14.0, base `a48ef5b`), em 2026-11-01.
+
+### 15.1 Situação de cada erro
+
+| # | Na 0.14.0 | Evidência | Destino |
+|---|---|---|---|
+| 1 | aberto (por desenho) | `skill-registry.ts:347`: tudo só com `SCRIVENER_MCP_EAGER_TOOLS=1`. A correção proposta (detectar `tools.listChanged` no `initialize`) não existe no protocolo: essa é capacidade do servidor, não do cliente | RC.13 |
+| 2 | aberto | sem timeout nas leituras; não reproduzido aqui | RC.13; fora (§3) |
+| 3 | corrigido | `rtf-handler.ts:167`: `formattedText` vazio codifica `plainText` | — |
+| 4 | aberto, mudou de forma | sonda no `dist`: `\'e9`→`é` já funciona (Latin-1), mas `\'92 \'93 \'94 \'97` viram U+0092–U+0097 ("Germanys") e a quebra crua depois de `\f1\i` vira `\n`. O fixture pt-BR do estágio 1 tem travessões `\'97` | RC.1, RC.2, RC.5 |
+| 5 | aberto | sonda: `"oi"` → `\rdblquote oi\rdblquote`; `'x'` → `\rquote x\rquote` (`rtf-handler.ts:65-73`, chave repetida no `Map`) | RC.3 |
+| 6 | corrigido no carregamento | `project-loader.ts:74-75` com `mergeAttrs: false` e atributos em `$`; testes `project-loader-roundtrip.test.ts`. O "Recovered Files" pode ter outra causa (erro 8): verificação manual RC.8 | RC.8 |
+| 7 | corrigido | `document-manager-binder-moves.test.ts` cobre UUID que o `parseInt` leria como 0 e pastas nativas | — |
+| 8 | aberto (o relatório o dá como corrigido só no patch local) | sonda: `delete_document` grava em `<Binder><SearchResults>` e a `TrashFolder` fica vazia (`binder-editor.ts:123-145`). `utils/document-operations.ts` tem uma versão com a lixeira nativa e teste próprio, mas a ferramenta não a usa | RC.6, RC.8 |
+| 9 | aberto, consequência do 4 | `project-writer.ts:104`: o splice só é aceito se `parseRTF(splice) === afterText`; `scanRawText` (`rtf-splice.ts:126,137`) tem os mesmos dois defeitos do leitor; a regeneração usa o cabeçalho fixo (`rtf-handler.ts:178-205`) | RC.2, RC.4 |
+| 10 | aberto | `binder-editor.ts:323-345` só procura em `SearchResults`; item apagado no Scrivener (na `TrashFolder`) dá "Trash is empty" | RC.7 |
+| 11 | não verificado | não reproduzido; possível relação com o worker do Jest que não encerra (Desvios, estágio 1) e com `server-shutdown.test.ts` no Windows | RC.14 |
+| 12 | aberto | sonda no fixture pt: `draftDocuments: 0` com 3 capítulos, `totalCharacters: 0`, título ausente; `compilation-service.ts:368-370` nunca incrementa as contagens por pasta | RC.9 |
+| 13 | corrigido em parte | `document-analysis.ts:265`: `readability` e `pacing` são strings, todos os `issues` vão no `structuredContent`, sem menção a `deep_analyze_content`; o texto mostra 3 de propósito. `analysisTypes` só orienta o modo provedor (`focus`) | — |
+| 14 | aberto (pt-BR) | `style-analyzer.ts:130` usa `extractDialogue` (narrative-lens) pela fachada | R3.2, R3.3, R3.6, R5.2, R5.3, R5.7 |
+| 15 | aberto | `ai-client.ts:328-329` manda `max_tokens` e `temperature` para todo modelo OpenAI | RC.10 |
+| 16 | corrigido | `writing-suggestions.ts:93-111` lê o documento salvo e o envia como contexto | — |
+| 17 | aberto | `async-handlers.ts:304,326`: "AI writing service not available" sem dizer como configurar | RC.12 |
+| 18 | mudou no upstream | o `check_consistency` usa o serviço de continuidade e cânone; as regras citadas no relatório não existem mais. Padrões pt-BR na fase 4; popular a partir do Binder fica fora (§3) | R4.4, R4.5 |
+| 19 | corrigido | `document-manager.ts:162`: o cache só vale se a revisão do arquivo salvo for a mesma | — |
+| 20 | corrigido para `write_document` | `project-writer.ts` grava por `writeRawContent`, imediato; a fila de 5 s (`document-manager.ts:55`) é de outros caminhos | RC.13 (documentar) |
+| 21 | aberto | `response-formatter.ts:18`: spool em `os.tmpdir()` | RC.11 |
+| 22 | corrigido | fila embutida sem Redis (`job-queue.ts`, coberta por `queue-locale.test.ts`) | RC.13 (documentar) |
+| 23 | aberto (pt-BR) | prompts em inglês | §6.11, R3.10 |
+
+### 15.2 Achados que o relatório não registra
+
+- Duas implementações da lixeira: a de `utils/document-operations.ts` é a testada; a do
+  `binder-editor.ts` é a que a ferramenta usa (erro 8).
+- `scanRawText` replica o tokenizador do leitor à mão. Corrigir só o leitor quebraria o splice,
+  por isso os dois chamam `rtf-decode.ts` (§9.L).
+- Esta SPEC dizia "12 tipos de melhoria"; o código tem 6 (§6.11).
+
+### 15.3 O que muda em inglês
+
+Mudanças intencionais, que o teste de cada requisito fixa:
+
+- `read_document`, `get_document_info`, exportação e toda análise: caracteres `\'80`–`\'9f`
+  decodificados pela página de código, e quebra crua no meio do parágrafo deixa de virar `\n`
+  (RC.2, RC.5).
+- `write_document`, `create_document`: aspas retas gravadas como `"` e `'` (RC.3); na
+  regeneração, o cabeçalho do documento original (RC.4); mais documentos ficam em `preserved`.
+- `delete_document`, `restore_document`, `list_trash`: lixeira nativa (RC.6, RC.7).
+- `get_statistics`: `draftDocuments`, `researchDocuments`, `trashedDocuments`,
+  `totalCharacters` e `title` (RC.9).
+- Chamadas OpenAI com modelos de raciocínio (RC.10); mensagem de provedor ausente (RC.12).
