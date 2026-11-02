@@ -318,7 +318,8 @@ Saída (resumo, 2026-11-02, junto com as correções da revisão do 3a):
   `foreign-span-changed`, nenhuma proposta em `review_changes`; reescrita que preserva a fala →
   resposta normal
 
-Commit: `________` — _mensagem_
+Commit: `5143fea` — `feat(locale): texto base, legibilidade e prompts pt-BR (estágios 3a e 3b)`;
+`ptbr.yml` verde (run 41393464499, com o passo 3 baixando o PortiLexicon-UD)
 
 ### Estágio 3c — Corpus e calibração (SPEC §12, §13 Fase 3)
 
@@ -347,7 +348,10 @@ Commit: `________` — _mensagem_
 
 ### Estágio 4 — Busca e continuidade (SPEC §9.H, §9.I, §13 Fase 4)
 
-- [ ] `conceptsFor` e revisão de índice por idioma — R4.1, R4.2
+- [x] `conceptsFor` e os 30 conceitos pt-BR (`src/locale/search.ts`, `pt-BR/search/concepts.ts`) — R4.1
+- [ ] Injeção no `passage-search.ts` (§9.H) e índice separado por idioma — R4.2. Pendente: o
+  serviço fixa espaço de nomes, caminho do cache e motor na construção; reconstruir ao trocar de
+  idioma pede mais linhas no upstream do que a §9.H prevê (desenho a decidir na próxima sessão)
 - [ ] Julgamento de relevância (`queries`) nas três camadas; revisão do autor — R4.3
 - [ ] Padrões de continuidade pt-BR — R4.4, R4.5
 
@@ -469,6 +473,7 @@ Commit: `________` — _mensagem_
 | 2026-11-02 | 3b (revisão) | R3.7 | `unavailableMetrics` usa o nome do campo (`daleChall`), sem prefixo | Achado do revisor: a R3.7 e a R7.2 usam o nome sem prefixo | `readability.test.ts` |
 | 2026-11-02 | 3b (revisão) | R3.8 | O teste lê a tabela de `semantica-campos.md` para saber quais campos são indisponíveis | Achado do revisor: lista fixa no teste podia divergir da documentação | `readability.test.ts` |
 | 2026-11-02 | 3b (revisão) | R3.2 | `a`/`u` + `i` + `ç` é hiato só antes de `-ção`/`-ções`; prefixos de hiato de `sair`/`cair`/`trair` por regex de conjugação | Achados do revisor: "caiçara", "Paiçandu", "Cairo" | `silabas.tsv` (+2) |
+| 2026-11-02 | 4 | §9.H, R4.1 | `conceptsFor(listaInglesa)` lê o idioma do contexto da chamada, em vez de `conceptsFor(language)` | Devolve o próprio objeto do upstream em inglês sem o locale importar o `passage-search`. Risco apontado pelo revisor: chamado fora de contexto (no construtor do serviço), cai em inglês em silêncio; a forma final depende do desenho da R4.2. O teste compara os nomes com uma cópia da lista do upstream (a constante não é exportada); com a injeção, comparar com o fonte | `search-concepts.test.ts` |
 | 2026-11-02 | 3c | §12.1 | Os clássicos vêm das edições do Project Gutenberg com ortografia de época; as linhas de cada parágrafo foram unidas e o `--` do Gutenberg trocado por `—` (registrado em `source.notes`) | O texto do Gutenberg quebra linhas a cada ~70 caracteres e transcreve o travessão como `--`; sem a normalização, a quebra de linha fecharia frase e nenhuma fala seria reconhecida | `*.annotations.json` (`source.notes`) |
 | 2026-11-02 | 3c | §12.3 | `--check` usa `scripts/locale/implemented.json` para saber quais detectores estão implementados (lista vazia hoje), como o `fetch-data --check` | `coverage.ts` lista funções de fachada, não detectores | – |
 
